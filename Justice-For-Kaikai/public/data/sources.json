@@ -1,0 +1,15 @@
+{
+  "checked_through": "2026-08-16",
+  "editorial_rule": "Folklore, reconstruction, family statements, institutional statements, reporting, and court findings remain separately labeled.",
+  "sources": [
+    { "tier": "E2", "label": "司法院｜直接施虐刑事案件一審新聞稿", "url": "https://www.judicial.gov.tw/tw/cp-1888-1322645-129aa-1.html" },
+    { "tier": "E2", "label": "司法院｜社工刑事案件一審新聞稿", "url": "https://www.judicial.gov.tw/tw/cp-1888-1528027-1ee8d-1.html" },
+    { "tier": "E3", "label": "行政院公報｜收出養媒合服務者管理辦法修正", "url": "https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031128/ch08/type1/gov70/num32/Eg.htm" },
+    { "tier": "E3", "label": "CRC兒少統計專區｜兒童少年保護調查處理及服務", "url": "https://crc.sfaa.gov.tw/Statistics/Detail/235" },
+    { "tier": "E3", "label": "衛福部113保護專線", "url": "https://www.mohw.gov.tw/cp-2704-46193-1.html" },
+    { "tier": "E5", "label": "公視新聞網｜最高法院終局進度報導一", "url": "https://news.pts.org.tw/article/819026" },
+    { "tier": "E5", "label": "公視新聞網｜最高法院終局進度報導二", "url": "https://news.pts.org.tw/article/819087" },
+    { "tier": "E5", "label": "中央社｜社工案上訴進度", "url": "https://www.cna.com.tw/news/asoc/202605150165.aspx" }
+  ]
+}
+

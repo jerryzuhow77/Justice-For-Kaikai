@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "release": "V6.0.2",
+  "project_url": "https://github.com/jerryzuhow77/Justice-For-Kaikai",
+  "images": [
+    { "path": "/media/hero-impression.jpg", "dimensions": "1536x864", "loading": "eager", "role": "hero" },
+    { "path": "/media/prologue-court.jpg", "dimensions": "1536x864", "loading": "lazy", "role": "shadow_stage" }
+  ],
+  "audio": [
+    { "path": "/media/chapter-01.m4a", "duration_seconds": 30.8, "autoplay": false },
+    { "path": "/media/chapter-02.m4a", "duration_seconds": 30.8, "autoplay": false },
+    { "path": "/media/chapter-03.m4a", "duration_seconds": 30.67, "autoplay": false },
+    { "path": "/media/chapter-04.m4a", "duration_seconds": 27.33, "autoplay": false },
+    { "path": "/media/chapter-05.m4a", "duration_seconds": 30.7, "autoplay": false },
+    { "path": "/media/chapter-06.m4a", "duration_seconds": 30.8, "autoplay": false }
+  ],
+  "source_video": [
+    "/media/1000025837.mp4", "/media/1000025838.mp4", "/media/1000025840.mp4",
+    "/media/1000025841.mp4", "/media/1000025842.mp4", "/media/1000025843.mp4"
+  ],
+  "copy": ["/content/zh-Hant.md", "/content/zh-Hans.md", "/content/en.md", "/content/ja.md"],
+  "rights": "See /docs/ASSET-RIGHTS.md before public deployment."
+}
+
