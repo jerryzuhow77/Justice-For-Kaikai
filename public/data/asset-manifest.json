@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "release": "V6.1.0",
+  "project_url": "https://github.com/jerryzuhow77/Justice-For-Kaikai",
+  "images": [
+    { "path": "/media/hero-impression.jpg", "dimensions": "1536x864", "loading": "eager", "role": "hero" },
+    { "path": "/media/prologue-court.jpg", "dimensions": "1536x864", "loading": "lazy", "role": "shadow_stage" },
+    { "path": "/media/poses/female-guardian-pose-sheet-v1.png", "dimensions": "1448x1086", "loading": "lazy", "role": "female_pose_sheet", "poses": 12 },
+    { "path": "/media/poses/male-guardian-pose-sheet-v1.png", "dimensions": "1536x1024", "loading": "lazy", "role": "male_pose_sheet", "poses": 12 },
+    { "path": "/media/poses/grandmother-pose-sheet-v1.png", "dimensions": "1536x1024", "loading": "lazy", "role": "grandmother_pose_sheet", "poses": 12 }
+  ],
+  "pose_assets": {
+    "female": "/media/poses/female-01.webp../female-12.webp",
+    "male": "/media/poses/male-01.webp../male-12.webp",
+    "grandmother": "/media/poses/grandmother-01.webp../grandmother-12.webp",
+    "loading": "scene_scoped_lazy",
+    "fallback": "css_jointed_silhouette"
+  },
+  "audio": [
+    { "path": "/media/chapter-01.m4a", "duration_seconds": 30.8, "autoplay": false },
+    { "path": "/media/chapter-02.m4a", "duration_seconds": 30.8, "autoplay": false },
+    { "path": "/media/chapter-03.m4a", "duration_seconds": 30.67, "autoplay": false },
+    { "path": "/media/chapter-04.m4a", "duration_seconds": 27.33, "autoplay": false },
+    { "path": "/media/chapter-05.m4a", "duration_seconds": 30.7, "autoplay": false },
+    { "path": "/media/chapter-06.m4a", "duration_seconds": 30.8, "autoplay": false }
+  ],
+  "source_video": [
+    "/media/1000025837.mp4", "/media/1000025838.mp4", "/media/1000025840.mp4",
+    "/media/1000025841.mp4", "/media/1000025842.mp4", "/media/1000025843.mp4"
+  ],
+  "copy": ["/content/zh-Hant.md", "/content/zh-Hans.md", "/content/en.md", "/content/ja.md"],
+  "rights": "See /docs/ASSET-RIGHTS.md before public deployment."
+}

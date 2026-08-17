@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "project": "Justice-For-Kaikai",
+  "release": "V6.1.0",
+  "canonical_project_url": "https://github.com/jerryzuhow77/Justice-For-Kaikai",
+  "fact_check_through": "2026-08-16",
+  "default_mode": "guided",
+  "modes": {
+    "guided": "Short literary transitions followed immediately by complete copy",
+    "cinema": "Expanded staging and longer dialogue holds; always user initiated",
+    "reading": "No stage, video, or audio is loaded by the interface",
+    "reduced": "Static dialogue cards with no displacement, flashes, or automatic advance"
+  },
+  "sequence": [
+    { "scene_id": "S00-PROLOGUE", "anchor": "#prologue", "title_zh_hant": "皮影序問｜關於六扇門", "guided_seconds": [52, 64], "cinema_seconds": [145, 160], "beat_count": 12, "distinct_pose_minimum": 12, "pose_assets": ["female-01..12", "male-01..12"], "camera_sequence": ["wide", "track-left", "push", "close", "track-right", "close", "low", "push", "track-left", "close", "wide", "push"], "source_label": "文學化皮影旁白｜非案件人物對話｜非真實錄音｜不代表法院認定", "visual_asset": "/media/prologue-court.jpg", "audio": null, "interaction": "manual_start_pause_skip" },
+    { "scene_id": "S01-CHAIR", "anchor": "#chapter-01", "title_zh_hant": "古老的傳說：綁在椅子上的孩子", "object": "竹椅", "verb": "鬆動", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": "/media/chapter-01.m4a", "source_video": "/media/1000025837.mp4" },
+    { "scene_id": "S02-HANDOVER", "anchor": "#chapter-02", "title_zh_hant": "當孩子必須離開原來的家", "object": "布帶", "verb": "交接", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": "/media/chapter-02.m4a", "source_video": "/media/1000025838.mp4" },
+    { "scene_id": "S03-SIGNALS", "anchor": "#chapter-03", "title_zh_hant": "越來越多求救，進入制度", "object": "窗格", "verb": "辨認", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": "/media/chapter-03.m4a", "source_video": "/media/1000025840.mp4" },
+    { "scene_id": "S04-EMERGENCY", "anchor": "#chapter-04", "title_zh_hant": "隔著布簾的急診記憶", "object": "布簾", "verb": "傾聽", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": "/media/chapter-04.m4a", "source_video": "/media/1000025841.mp4", "permanent_notice": "未具名讀者來函／情境重構｜非病歷、非錄音、非法院認定" },
+    { "scene_id": "S05-AMENDMENT", "anchor": "#chapter-05", "title_zh_hant": "從一紙修法開始：兒福聯盟的誕生", "object": "活字", "verb": "印記", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": "/media/chapter-05.m4a", "source_video": "/media/1000025842.mp4" },
+    { "scene_id": "S06-PEIPEI", "anchor": "#chapter-06", "title_zh_hant": "珮珮：另一間病房裡的孩子", "object": "春聯", "verb": "分界", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": "/media/chapter-06.m4a", "source_video": "/media/1000025843.mp4" },
+    { "scene_id": "S07-SEAMS", "anchor": "#chapter-07", "title_zh_hant": "從珮珮到剴剴：制度留下的接縫", "object": "紅線", "verb": "核實", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12"], "audio": null, "soundscape": "paper_room_tone" },
+    { "scene_id": "S08-GRANDMOTHER", "anchor": "#chapter-08", "title_zh_hant": "外婆的眼淚：第二章前夜", "object": "白髮", "verb": "等待", "guided_seconds": [19, 24], "beat_count": 10, "distinct_pose_minimum": 10, "pose_assets": ["female-01..12", "male-01..12", "grandmother-01..12"], "audio": null, "soundscape": "courtroom_room_tone", "permanent_notice": "家屬公開說法／具名報導之間接引述｜本專題整理｜非法院逐字稿" },
+    { "scene_id": "S09-NEXT-DOOR", "anchor": "#ending", "title_zh_hant": "讓下一扇門更早打開", "guided_seconds": [65, 80], "epilogue_seconds": [30, 45], "beat_count": 12, "distinct_pose_minimum": 12, "pose_assets": ["female-01..12", "male-01..12"], "camera_sequence": ["wide", "track-left", "push", "track-right", "low", "close", "close", "push", "wide", "close", "push", "wide"], "audio": null, "visual_rule": "ordinary_morning_only_no_afterlife_no_child_apparition", "interaction": "manual_start_pause_skip" }
+  ],
+  "character_animation": {
+    "quality_target": "cinematic_2_5d_paper_collage",
+    "pose_sheet_layout": "4x3_rgba",
+    "major_character_pose_count": 12,
+    "chapter_transition_minimum_beats": 10,
+    "fallback": "original_jointed_css_silhouette",
+    "offscreen_behavior": "pause_timeline",
+    "pause_control": true,
+    "full_spec": "/docs/animation-film-production-v6.1.md"
+  },
+  "state_machine": ["idle", "source_gate", "curtain_open", "dialogue", "curtain_close", "transition", "article"],
+  "a11y": { "autoplay_audio": false, "flashes": false, "dialogue_transcript_available": true, "reduced_motion_supported": true, "skip_to_content": true }
+}
