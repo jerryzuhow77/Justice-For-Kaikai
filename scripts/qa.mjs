@@ -36,6 +36,7 @@ for (const required of ["index.html", "story.html", "assets/css/styles.css", "as
 const app = fs.readFileSync(path.join(root, "assets/js/app.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const story = fs.readFileSync(path.join(root, "story.html"), "utf8");
+const css = fs.readFileSync(path.join(root, "assets/css/styles.css"), "utf8");
 for (const token of ["gsap.timeline", "gsap.matchMedia", "ScrollTrigger.batch", "timeline-progress", "stepTimes", "kill()", "applyStaticVisuals"]) {
   if (!app.includes(token) && !html.includes(token)) errors.push(`GSAP實作缺少：${token}`);
 }
@@ -62,9 +63,26 @@ if (!html.includes('id="full-copy"') || !html.includes('id="inline-story-content
 if (!html.includes("fm-c-two-worlds-v2.webp") || !registry.includes("淺藍與深藍條紋上衣")) errors.push("剴剴服裝未鎖定淺藍／深藍條紋");
 if (!app.includes("actorPosePlan") || !app.includes("setActorSprites") || !app.includes("SIDE_POSE_ROOT")) errors.push("多姿勢角色切換尚未接入播放器");
 
+const placementBlock = app.match(/const INLINE_SCENE_PLACEMENTS = \[([\s\S]*?)\n  \];/)?.[1] || "";
+for (const anchor of [...placementBlock.matchAll(/anchor: "([^"]+)"/g)].map((match) => match[1])) {
+  if (!story.includes(`id="${anchor}"`)) errors.push(`隨文動畫找不到文案錨點：${anchor}`);
+}
+for (const id of order) {
+  const occurrences = (placementBlock.match(new RegExp(`"${id}"`, "g")) || []).length;
+  if (occurrences !== 1) errors.push(`隨文動畫配置${id}應出現1次，實際${occurrences}次`);
+}
+if (!app.includes("insertInlineScenes") || !app.includes("decorateInlineCopy") || !app.includes("setupInlineStoryMotion")) errors.push("隨文動畫、正文圖章或GSAP進場尚未接入");
+for (const colour of ["--xuanqing", "--dailan", "--tianshuibi", "--xieqing", "--yuebai", "--zhusha", "--yanzhi", "--zheshi", "--songhua", "--ehuang", "--wujin", "--xuanzhi"]) {
+  if (!css.includes(colour)) errors.push(`缺少中國傳統色變數：${colour}`);
+}
+for (let index = 1; index <= 12; index += 1) {
+  const badge = path.join(root, `assets/img/badges/minnan-${String(index).padStart(2, "0")}.webp`);
+  if (!fs.existsSync(badge)) errors.push(`缺少閩南工藝圖章${index}`);
+}
+
 if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
 
-console.log("QA PASS｜24場＝10皮影＋10陰翳側視＋4電影；每場10動作節拍；男女各12姿勢、14張唯一場景主視覺、完整內嵌文案、GSAP時間軸與靜態備援齊全。");
+console.log("QA PASS｜24場動畫各自嵌入文案一次；12枚大型半透明閩南圖章、12項中國傳統色、48張角色姿勢、14張唯一主視覺、GSAP時間軸與靜態備援齊全。");

@@ -9,6 +9,21 @@
   const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
   const hasGSAP = Boolean(window.gsap);
 
+  const INLINE_SCENE_PLACEMENTS = [
+    { anchor: "開頭引言花會再開童年不會重來", label: "序幕電影", scenes: ["FM-A"] },
+    { anchor: "皮影序問關於六扇門", label: "序問雙劇場", scenes: ["SP00", "DV00"] },
+    { anchor: "古老的傳說綁在椅子上的孩子", label: "第一篇章動畫", scenes: ["SP01", "DV01"] },
+    { anchor: "當孩子必須離開原來的家", label: "第二篇章動畫", scenes: ["SP02", "DV02"] },
+    { anchor: "越來越多求救進入制度", label: "第三篇章動畫", scenes: ["SP03", "DV03"] },
+    { anchor: "隔著布簾的急診記憶", label: "第四篇章動畫", scenes: ["SP04", "DV04"] },
+    { anchor: "從一紙修法開始兒福聯盟的誕生", label: "第五篇章動畫", scenes: ["SP05", "DV05"] },
+    { anchor: "珮珮另一間病房裡的孩子", label: "第六篇章動畫", scenes: ["SP06", "DV06"] },
+    { anchor: "從珮珮到剴剴制度留下的接縫", label: "第七篇章動畫", scenes: ["SP07", "DV07"] },
+    { anchor: "外婆的眼淚第二章前夜", label: "第八篇章動畫", scenes: ["FM-D", "SP08", "DV08"] },
+    { anchor: "外婆含淚的指責正文收束", label: "法庭電影", scenes: ["FM-B"] },
+    { anchor: "結尾皮影戲讓下一扇門更早打開", label: "終章三聯劇場", scenes: ["SP09", "DV09", "FM-C"] }
+  ];
+
   if (hasGSAP) {
     document.documentElement.classList.add("has-gsap");
     if (window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
@@ -39,7 +54,8 @@
     reduced: localStorage.getItem("kk-reduced") === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     timeline: null,
     stepTimes: [],
-    pageMedia: null
+    pageMedia: null,
+    inlineMedia: null
   };
 
   const dialog = $("#scene-dialog");
@@ -111,6 +127,7 @@
       if (state.scene) renderStep(state.step, true);
     } else {
       setupPageMotion();
+      setupInlineStoryMotion();
       if (state.scene && dialog?.open) {
         stage.classList.toggle("is-gsap", hasGSAP);
         buildTimeline(state.scene);
@@ -177,6 +194,92 @@
     });
   }
 
+  function createInlineSceneCard(scene) {
+    const position = order.indexOf(scene.id);
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = `copy-scene-card ${scene.type}`;
+    card.dataset.sceneId = scene.id;
+    card.setAttribute("aria-label", `播放隨文${typeLabels[scene.type]}：${scene.title}`);
+
+    const poster = document.createElement("span");
+    poster.className = "copy-scene-poster";
+    if (scene.image) poster.style.setProperty("--scene-image", `url('${scene.image}')`);
+    if (scene.type !== "film") {
+      const previewBeat = scene.chapter === "終章" ? 9 : 4;
+      const female = document.createElement("img");
+      const male = document.createElement("img");
+      female.src = poseAsset(scene, "female", actorPosePlan(scene, "female")[previewBeat]);
+      male.src = poseAsset(scene, "male", actorPosePlan(scene, "male")[previewBeat]);
+      female.alt = "";
+      male.alt = "";
+      female.loading = "lazy";
+      male.loading = "lazy";
+      female.className = "copy-scene-actor female";
+      male.className = "copy-scene-actor male";
+      poster.append(female, male);
+    }
+
+    const ornament = document.createElement("img");
+    ornament.className = "copy-scene-ornament";
+    ornament.src = `assets/img/badges/minnan-${String((Math.max(0, position) % 12) + 1).padStart(2, "0")}.webp`;
+    ornament.alt = "";
+    ornament.loading = "lazy";
+
+    const copy = document.createElement("span");
+    copy.className = "copy-scene-meta";
+    copy.innerHTML = `
+      <span class="copy-scene-code">${String(position + 1).padStart(2, "0")} / 24 · ${scene.id}</span>
+      <strong>${scene.title}</strong>
+      <span>${scene.subtitle}</span>
+      <em>開啟十拍動畫與完整對話</em>`;
+    card.append(poster, ornament, copy);
+    card.addEventListener("click", () => openScene(scene.id));
+    return card;
+  }
+
+  function insertInlineScenes(target) {
+    const inserted = new Set();
+    INLINE_SCENE_PLACEMENTS.forEach((placement) => {
+      const heading = document.getElementById(placement.anchor) || $(`#${CSS.escape(placement.anchor)}`, target);
+      if (!heading || !target.contains(heading)) return;
+      const validScenes = placement.scenes.map((id) => sceneById.get(id)).filter(Boolean);
+      if (!validScenes.length) return;
+      const group = document.createElement("aside");
+      group.className = "copy-scene-group";
+      group.setAttribute("aria-label", placement.label);
+      const header = document.createElement("header");
+      header.innerHTML = `<span>文學化影像轉場</span><b>${placement.label}</b><small>${validScenes.length} 部 · 點選後進入全螢幕劇場</small>`;
+      const grid = document.createElement("div");
+      grid.className = "copy-scene-grid";
+      validScenes.forEach((scene) => {
+        inserted.add(scene.id);
+        grid.append(createInlineSceneCard(scene));
+      });
+      group.append(header, grid);
+      heading.insertAdjacentElement("afterend", group);
+    });
+    target.dataset.inlineSceneCount = String(inserted.size);
+  }
+
+  function decorateInlineCopy(target) {
+    const field = document.createElement("div");
+    field.className = "copy-badge-field";
+    field.setAttribute("aria-hidden", "true");
+    for (let index = 0; index < 12; index += 1) {
+      const badge = document.createElement("img");
+      badge.src = `assets/img/badges/minnan-${String(index + 1).padStart(2, "0")}.webp`;
+      badge.alt = "";
+      badge.loading = "lazy";
+      badge.style.top = `${1.5 + index * 8.25}%`;
+      badge.style.left = index % 2 === 0 ? `${-16 + (index % 3) * 3}%` : "auto";
+      badge.style.right = index % 2 === 1 ? `${-18 + (index % 4) * 2}%` : "auto";
+      badge.style.setProperty("--copy-seal-rotation", `${(index % 2 ? 1 : -1) * (5 + index * 4)}deg`);
+      field.append(badge);
+    }
+    target.prepend(field);
+  }
+
   async function loadInlineStory() {
     const target = $("#inline-story-content");
     const nav = $("#copy-chapter-nav");
@@ -190,6 +293,9 @@
       source.querySelectorAll("a[download]").forEach((link) => link.remove());
       target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true)));
       target.removeAttribute("aria-busy");
+      decorateInlineCopy(target);
+      insertInlineScenes(target);
+      setupInlineStoryMotion();
       nav.replaceChildren();
       const headings = $$("h2, h3", target);
       headings.forEach((heading, index) => {
@@ -222,7 +328,7 @@
       img.style.left = i % 2 ? "auto" : `${-7 + (i % 3) * 2}%`;
       img.style.right = i % 2 ? `${-8 + (i % 4) * 1.5}%` : "auto";
       img.style.setProperty("--rot", `${(i % 2 ? 1 : -1) * (4 + i * 3)}deg`);
-      img.style.width = `clamp(260px, ${24 + (i % 4) * 3}vw, 560px)`;
+      img.style.width = `clamp(380px, ${38 + (i % 4) * 4}vw, 820px)`;
       field.append(img);
     }
   }
@@ -309,9 +415,33 @@
     });
   }
 
+  function setupInlineStoryMotion() {
+    state.inlineMedia?.revert();
+    state.inlineMedia = null;
+    if (!hasGSAP || !window.ScrollTrigger || state.reduced || !$(".copy-scene-card")) return;
+    const { gsap } = window;
+    state.inlineMedia = gsap.matchMedia();
+    state.inlineMedia.add("(prefers-reduced-motion: no-preference)", () => {
+      window.ScrollTrigger.batch(".copy-scene-card", {
+        start: "top 90%",
+        once: true,
+        onEnter: (batch) => gsap.fromTo(batch, { autoAlpha: 0, y: 34, scale: .985 }, { autoAlpha: 1, y: 0, scale: 1, duration: .8, stagger: .1, ease: "power3.out", clearProps: "opacity,visibility,transform" })
+      });
+      gsap.utils.toArray(".copy-scene-group").forEach((group) => {
+        gsap.from(group, {
+          backgroundPosition: "80% 50%",
+          scrollTrigger: { trigger: group, start: "top bottom", end: "bottom top", scrub: 1 }
+        });
+      });
+      return () => undefined;
+    });
+  }
+
   function teardownPageMotion() {
     state.pageMedia?.revert();
     state.pageMedia = null;
+    state.inlineMedia?.revert();
+    state.inlineMedia = null;
   }
 
   function totalSteps(scene) {

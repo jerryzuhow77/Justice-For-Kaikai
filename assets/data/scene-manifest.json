@@ -1,5 +1,5 @@
 {
-  "version": "7.2.0",
+  "version": "7.3.0",
   "generated_at": "2026-08-19T00:00:00+08:00",
   "canonical_repository": "https://github.com/jerryzuhow77/Justice-For-Kaikai",
   "counts": {
@@ -7,6 +7,17 @@
     "shadow": 10,
     "side": 10,
     "film": 4
+  },
+  "inline_distribution": {
+    "opening_and_prologue": ["FM-A", "SP00", "DV00"],
+    "chapters_01_to_07": ["SP01", "DV01", "SP02", "DV02", "SP03", "DV03", "SP04", "DV04", "SP05", "DV05", "SP06", "DV06", "SP07", "DV07"],
+    "chapter_08": ["FM-D", "SP08", "DV08", "FM-B"],
+    "finale": ["SP09", "DV09", "FM-C"],
+    "total_unique": 24
+  },
+  "visual_palette": {
+    "traditional_colours": ["玄青", "黛藍", "天水碧", "蟹青", "月白", "朱砂", "胭脂", "赭石", "松花", "鵝黃", "烏金", "宣紙"],
+    "badge_treatment": "12 Minnan craft seals distributed as oversized translucent page, copy-paper, and scene-card watermarks"
   },
   "character_performance": {
     "distinct_pose_minimum_per_scene": 10,
