@@ -517,6 +517,14 @@
 
   function filmTarget(scene, actionIndex) {
     if (scene.id === "FM-C") {
+      if (window.matchMedia("(max-width: 760px)").matches) {
+        const mobileTwoWorldShots = [
+          [106, 50, 50], [114, 44, 50], [114, 56, 50], [108, 50, 48], [118, 45, 51],
+          [118, 55, 51], [110, 50, 54], [120, 46, 52], [120, 54, 52], [106, 50, 50]
+        ];
+        const [size, x, y] = mobileTwoWorldShots[actionIndex];
+        return { size: `auto ${size}%`, position: `${x}% ${y}%` };
+      }
       const twoWorldShots = [
         [116, 50, 50], [128, 24, 47], [136, 74, 49], [146, 51, 45], [123, 67, 42],
         [139, 36, 53], [126, 54, 62], [148, 42, 58], [132, 79, 50], [118, 50, 49]
@@ -567,7 +575,8 @@
 
   function poseTargets(scene, actionIndex) {
     const pose = MOTION_POSES[actionIndex];
-    const ratio = scene.type === "side" ? .72 : 1;
+    const compactStage = window.matchMedia("(max-width: 760px)").matches;
+    const ratio = compactStage ? (scene.type === "side" ? .34 : .42) : (scene.type === "side" ? .72 : 1);
     const target = (values) => ({ x: values[0] * ratio, y: values[1] * ratio, rotation: values[2], scale: values[3] * (scene.type === "side" ? .94 : 1) });
     return { female: target(pose.f), male: target(pose.m) };
   }

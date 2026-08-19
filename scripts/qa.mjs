@@ -47,6 +47,8 @@ if (!html.includes('id="nav-toggle"') || !html.includes('id="reading-progress-ba
 if (!html.includes('id="toggle-all-scenes"') || !app.includes("FEATURED_SCENE_IDS")) errors.push("六場精選與24場總覽切換尚未接入");
 if (html.includes('id="sound-toggle"') || app.includes("待掛曲")) errors.push("公開頁面仍顯示未完成的音樂控制");
 if (!html.includes('id="source-guide"') || !story.includes('id="source-index"')) errors.push("來源分層或完整來源索引尚未公開");
+if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(420px, 112vw, 720px)") || !css.includes('.stage[data-type="side"] .actor img { object-fit: cover')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
+if (!app.includes("mobileTwoWorldShots") || !app.includes('scene.type === "side" ? .34 : .42')) errors.push("手機電影構圖或人物移動比例尚未接入");
 
 for (const [file, lang] of [["story-zh-hans.html", "zh-Hans"], ["story-en.html", "en"], ["story-ja.html", "ja"]]) {
   const localePage = fs.readFileSync(path.join(root, file), "utf8");
