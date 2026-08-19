@@ -142,7 +142,7 @@ body:not(.is-gated) .entry-gate { opacity: 0; visibility: hidden; }
 }
 .gate-panel h1 {
   margin: .4rem 0 0;
-  font: 500 clamp(3.2rem, 6vw, 5.8rem)/1.12 var(--serif);
+  font: 500 clamp(3.2rem, 5.2vw, 4.8rem)/1.12 var(--serif);
   letter-spacing: .065em;
 }
 .gate-lead { margin: 1rem 0 2rem; color: #c9b28f; letter-spacing: .16em; }

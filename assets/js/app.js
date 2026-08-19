@@ -358,7 +358,7 @@
       insertInlineScenes(target);
       setupInlineStoryMotion();
       nav.replaceChildren();
-      const headings = $$("h2, h3", target);
+      const headings = $$("h2, h3, h4.story-chapter-heading", target);
       headings.forEach((heading, index) => {
         if (!heading.id) heading.id = `copy-heading-${index + 1}`;
         const link = document.createElement("a");
