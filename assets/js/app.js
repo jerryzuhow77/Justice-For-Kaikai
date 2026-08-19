@@ -94,8 +94,8 @@
     window.setTimeout(() => {
       const targetElement = $(target);
       targetElement?.focus?.({ preventScroll: true });
-      if (target !== "#top") targetElement?.scrollIntoView?.({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
       window.ScrollTrigger?.refresh();
+      if (target !== "#top") targetElement?.scrollIntoView?.({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
     }, 160);
   }
 
