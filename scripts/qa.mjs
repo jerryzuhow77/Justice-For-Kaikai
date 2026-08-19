@@ -35,15 +35,36 @@ for (const required of ["index.html", "story.html", "assets/css/styles.css", "as
 
 const app = fs.readFileSync(path.join(root, "assets/js/app.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const story = fs.readFileSync(path.join(root, "story.html"), "utf8");
 for (const token of ["gsap.timeline", "gsap.matchMedia", "ScrollTrigger.batch", "timeline-progress", "stepTimes", "kill()", "applyStaticVisuals"]) {
   if (!app.includes(token) && !html.includes(token)) errors.push(`GSAP實作缺少：${token}`);
 }
 if (html.indexOf("gsap.min.js") > html.indexOf("app.js")) errors.push("GSAP載入順序晚於app.js");
 if (!html.includes("stage-atmosphere") || !html.includes("stage-focus-light") || !html.includes("stage-red-thread")) errors.push("電影化舞臺圖層不完整");
 
+const sideImages = scenes.filter((scene) => scene.type === "side").map((scene) => scene.image);
+const filmImages = scenes.filter((scene) => scene.type === "film").map((scene) => scene.image);
+if (new Set(sideImages).size !== 10) errors.push("十場陰翳側視未使用十張唯一場景圖");
+if (new Set(filmImages).size !== 4) errors.push("四場電影式動畫未使用四張唯一主視覺");
+
+for (const sex of ["female", "male"]) {
+  for (let index = 1; index <= 12; index += 1) {
+    const number = String(index).padStart(2, "0");
+    const shadowAsset = path.join(root, `public/media/poses/${sex}-${number}.webp`);
+    const sideAsset = path.join(root, `assets/img/actors/side/guardian-${sex}-${number}.webp`);
+    if (!fs.existsSync(shadowAsset)) errors.push(`皮影${sex}缺少姿勢${number}`);
+    if (!fs.existsSync(sideAsset)) errors.push(`守門人${sex}缺少姿勢${number}`);
+  }
+}
+
+if (/<a\b[^>]*\bdownload\b/i.test(html) || /<a\b[^>]*\bdownload\b/i.test(story)) errors.push("網頁仍存在下載連結");
+if (!html.includes('id="full-copy"') || !html.includes('id="inline-story-content"') || !app.includes("loadInlineStory")) errors.push("完整文案尚未整合到主頁");
+if (!html.includes("fm-c-two-worlds-v2.webp") || !registry.includes("淺藍與深藍條紋上衣")) errors.push("剴剴服裝未鎖定淺藍／深藍條紋");
+if (!app.includes("actorPosePlan") || !app.includes("setActorSprites") || !app.includes("SIDE_POSE_ROOT")) errors.push("多姿勢角色切換尚未接入播放器");
+
 if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
 
-console.log("QA PASS｜24場＝10皮影＋10陰翳側視＋4電影；每場10動作節拍；GSAP時間軸、本地資產、進度控制與靜態備援齊全。 ");
+console.log("QA PASS｜24場＝10皮影＋10陰翳側視＋4電影；每場10動作節拍；男女各12姿勢、14張唯一場景主視覺、完整內嵌文案、GSAP時間軸與靜態備援齊全。");

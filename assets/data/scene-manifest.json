@@ -1,5 +1,5 @@
 {
-  "version": "7.0.0",
+  "version": "7.2.0",
   "generated_at": "2026-08-19T00:00:00+08:00",
   "canonical_repository": "https://github.com/jerryzuhow77/Justice-For-Kaikai",
   "counts": {
@@ -7,6 +7,14 @@
     "shadow": 10,
     "side": 10,
     "film": 4
+  },
+  "character_performance": {
+    "distinct_pose_minimum_per_scene": 10,
+    "shadow_female_assets": "public/media/poses/female-01.webp..female-12.webp",
+    "shadow_male_assets": "public/media/poses/male-01.webp..male-12.webp",
+    "side_female_assets": "assets/img/actors/side/guardian-female-01.webp..guardian-female-12.webp",
+    "side_male_assets": "assets/img/actors/side/guardian-male-01.webp..guardian-male-12.webp",
+    "selection": "semantic action matching with per-scene de-duplication"
   },
   "order": [
     "FM-A",
@@ -1229,7 +1237,7 @@
       "motif": "清代古厝與現代長廊的中央門縫",
       "prop": "同一扇門",
       "source": "原創象徵性文學對話｜不是兩名兒童的真實言語、證詞或臨終陳述",
-      "image": "assets/img/films/fm-c-two-worlds.webp",
+      "image": "assets/img/films/fm-c-two-worlds-v2.webp",
       "actions": [
         "左側清代古厝與右側現代長廊同時亮起",
         "完整無傷的清代女童側影走近門縫",

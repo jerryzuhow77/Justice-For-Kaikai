@@ -14,7 +14,7 @@
     if (window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
   }
 
-  const POSES = [
+  const MOTION_POSES = [
     { f: [-18, 0, -2, .98, -3, 10, -12], m: [18, 0, 2, 1, 2, 12, -10] },
     { f: [14, -3, 2, 1, 5, 18, -62], m: [-4, 6, -1, .99, -2, 8, -16] },
     { f: [38, 0, -1, .97, -6, 16, -22], m: [-22, 0, -3, 1, 4, 58, -8] },
@@ -26,6 +26,10 @@
     { f: [-46, 0, -4, 1, -5, 42, -20], m: [46, 0, 4, 1, 5, 42, -20] },
     { f: [-76, -2, 0, 1, 8, 14, -12], m: [76, -2, 0, 1, -8, 12, -14] }
   ];
+
+  const SHADOW_POSE_ROOT = "public/media/poses";
+  const SIDE_POSE_ROOT = "assets/img/actors/side";
+  const posePlanCache = new Map();
 
   const state = {
     scene: null,
@@ -48,6 +52,8 @@
   const stageRedThread = $("#stage-red-thread");
   const actorFemale = $(".actor-female", stage);
   const actorMale = $(".actor-male", stage);
+  const actorFemaleImage = $("#actor-female-image", stage);
+  const actorMaleImage = $("#actor-male-image", stage);
   const curtainLeft = $(".curtain-left", stage);
   const curtainRight = $(".curtain-right", stage);
   const dialogueBox = $("#dialogue-box");
@@ -59,7 +65,9 @@
     document.body.classList.remove("is-gated");
     sessionStorage.setItem("kk-entered", "true");
     window.setTimeout(() => {
-      $(target)?.focus?.({ preventScroll: true });
+      const targetElement = $(target);
+      targetElement?.focus?.({ preventScroll: true });
+      if (target !== "#top") targetElement?.scrollIntoView?.({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
       window.ScrollTrigger?.refresh();
     }, 160);
   }
@@ -81,8 +89,7 @@
     enterSite("#top");
   });
   $("#enter-reading")?.addEventListener("click", () => {
-    enterSite();
-    window.location.href = "story.html";
+    enterSite("#full-copy");
   });
   $("#gate-reduced")?.addEventListener("change", (event) => setReduced(event.target.checked));
   $("#motion-toggle")?.addEventListener("click", () => setReduced(!state.reduced));
@@ -109,6 +116,96 @@
         buildTimeline(state.scene);
         goToStep(state.step);
       }
+    }
+  }
+
+  function poseAsset(scene, sex, poseNumber) {
+    const number = String(poseNumber).padStart(2, "0");
+    if (scene.type === "side") return `${SIDE_POSE_ROOT}/guardian-${sex}-${number}.webp`;
+    return `${SHADOW_POSE_ROOT}/${sex}-${number}.webp`;
+  }
+
+  function semanticPose(scene, action, sex, actionIndex) {
+    const side = scene.type === "side";
+    const text = `${action} ${scene.motif || ""} ${scene.prop || ""}`;
+    if (/門|門檻|推開|門縫|開門/.test(text)) return actionIndex >= 8 ? 12 : 11;
+    if (/椅|椅腳|榫|跪|俯身/.test(text)) return sex === "female" ? (side ? 9 : 8) : (side ? 8 : 7);
+    if (/線|繡線|布帶|線結|結繩/.test(text)) return sex === "female" ? (side ? 7 : 5) : (side ? 7 : 10);
+    if (/燈|提燈|舉燈|亮起|微光/.test(text)) return sex === "female" ? (side ? 5 : 3) : (side ? 6 : 9);
+    if (/卷|頁|表|紀錄|文件|姓名|來源|信紙|判決|筆|核對|資料/.test(text)) return sex === "female" ? (side ? 4 : 6) : (side ? (actionIndex > 6 ? 10 : 3) : (actionIndex > 6 ? 10 : 4));
+    if (/聽|側耳|交頭|回看|回望/.test(text)) return sex === "female" ? (side ? 3 : 2) : (side ? 4 : 3);
+    if (/走|入場|離席|靠近|前行|退到|穿過/.test(text)) return sex === "female" ? (side ? 2 : 1) : 2;
+    if (/扶|觸摸|按住|放下|校準|接住/.test(text)) return sex === "female" ? (side ? 6 : 6) : (side ? 9 : 8);
+    if (/印章|停筆|擋住|停止/.test(text)) return sex === "female" ? (side ? 8 : 1) : (side ? 5 : 1);
+    return (actionIndex % 10) + 1;
+  }
+
+  function actorPosePlan(scene, sex) {
+    const key = `${scene.id}:${sex}`;
+    if (posePlanCache.has(key)) return posePlanCache.get(key);
+    const used = new Set();
+    const plan = scene.actions.map((action, actionIndex) => {
+      const preferred = semanticPose(scene, action, sex, actionIndex);
+      const pool = [preferred, ...Array.from({ length: 12 }, (_, offset) => ((actionIndex + offset) % 12) + 1)];
+      const chosen = pool.find((candidate) => !used.has(candidate)) || preferred;
+      used.add(chosen);
+      return chosen;
+    });
+    posePlanCache.set(key, plan);
+    return plan;
+  }
+
+  function setActorSprites(scene, actionIndex) {
+    if (!scene || scene.type === "film") return;
+    const femalePose = actorPosePlan(scene, "female")[actionIndex];
+    const malePose = actorPosePlan(scene, "male")[actionIndex];
+    const femaleSrc = poseAsset(scene, "female", femalePose);
+    const maleSrc = poseAsset(scene, "male", malePose);
+    if (actorFemaleImage?.getAttribute("src") !== femaleSrc) actorFemaleImage.src = femaleSrc;
+    if (actorMaleImage?.getAttribute("src") !== maleSrc) actorMaleImage.src = maleSrc;
+    actorFemale.dataset.poseAsset = String(femalePose);
+    actorMale.dataset.poseAsset = String(malePose);
+  }
+
+  function preloadActorSet(scene) {
+    if (!scene || scene.type === "film") return;
+    ["female", "male"].forEach((sex) => {
+      actorPosePlan(scene, sex).forEach((pose) => {
+        const image = new Image();
+        image.src = poseAsset(scene, sex, pose);
+      });
+    });
+  }
+
+  async function loadInlineStory() {
+    const target = $("#inline-story-content");
+    const nav = $("#copy-chapter-nav");
+    if (!target || !nav) return;
+    try {
+      const response = await fetch("story.html", { cache: "no-cache" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const documentCopy = new DOMParser().parseFromString(await response.text(), "text/html");
+      const source = $(".story-content", documentCopy);
+      if (!source) throw new Error("完整文案節點不存在");
+      source.querySelectorAll("a[download]").forEach((link) => link.remove());
+      target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true)));
+      target.removeAttribute("aria-busy");
+      nav.replaceChildren();
+      const headings = $$("h2, h3", target);
+      headings.forEach((heading, index) => {
+        if (!heading.id) heading.id = `copy-heading-${index + 1}`;
+        const link = document.createElement("a");
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent.replace(/\s+/g, " ").trim();
+        nav.append(link);
+      });
+      if (!headings.length) nav.textContent = "完整正文";
+      window.ScrollTrigger?.refresh();
+    } catch (error) {
+      target.removeAttribute("aria-busy");
+      target.innerHTML = `<p>完整文案暫時無法嵌入本頁。請改用 <a href="story.html">純文字閱讀模式</a>。</p>`;
+      nav.textContent = "載入失敗";
+      console.error("Inline story load failed", error);
     }
   }
 
@@ -235,9 +332,20 @@
   }
 
   function filmTarget(scene, actionIndex) {
-    if (scene.id === "FM-C") return { size: `${112 + (actionIndex % 3) * 5}% auto`, position: `${45 + (actionIndex - 4.5) * 1.5}% 48%` };
-    const panel = Math.min(3, Math.floor(actionIndex / 2.5));
-    return { size: "405% auto", position: `${panel * 33.333}% 48%` };
+    if (scene.id === "FM-C") {
+      const twoWorldShots = [
+        [116, 50, 50], [128, 24, 47], [136, 74, 49], [146, 51, 45], [123, 67, 42],
+        [139, 36, 53], [126, 54, 62], [148, 42, 58], [132, 79, 50], [118, 50, 49]
+      ];
+      const [size, x, y] = twoWorldShots[actionIndex];
+      return { size: `${size}% auto`, position: `${x}% ${y}%` };
+    }
+    const panelShots = [
+      [442, 2, 43], [498, 7, 52], [454, 28, 45], [486, 37, 53], [430, 54, 46],
+      [510, 62, 55], [448, 71, 43], [492, 82, 51], [462, 94, 45], [520, 99, 54]
+    ];
+    const [size, x, y] = panelShots[actionIndex];
+    return { size: `${size}% auto`, position: `${x}% ${y}%` };
   }
 
   function backgroundTarget(scene, actionIndex) {
@@ -258,6 +366,7 @@
     state.step = Math.max(0, Math.min(total - 1, step));
     const actionIndex = actionIndexFor(scene, state.step);
     const line = scene.dialogue[dialogueIndexFor(scene, state.step)];
+    setActorSprites(scene, actionIndex);
     stage.dataset.pose = String(actionIndex);
     stage.dataset.type = scene.type;
     stage.dataset.scene = scene.id;
@@ -273,9 +382,9 @@
   }
 
   function poseTargets(scene, actionIndex) {
-    const pose = POSES[actionIndex];
+    const pose = MOTION_POSES[actionIndex];
     const ratio = scene.type === "side" ? .72 : 1;
-    const target = (values) => ({ x: values[0] * ratio, y: values[1] * ratio, rotation: values[2], scale: values[3] * (scene.type === "side" ? .94 : 1), head: values[4], armA: values[5], armB: values[6] });
+    const target = (values) => ({ x: values[0] * ratio, y: values[1] * ratio, rotation: values[2], scale: values[3] * (scene.type === "side" ? .94 : 1) });
     return { female: target(pose.f), male: target(pose.m) };
   }
 
@@ -283,9 +392,6 @@
     if (!hasGSAP || !actor) return;
     const { gsap } = window;
     gsap.set(actor, { x: target.x, y: target.y, rotation: target.rotation, scale: target.scale });
-    gsap.set($(".head", actor), { rotation: target.head, transformOrigin: "50% 75%" });
-    gsap.set($(".arm-a", actor), { rotation: target.armA, transformOrigin: "50% 8px" });
-    gsap.set($(".arm-b", actor), { rotation: target.armB, transformOrigin: "50% 8px" });
   }
 
   function applyStaticVisuals(scene, actionIndex) {
@@ -311,9 +417,7 @@
 
   function animateActor(timeline, actor, target, at, duration) {
     timeline.to(actor, { x: target.x, y: target.y, rotation: target.rotation, scale: target.scale, duration, ease: "power2.inOut" }, at);
-    timeline.to($(".head", actor), { rotation: target.head, transformOrigin: "50% 75%", duration: duration * .8, ease: "sine.inOut" }, at);
-    timeline.to($(".arm-a", actor), { rotation: target.armA, transformOrigin: "50% 8px", duration: duration * .86, ease: "power2.inOut" }, at);
-    timeline.to($(".arm-b", actor), { rotation: target.armB, transformOrigin: "50% 8px", duration: duration * .9, ease: "power2.inOut" }, at);
+    timeline.fromTo($("img", actor), { autoAlpha: .28, scale: .965, yPercent: 1.4 }, { autoAlpha: 1, scale: 1, yPercent: 0, duration: Math.min(.72, duration * .45), ease: "power2.out", immediateRender: false }, at);
   }
 
   function animateShot(timeline, scene, step, at, beatDuration) {
@@ -417,10 +521,19 @@
       beat.dataset.number = String(index + 1).padStart(2, "0");
       beat.title = scene.actions[index];
       beat.setAttribute("aria-label", `跳到分鏡${index + 1}：${scene.actions[index]}`);
-      if (scene.image) beat.style.backgroundImage = `linear-gradient(rgba(8,12,11,.12),rgba(8,12,11,.45)),url('${scene.image}')`;
-      if (scene.type === "film" && scene.id !== "FM-C") {
-        beat.style.backgroundSize = "420% auto";
-        beat.style.backgroundPosition = `${Math.min(3, Math.floor(index / 2.5)) * 33.333}% 50%`;
+      if (scene.type === "film") {
+        const target = filmTarget(scene, index);
+        beat.style.backgroundImage = `linear-gradient(rgba(8,12,11,.08),rgba(8,12,11,.38)),url('${scene.image}')`;
+        beat.style.backgroundSize = `cover, ${target.size}`;
+        beat.style.backgroundPosition = `center, ${target.position}`;
+      } else {
+        const female = poseAsset(scene, "female", actorPosePlan(scene, "female")[index]);
+        const male = poseAsset(scene, "male", actorPosePlan(scene, "male")[index]);
+        const background = scene.image ? `url('${scene.image}')` : "radial-gradient(ellipse at center, #655b3e, #17120e 72%)";
+        beat.style.backgroundImage = `linear-gradient(rgba(8,12,11,.08),rgba(8,12,11,.5)),url('${female}'),url('${male}'),${background}`;
+        beat.style.backgroundSize = "cover, 42% 78%, 42% 78%, cover";
+        beat.style.backgroundPosition = `center, ${10 + index * 1.4}% 84%, ${90 - index * 1.4}% 84%, ${44 + (index - 4.5) * 2}% 50%`;
+        beat.style.backgroundRepeat = "no-repeat";
       }
       beat.addEventListener("click", () => goToStep(Math.round((index / 9) * (totalSteps(scene) - 1))));
       board.append(beat);
@@ -444,7 +557,7 @@
   function resetStageInline() {
     if (!hasGSAP) return;
     const { gsap } = window;
-    const targets = [stageBg, stageProp, stagePaper, stageAtmosphere, stageFocusLight, stageRedThread, actorFemale, actorMale, curtainLeft, curtainRight, dialogueBox, $("#frame-counter"), ...$$(".head, .arm", stage)];
+    const targets = [stageBg, stageProp, stagePaper, stageAtmosphere, stageFocusLight, stageRedThread, actorFemale, actorMale, actorFemaleImage, actorMaleImage, curtainLeft, curtainRight, dialogueBox, $("#frame-counter")];
     gsap.set(targets, { clearProps: "transform,opacity,visibility,filter,backgroundPosition,backgroundSize" });
   }
 
@@ -461,6 +574,7 @@
     $("#scene-subtitle").textContent = scene.subtitle;
     $("#scene-source").textContent = scene.source;
     stageBg.style.backgroundImage = scene.image ? `url('${scene.image}')` : "none";
+    preloadActorSet(scene);
     renderStoryboard(scene);
     renderTranscript(scene);
     $("#transcript").hidden = true;
@@ -581,6 +695,7 @@
 
   createBadges();
   renderSceneGrid();
+  loadInlineStory();
   setupPageMotion();
 
   const hashScene = new URLSearchParams(window.location.search).get("scene");
