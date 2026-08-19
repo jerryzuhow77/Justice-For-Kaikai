@@ -1,4 +1,4 @@
-# PART A | Complete English Web Copy (PAGE COPY)
+# Chapter One | The Orphan Without Parents
 
 ## 01 | An Old Legend: The Child Bound to a Chair
 

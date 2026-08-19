@@ -8,6 +8,7 @@
   const order = window.KAIKAI_SCENE_ORDER || scenes.map((scene) => scene.id);
   const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
   const hasGSAP = Boolean(window.gsap);
+  const FEATURED_SCENE_IDS = ["FM-A", "SP02", "DV03", "SP04", "FM-B", "FM-C"];
 
   const INLINE_SCENE_PLACEMENTS = [
     { anchor: "開頭引言花會再開童年不會重來", label: "序幕電影", scenes: ["FM-A"] },
@@ -55,7 +56,8 @@
     timeline: null,
     stepTimes: [],
     pageMedia: null,
-    inlineMedia: null
+    inlineMedia: null,
+    allScenesExpanded: false
   };
 
   const dialog = $("#scene-dialog");
@@ -77,8 +79,17 @@
   const progressInput = $("#timeline-progress");
   const timelineTime = $("#timeline-time");
 
+  function setPageGate(locked) {
+    document.body.classList.toggle("is-gated", locked);
+    const header = $("#site-header");
+    const main = $("#main");
+    if (header) header.inert = locked;
+    if (main) main.inert = locked;
+    $("#entry-gate")?.setAttribute("aria-hidden", String(!locked));
+  }
+
   function enterSite(target = "#top") {
-    document.body.classList.remove("is-gated");
+    setPageGate(false);
     sessionStorage.setItem("kk-entered", "true");
     window.setTimeout(() => {
       const targetElement = $(target);
@@ -88,7 +99,7 @@
     }, 160);
   }
 
-  if (sessionStorage.getItem("kk-entered") === "true") document.body.classList.remove("is-gated");
+  if (sessionStorage.getItem("kk-entered") === "true") setPageGate(false);
 
   function refreshMotionButton() {
     const button = $("#motion-toggle");
@@ -109,10 +120,30 @@
   });
   $("#gate-reduced")?.addEventListener("change", (event) => setReduced(event.target.checked));
   $("#motion-toggle")?.addEventListener("click", () => setReduced(!state.reduced));
-  $("#sound-toggle")?.addEventListener("click", (event) => {
-    event.currentTarget.textContent = "待掛曲";
-    event.currentTarget.title = "保留六首原創音樂與音景掛載槽；收到音檔後可依時間軸標籤精準對應。";
-  });
+
+  const navToggle = $("#nav-toggle");
+  const mainNav = $("#main-nav");
+  function setNavOpen(open) {
+    mainNav?.classList.toggle("is-open", open);
+    navToggle?.setAttribute("aria-expanded", String(open));
+    if (navToggle) navToggle.textContent = open ? "關閉" : "選單";
+  }
+  navToggle?.addEventListener("click", () => setNavOpen(navToggle.getAttribute("aria-expanded") !== "true"));
+  $$("a", mainNav).forEach((link) => link.addEventListener("click", () => setNavOpen(false)));
+  window.addEventListener("resize", () => { if (window.innerWidth > 980) setNavOpen(false); });
+
+  let progressFrame = 0;
+  function updateReadingProgress() {
+    progressFrame = 0;
+    const available = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const ratio = Math.max(0, Math.min(1, window.scrollY / available));
+    const bar = $("#reading-progress-bar");
+    if (bar) bar.style.width = `${ratio * 100}%`;
+  }
+  window.addEventListener("scroll", () => {
+    if (!progressFrame) progressFrame = window.requestAnimationFrame(updateReadingProgress);
+  }, { passive: true });
+  updateReadingProgress();
 
   function setReduced(enabled) {
     state.reduced = enabled;
@@ -357,13 +388,33 @@
 
   function renderSceneGrid() {
     if (!sceneGrid) return;
+    sceneGrid.replaceChildren();
     const fragment = document.createDocumentFragment();
-    order.forEach((id, index) => {
+    const visibleOrder = state.allScenesExpanded ? order : FEATURED_SCENE_IDS;
+    visibleOrder.forEach((id) => {
       const scene = sceneById.get(id);
-      if (scene) fragment.append(createCard(scene, index));
+      if (scene) fragment.append(createCard(scene, order.indexOf(id)));
     });
     sceneGrid.append(fragment);
+    sceneGrid.dataset.view = state.allScenesExpanded ? "all" : "featured";
   }
+
+  $("#toggle-all-scenes")?.addEventListener("click", (event) => {
+    state.allScenesExpanded = !state.allScenesExpanded;
+    event.currentTarget.setAttribute("aria-expanded", String(state.allScenesExpanded));
+    event.currentTarget.textContent = state.allScenesExpanded ? "收合為6場精選" : "查看全部24場";
+    const filters = $("#scene-filters");
+    if (filters) filters.hidden = !state.allScenesExpanded;
+    if (!state.allScenesExpanded) {
+      $$(".filter").forEach((item) => {
+        const active = item.dataset.filter === "all";
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+    }
+    renderSceneGrid();
+    window.setTimeout(() => window.ScrollTrigger?.refresh(), 80);
+  });
 
   $$(".filter").forEach((button) => {
     button.addEventListener("click", () => {
@@ -395,7 +446,7 @@
         once: true,
         onEnter: (batch) => gsap.fromTo(batch, { autoAlpha: 0, y: 46 }, { autoAlpha: 1, y: 0, duration: .85, stagger: .08, ease: "power3.out", clearProps: "opacity,visibility,transform" })
       });
-      gsap.from(".stats-band article", {
+      gsap.from(".stats-band > a", {
         y: 24,
         autoAlpha: 0,
         duration: .7,
@@ -482,8 +533,8 @@
     if (scene.type === "film") return filmTarget(scene, actionIndex);
     if (scene.type === "side") {
       return {
-        size: window.innerWidth < 680 ? "auto 112%" : "auto 116%",
-        position: `${42 + (actionIndex - 4.5) * 2.1}% ${48 + ((actionIndex % 3) - 1) * 3}%`
+        size: "cover",
+        position: `${50 + (actionIndex - 4.5) * 1.1}% ${48 + ((actionIndex % 3) - 1) * 2}%`
       };
     }
     return { size: "108% auto", position: "50% 50%" };
@@ -555,7 +606,13 @@
     const travel = Math.min(2.2, beatDuration * .48);
     const bg = backgroundTarget(scene, actionIndex);
     const poses = poseTargets(scene, actionIndex);
-    timeline.to(stageBg, { backgroundSize: bg.size, backgroundPosition: bg.position, scale: scene.type === "shadow" ? 1 + (actionIndex % 3) * .008 : 1.015 + (actionIndex % 2) * .012, filter: `saturate(${scene.type === "film" ? .72 : .62}) contrast(1.06) brightness(${.78 + (actionIndex % 3) * .025})`, duration: travel, ease: "power2.inOut" }, at);
+    const backgroundFilter = scene.type === "side"
+      ? `saturate(.44) contrast(1.05) brightness(${.4 + (actionIndex % 3) * .02}) blur(3px)`
+      : `saturate(${scene.type === "film" ? .72 : .62}) contrast(1.06) brightness(${.78 + (actionIndex % 3) * .025})`;
+    const backgroundScale = scene.type === "shadow"
+      ? 1 + (actionIndex % 3) * .008
+      : scene.type === "side" ? 1.065 + (actionIndex % 2) * .008 : 1.015 + (actionIndex % 2) * .012;
+    timeline.to(stageBg, { backgroundSize: bg.size, backgroundPosition: bg.position, scale: backgroundScale, filter: backgroundFilter, duration: travel, ease: "power2.inOut" }, at);
     if (scene.type !== "film") {
       animateActor(timeline, actorFemale, poses.female, at, Math.min(1.65, travel));
       animateActor(timeline, actorMale, poses.male, at, Math.min(1.72, travel));
@@ -814,7 +871,10 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (!dialog?.open) return;
+    if (!dialog?.open) {
+      if (event.key === "Escape") setNavOpen(false);
+      return;
+    }
     if (event.key === "ArrowRight") stepScene(1);
     if (event.key === "ArrowLeft") stepScene(-1);
     if (event.key === " ") {

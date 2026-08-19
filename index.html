@@ -4,14 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#101918">
-  <meta name="description" content="剴剴案特別專題第一章：十場皮影、十場陰翳側視與四場電影式動畫的互動長卷。">
+  <meta name="description" content="剴剴案特別專題第一章〈沒有父母的孤兒〉：以案件時間線、來源分層、文學敘事與隨文動畫，追問保護的門為何沒有更早打開。">
   <meta property="og:title" content="剴剴案特別專題｜沒有父母的孤兒">
-  <meta property="og:description" content="24場原創動畫劇場，以文學、查證與制度追問，記住一個孩子本來應有的明天。">
+  <meta property="og:description" content="以案件時間線、來源分層與互動長卷，記住一個孩子本來應有的明天。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
-  <meta property="og:image" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-b-hair-to-white.webp">
+  <meta property="og:image" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-c-two-worlds-v2.webp">
+  <meta property="og:image:width" content="1672">
+  <meta property="og:image:height" content="941">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:locale:alternate" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
-  <title>剴剴案特別專題｜V7.3隨文動畫與中國傳統色長卷</title>
+  <link rel="alternate" hreflang="zh-Hant" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-zh-hans.html">
+  <link rel="alternate" hreflang="en" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-en.html">
+  <link rel="alternate" hreflang="ja" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-ja.html">
+  <link rel="alternate" hreflang="x-default" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
+  <title>剴剴案特別專題｜沒有父母的孤兒</title>
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/css/styles.css">
@@ -25,7 +37,7 @@
 
   <div class="badge-field" aria-hidden="true"></div>
 
-  <section class="entry-gate" id="entry-gate" aria-labelledby="gate-title">
+  <section class="entry-gate" id="entry-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <div class="gate-grain" aria-hidden="true"></div>
     <div class="gate-panel">
       <p class="eyebrow">Justice for Kaikai · 第一章</p>
@@ -33,32 +45,40 @@
       <p class="gate-lead">應須惜兒孫，安樂是天倫。</p>
       <p class="gate-copy">本專題含兒少受害、急診情境重構、法院與哀悼內容。動畫不呈現施虐、傷口或兒童遺體；人物均為原創、匿名或非肖像化設計。</p>
       <div class="gate-actions">
-        <button class="primary-button" id="enter-site">進入第一章</button>
-        <button class="ghost-button" id="enter-reading">直接閱讀文字</button>
+        <button class="primary-button" id="enter-site">進入互動長卷</button>
+        <button class="ghost-button" id="enter-reading">直接開始閱讀</button>
       </div>
       <label class="quiet-toggle"><input id="gate-reduced" type="checkbox"> 使用低動態模式</label>
-      <p class="gate-note">聲音預設關閉；所有動畫皆可暫停、略過與閱讀完整逐字稿。</p>
+      <p class="gate-note">所有動畫皆可暫停、略過，並可改讀完整逐字稿。</p>
+      <noscript><p class="gate-noscript">瀏覽器目前停用JavaScript，請直接開啟 <a href="story.html">完整文字版</a>。</p></noscript>
     </div>
   </section>
 
-  <header class="site-header" id="site-header">
+  <header class="site-header" id="site-header" inert>
     <a class="brand" href="#top" aria-label="返回頁首">
       <span class="brand-mark" aria-hidden="true">開</span>
       <span><b>剴剴案特別專題</b><small>24場原創動畫長卷</small></span>
     </a>
-    <nav aria-label="主要導覽">
-      <a href="#animations">動畫</a>
-      <a href="#visual-system">美術</a>
-      <a href="#full-copy">完整文案</a>
+    <nav id="main-nav" aria-label="主要導覽">
+      <a href="#full-copy">開始閱讀</a>
+      <a href="#animations">動畫精選</a>
+      <a href="#source-guide">來源界線</a>
       <a href="#action">守護行動</a>
+      <span class="locale-links" aria-label="其他語言文字版">
+        <a href="#full-copy" lang="zh-Hant" aria-current="page">繁</a>
+        <a href="story-zh-hans.html" lang="zh-Hans">简</a>
+        <a href="story-en.html" lang="en">EN</a>
+        <a href="story-ja.html" lang="ja">日</a>
+      </span>
     </nav>
     <div class="header-tools">
       <button class="icon-button" id="motion-toggle" aria-pressed="false" title="切換低動態">動態</button>
-      <button class="icon-button" id="sound-toggle" aria-pressed="false" title="聲音尚未啟用">靜音</button>
+      <button class="icon-button nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav">選單</button>
     </div>
+    <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
   </header>
 
-  <main id="main">
+  <main id="main" inert>
     <section class="hero" id="top">
       <div class="hero-image" role="img" aria-label="從清代古厝、現代醫院到法院的陰翳長卷概念圖"></div>
       <div class="hero-vignette" aria-hidden="true"></div>
@@ -66,9 +86,10 @@
         <p class="eyebrow">調查紀錄片 × 司法檔案 × 互動長卷</p>
         <h2>一個孩子生命最後的<br><em>一百一十五天</em></h2>
         <p>花有重開日，人無再少年。孩子失去的年歲，不能寄放在下一個明天。</p>
+        <p class="update-chip">資料與司法狀態核對至 2026年8月16日</p>
         <div class="hero-actions">
-          <a class="primary-button" href="#animations">觀看24場動畫</a>
-          <a class="ghost-button" href="#full-copy">閱讀完整文案</a>
+          <a class="primary-button" href="#full-copy">開始閱讀正文</a>
+          <a class="ghost-button" href="#animations">觀看精選動畫</a>
         </div>
       </div>
       <div class="scroll-cue" aria-hidden="true"><span></span>向下展卷</div>
@@ -79,7 +100,7 @@
       <div class="intro-copy">
         <p class="kicker">文學命題，不取代證據</p>
         <h2 id="intro-title">不是觀看悲傷，<br>而是辨認門為何沒有更早打開。</h2>
-        <p>十場皮影以成年守門人提出命題；十場原創臺灣陰翳側視劇場觀察物件、程序與交接；四場電影式動畫承接傳說、思念、法庭與跨時空收束。每一段都在進入正文前交還來源牌。</p>
+        <p>案件紀錄、司法認定、公開報導與文學重構分層呈現。動畫只在相關段落出現，所有讀者都能略過劇場，直接閱讀正文與來源。</p>
       </div>
       <blockquote>
         <span>「</span>
@@ -87,23 +108,64 @@
       </blockquote>
     </section>
 
-    <section class="stats-band" aria-label="動畫組成">
-      <article><strong>10</strong><span>皮影詩劇</span><small>完整V6母稿對話</small></article>
-      <article><strong>10</strong><span>陰翳側視劇場</span><small>每場10個動作節拍</small></article>
-      <article><strong>4</strong><span>電影式動畫</span><small>多時代電影分鏡</small></article>
-      <article><strong>24</strong><span>隨文播放場次</span><small>分布序章、八篇與終章</small></article>
+    <section class="stats-band" aria-label="閱讀入口">
+      <a href="#full-copy"><strong>5</strong><span>關鍵節點</span><small>先掌握案件時間線</small></a>
+      <a href="#full-copy"><strong>8</strong><span>正文章節</span><small>依序閱讀制度接縫</small></a>
+      <a href="#source-guide"><strong>4</strong><span>來源層級</span><small>先辨識材料性質</small></a>
+      <a href="#action"><strong>3</strong><span>守護專線</span><small>危險時先採取行動</small></a>
+    </section>
+
+    <section class="source-guide section-shell" id="source-guide" aria-labelledby="source-guide-title">
+      <div class="source-guide-heading">
+        <div>
+          <p class="kicker">先辨識材料，再進入故事</p>
+          <h2 id="source-guide-title">文學保留感受，<br>證據決定能說到哪裡。</h2>
+        </div>
+        <p>每一段文字與動畫都標示材料屬性；不同來源不互相冒充，也不以戲劇效果預先替司法下結論。</p>
+      </div>
+      <div class="source-guide-grid">
+        <article class="source-kind official"><b>法院／官方</b><span>裁判、新聞稿、法規與統計資料</span></article>
+        <article class="source-kind report"><b>具名報導／公開說法</b><span>保留報導範圍與引述界線</span></article>
+        <article class="source-kind notes"><b>庭審筆記／來函</b><span>可記錄經驗，不等同法院逐字稿</span></article>
+        <article class="source-kind literary"><b>文學／藝術重構</b><span>非真實錄音、非案件人物對話</span></article>
+      </div>
+    </section>
+
+    <section class="full-copy-section" id="full-copy" aria-labelledby="full-copy-title" tabindex="-1">
+      <div class="full-copy-heading section-shell">
+        <div>
+          <p class="kicker">第一章｜沒有父母的孤兒</p>
+          <h2 id="full-copy-title">完整文案與動畫，<br>在章節裡彼此照應。</h2>
+        </div>
+        <p>正文依序整理案件節點、制度背景、急診記憶與法庭敘事；相關動畫只在段落旁出現，不播放任何內容也能完整閱讀。</p>
+      </div>
+      <div class="inline-copy-frame section-shell">
+        <aside class="copy-rail" aria-label="完整文案章節導覽">
+          <p>閱讀地圖</p>
+          <nav id="copy-chapter-nav"><span>正在整理章節……</span></nav>
+          <a href="story.html">開啟純文字閱讀模式</a>
+        </aside>
+        <article class="inline-story-content" id="inline-story-content" aria-busy="true">
+          <p class="copy-loading">完整文案載入中……</p>
+        </article>
+      </div>
+      <noscript><p class="noscript-note section-shell">請開啟 <a href="story.html">完整文字閱讀模式</a>；其內容與本區相同。</p></noscript>
     </section>
 
     <section class="animations section-shell" id="animations" aria-labelledby="animations-title">
       <div class="section-heading">
         <div>
-          <p class="kicker">Scene Registry · V7.3 GSAP</p>
-          <h2 id="animations-title">二十四部劇，逐場打開</h2>
+          <p class="kicker">隨文劇場精選</p>
+          <h2 id="animations-title">先看六場，<br>再決定是否展開全卷。</h2>
         </div>
-        <p>選擇任一場次進入全螢幕劇場。對話框採電玩敘事節奏，但所有介面、人物與場景均為原創；每場包含十個動作節拍與十格分鏡。</p>
+        <p>精選場次涵蓋傳說、制度交接、急診、法庭與跨時空結尾。每場都可暫停、逐拍閱讀或開啟完整逐字稿。</p>
       </div>
 
-      <div class="filters" role="toolbar" aria-label="篩選動畫類型">
+      <div class="scene-list-actions">
+        <button class="primary-button" id="toggle-all-scenes" aria-expanded="false" aria-controls="scene-grid">查看全部24場</button>
+        <span>完整總覽展開後可依類型篩選</span>
+      </div>
+      <div class="filters" id="scene-filters" role="toolbar" aria-label="篩選動畫類型" hidden>
         <button class="filter is-active" data-filter="all" aria-pressed="true">全部 24</button>
         <button class="filter" data-filter="shadow" aria-pressed="false">皮影 10</button>
         <button class="filter" data-filter="side" aria-pressed="false">陰翳側視 10</button>
@@ -116,9 +178,9 @@
 
     <section class="visual-system" id="visual-system" aria-labelledby="visual-title">
       <div class="visual-copy section-shell">
-        <p class="kicker">Visual Direction</p>
-        <h2 id="visual-title">潮濕臺灣空間，<br>工藝細節與克制的鏡頭。</h2>
-        <p>美術以黛青、煙墨、蟹青、退紅與暖褐為主；人物採2.5D紙纖維關節偶，避免真實肖像。古厝木窗、醫院磨石子、法院木門、竹編、藺草、木雕、剪黏與閩南圓章，共同構成同一條時間長卷。</p>
+        <p class="kicker">影像倫理與美術</p>
+        <h2 id="visual-title">鏡頭可以靠近，<br>但不越過孩子的尊嚴。</h2>
+        <p>美術保留潮濕臺灣空間與中國傳統色，以物件、門、走廊與停頓代替傷勢重演。人物採非肖像化設計，文學畫面始終與案件證據分開標示。</p>
         <dl class="design-tokens">
           <div><dt>人物</dt><dd>十組姿勢、完整無傷、非肖像化</dd></div>
           <div><dt>鏡頭</dt><dd>24mm觀察遠景至50mm物件特寫</dd></div>
@@ -134,55 +196,52 @@
       </div>
     </section>
 
-    <section class="character-system section-shell" aria-labelledby="character-system-title">
-      <div class="character-system-heading">
-        <div>
-          <p class="kicker">Character Performance Bible</p>
-          <h2 id="character-system-title">不是同一張立繪移動，<br>而是角色真正表演。</h2>
+    <section class="making-of section-shell" id="making-of" aria-labelledby="making-of-title">
+      <details>
+        <summary>
+          <span class="kicker">幕後製作</span>
+          <strong id="making-of-title">查看角色姿勢與動畫方法</strong>
+          <span>公開頁面收起製作規格，需要時再展開。</span>
+        </summary>
+        <div class="making-of-content">
+          <section class="character-system" aria-labelledby="character-system-title">
+            <div class="character-system-heading">
+              <div>
+                <p class="kicker">角色表演</p>
+                <h2 id="character-system-title">每一個停頓，<br>都有不同姿勢。</h2>
+              </div>
+              <p>男女皮影與男女守門人各有十二組全身姿勢。下方使用乾淨的單張透明素材重新排列，避免舊姿勢總表的去背殘影。</p>
+            </div>
+            <div class="pose-gallery-grid">
+              <figure class="pose-gallery"><div class="pose-preview-grid">
+                <img src="public/media/poses/female-01.webp" alt="女皮影行走姿勢" loading="lazy"><img src="public/media/poses/female-03.webp" alt="女皮影提燈姿勢" loading="lazy"><img src="public/media/poses/female-05.webp" alt="女皮影牽線姿勢" loading="lazy"><img src="public/media/poses/female-08.webp" alt="女皮影跪察姿勢" loading="lazy"><img src="public/media/poses/female-11.webp" alt="女皮影推門姿勢" loading="lazy"><img src="public/media/poses/female-12.webp" alt="女皮影持燈站立姿勢" loading="lazy">
+              </div><figcaption><b>女皮影｜12姿勢</b><span>精選6姿勢預覽</span></figcaption></figure>
+              <figure class="pose-gallery"><div class="pose-preview-grid">
+                <img src="public/media/poses/male-01.webp" alt="男皮影停步姿勢" loading="lazy"><img src="public/media/poses/male-03.webp" alt="男皮影側耳姿勢" loading="lazy"><img src="public/media/poses/male-04.webp" alt="男皮影讀卷姿勢" loading="lazy"><img src="public/media/poses/male-07.webp" alt="男皮影扶椅姿勢" loading="lazy"><img src="public/media/poses/male-10.webp" alt="男皮影整理卷宗姿勢" loading="lazy"><img src="public/media/poses/male-12.webp" alt="男皮影開門姿勢" loading="lazy">
+              </div><figcaption><b>男皮影｜12姿勢</b><span>精選6姿勢預覽</span></figcaption></figure>
+              <figure class="pose-gallery"><div class="pose-preview-grid">
+                <img src="assets/img/actors/side/guardian-female-01.webp" alt="女守門人站立姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-female-03.webp" alt="女守門人側耳姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-female-05.webp" alt="女守門人提燈姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-female-07.webp" alt="女守門人牽線姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-female-09.webp" alt="女守門人俯身察看姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-female-12.webp" alt="女守門人穿門姿勢" loading="lazy">
+              </div><figcaption><b>女守門人｜12姿勢</b><span>精選6姿勢預覽</span></figcaption></figure>
+              <figure class="pose-gallery"><div class="pose-preview-grid">
+                <img src="assets/img/actors/side/guardian-male-01.webp" alt="男守門人站立姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-male-03.webp" alt="男守門人讀卷姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-male-06.webp" alt="男守門人提燈姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-male-08.webp" alt="男守門人扶椅姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-male-10.webp" alt="男守門人核對卷宗姿勢" loading="lazy"><img src="assets/img/actors/side/guardian-male-12.webp" alt="男守門人穿門姿勢" loading="lazy">
+              </div><figcaption><b>男守門人｜12姿勢</b><span>精選6姿勢預覽</span></figcaption></figure>
+            </div>
+          </section>
+          <section class="production" aria-labelledby="production-title">
+            <div class="section-index">24</div>
+            <div>
+              <p class="kicker">動畫方法</p>
+              <h2 id="production-title">劇場服務正文，<br>不取代正文。</h2>
+              <div class="production-grid">
+                <article><b>01</b><h3>十拍動作</h3><p>每場以十個姿勢與動作節拍推進，不靠單張圖反覆淡入。</p></article>
+                <article><b>02</b><h3>可自由閱讀</h3><p>可上一句、下一句、暫停、拖曳進度，或直接開啟逐字稿。</p></article>
+                <article><b>03</b><h3>多層分鏡</h3><p>前景物件、中景人物與後景空間分層移動，維持克制的觀察鏡頭。</p></article>
+                <article><b>04</b><h3>尊重界線</h3><p>不重演傷害、不追拍哀傷，且不因戲劇效果移除來源標籤。</p></article>
+              </div>
+            </div>
+          </section>
         </div>
-        <p>男女皮影與男女守門人各製作十二組全身姿勢。播放器會依每拍文案選用提燈、側耳、翻卷、牽線、扶椅、跪察、回望、推門等動作；每一場的十拍至少使用十個不同姿態。</p>
-      </div>
-      <div class="pose-sheet-grid">
-        <figure><img src="assets/img/actors/shadow/female-pose-sheet-v2.webp" alt="女皮影十二種提燈、牽線、傾聽、跪坐、推門等姿勢設計" loading="lazy"><figcaption><b>女皮影｜12姿勢</b><span>保留閩南繡紋、操偶桿與退紅線</span></figcaption></figure>
-        <figure><img src="assets/img/actors/shadow/male-pose-sheet-v2.webp" alt="男皮影十二種步行、讀卷、扶椅、補榫、開門等姿勢設計" loading="lazy"><figcaption><b>男皮影｜12姿勢</b><span>卷宗、竹椅、門扇與責任竹榫</span></figcaption></figure>
-        <figure><img src="assets/img/actors/side/guardian-female-pose-sheet-v2.webp" alt="返校氛圍女守門人十二種側視劇場姿勢設計" loading="lazy"><figcaption><b>女守門人｜12姿勢</b><span>原創臺灣陰翳側視人物；非既有遊戲角色</span></figcaption></figure>
-        <figure><img src="assets/img/actors/side/guardian-male-pose-sheet-v2.webp" alt="返校氛圍男守門人十二種側視劇場姿勢設計" loading="lazy"><figcaption><b>男守門人｜12姿勢</b><span>米白上衣、深藍長褲與克制的紀錄者動作</span></figcaption></figure>
-      </div>
-    </section>
-
-    <section class="production section-shell" aria-labelledby="production-title">
-      <div class="section-index">24</div>
-      <div>
-        <p class="kicker">Production Standard</p>
-        <h2 id="production-title">每一場都是一部小型動畫片。</h2>
-        <div class="production-grid">
-          <article><b>01</b><h3>十拍動作</h3><p>每場固定十個可驗收的姿勢與動作節拍，不以單張圖反覆淡入取代表演。</p></article>
-          <article><b>02</b><h3>遊戲式對話</h3><p>說話者、逐句文字、上一句／下一句、播放與完整逐字稿皆為可存取HTML。</p></article>
-          <article><b>03</b><h3>GSAP多層分鏡</h3><p>前景工藝物、中景人物、後景空間與光影分離，由時間軸同步2.5D推鏡、橫移與焦點轉換。</p></article>
-          <article><b>04</b><h3>尊重界線</h3><p>急診停在簾外，外婆不被追拍，兒童維持完整無傷，查證標籤不因戲劇而消失。</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="full-copy-section" id="full-copy" aria-labelledby="full-copy-title" tabindex="-1">
-      <div class="full-copy-heading section-shell">
-        <div>
-          <p class="kicker">Copy × Cinema · V7.3</p>
-          <h2 id="full-copy-title">完整文案與動畫，<br>在章節裡彼此照應。</h2>
-        </div>
-        <p>二十四部動畫依敘事位置分布於序章、八篇正文與終章；讀到相關段落即可開啟十拍劇場。正文採玄青、黛藍、天水碧、月白、朱砂、胭脂、赭石與宣紙色，並以十二枚閩南工藝圖章作大型半透明水印。</p>
-      </div>
-      <div class="inline-copy-frame section-shell">
-        <aside class="copy-rail" aria-label="完整文案章節導覽">
-          <p>閱讀地圖</p>
-          <nav id="copy-chapter-nav"><span>正在整理章節……</span></nav>
-          <a href="story.html">開啟純文字閱讀模式</a>
-        </aside>
-        <article class="inline-story-content" id="inline-story-content" aria-busy="true">
-          <p class="copy-loading">完整文案載入中……</p>
-        </article>
-      </div>
-      <noscript><p class="noscript-note section-shell">請開啟 <a href="story.html">完整文字閱讀模式</a>；其內容與本區相同。</p></noscript>
+      </details>
     </section>
 
     <section class="action" id="action" aria-labelledby="action-title">
@@ -200,9 +259,13 @@
     </section>
   </main>
 
+  <a class="help-fab" href="#action" aria-label="前往110、113與119守護專線資訊">
+    <span>立即求助</span><small>110 · 113 · 119</small>
+  </a>
+
   <footer>
-    <p>Justice for Kaikai · V7.3 · Inline Cinema + Traditional Colour Edition</p>
-    <p><a href="https://github.com/jerryzuhow77/Justice-For-Kaikai">GitHub 專案</a> · <a href="#full-copy">完整文案與來源界線</a></p>
+    <p>Justice for Kaikai · 第一章〈沒有父母的孤兒〉</p>
+    <p><a href="https://jerryzuhow77.github.io/child-advocacy-site/">護童行動聯盟</a> · <a href="https://github.com/jerryzuhow77/Justice-For-Kaikai">版本與製作紀錄</a> · <a href="story.html#source-index">查證來源</a></p>
   </footer>
 
   <dialog class="scene-dialog" id="scene-dialog" aria-labelledby="scene-title">
@@ -219,17 +282,19 @@
       <div class="source-ribbon" id="scene-source"></div>
 
       <div class="stage" id="stage" aria-live="off">
-        <div class="stage-bg" id="stage-bg"></div>
-        <div class="stage-atmosphere" id="stage-atmosphere" aria-hidden="true"></div>
-        <div class="stage-focus-light" id="stage-focus-light" aria-hidden="true"></div>
-        <div class="stage-red-thread" id="stage-red-thread" aria-hidden="true"></div>
-        <div class="stage-paper" aria-hidden="true"></div>
-        <div class="stage-prop" id="stage-prop" aria-hidden="true"></div>
-        <div class="actor actor-female" aria-hidden="true"><img id="actor-female-image" src="public/media/poses/female-01.webp" alt=""></div>
-        <div class="actor actor-male" aria-hidden="true"><img id="actor-male-image" src="public/media/poses/male-01.webp" alt=""></div>
-        <div class="curtain curtain-left" aria-hidden="true"></div>
-        <div class="curtain curtain-right" aria-hidden="true"></div>
-        <div class="frame-counter" id="frame-counter">01 / 10</div>
+        <div class="stage-visual" id="stage-visual">
+          <div class="stage-bg" id="stage-bg"></div>
+          <div class="stage-atmosphere" id="stage-atmosphere" aria-hidden="true"></div>
+          <div class="stage-focus-light" id="stage-focus-light" aria-hidden="true"></div>
+          <div class="stage-red-thread" id="stage-red-thread" aria-hidden="true"></div>
+          <div class="stage-paper" aria-hidden="true"></div>
+          <div class="stage-prop" id="stage-prop" aria-hidden="true"></div>
+          <div class="actor actor-female" aria-hidden="true"><img id="actor-female-image" src="public/media/poses/female-01.webp" alt=""></div>
+          <div class="actor actor-male" aria-hidden="true"><img id="actor-male-image" src="public/media/poses/male-01.webp" alt=""></div>
+          <div class="curtain curtain-left" aria-hidden="true"></div>
+          <div class="curtain curtain-right" aria-hidden="true"></div>
+          <div class="frame-counter" id="frame-counter">01 / 10</div>
+        </div>
         <div class="dialogue-box" id="dialogue-box">
           <div class="speaker" id="speaker">旁白</div>
           <p id="dialogue-text"></p>

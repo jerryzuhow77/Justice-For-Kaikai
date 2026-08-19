@@ -29,7 +29,7 @@ for (const scene of scenes) {
   if (scene.image && !fs.existsSync(path.join(root, scene.image))) errors.push(`${scene.id}缺圖：${scene.image}`);
 }
 
-for (const required of ["index.html", "story.html", "assets/css/styles.css", "assets/js/app.js", "assets/data/scene-manifest.json", "assets/vendor/gsap/gsap.min.js", "assets/vendor/gsap/ScrollTrigger.min.js", "docs/V6.2-mother-script.md", "docs/V7.1-GSAP-production-notes.md"]) {
+for (const required of ["index.html", "story.html", "story-zh-hans.html", "story-en.html", "story-ja.html", "assets/css/styles.css", "assets/js/app.js", "assets/data/scene-manifest.json", "assets/vendor/gsap/gsap.min.js", "assets/vendor/gsap/ScrollTrigger.min.js", "docs/V6.2-mother-script.md", "docs/V7.1-GSAP-production-notes.md"]) {
   if (!fs.existsSync(path.join(root, required))) errors.push(`缺必要檔：${required}`);
 }
 
@@ -42,6 +42,16 @@ for (const token of ["gsap.timeline", "gsap.matchMedia", "ScrollTrigger.batch", 
 }
 if (html.indexOf("gsap.min.js") > html.indexOf("app.js")) errors.push("GSAP載入順序晚於app.js");
 if (!html.includes("stage-atmosphere") || !html.includes("stage-focus-light") || !html.includes("stage-red-thread")) errors.push("電影化舞臺圖層不完整");
+if (!html.includes('id="stage-visual"')) errors.push("手機版舞臺與對話區尚未分層");
+if (!html.includes('id="nav-toggle"') || !html.includes('id="reading-progress-bar"')) errors.push("手機導覽或閱讀進度尚未接入");
+if (!html.includes('id="toggle-all-scenes"') || !app.includes("FEATURED_SCENE_IDS")) errors.push("六場精選與24場總覽切換尚未接入");
+if (html.includes('id="sound-toggle"') || app.includes("待掛曲")) errors.push("公開頁面仍顯示未完成的音樂控制");
+if (!html.includes('id="source-guide"') || !story.includes('id="source-index"')) errors.push("來源分層或完整來源索引尚未公開");
+
+for (const [file, lang] of [["story-zh-hans.html", "zh-Hans"], ["story-en.html", "en"], ["story-ja.html", "ja"]]) {
+  const localePage = fs.readFileSync(path.join(root, file), "utf8");
+  if (!localePage.includes(`<html lang="${lang}">`) || !localePage.includes("story-locales")) errors.push(`${file}語言或切換導覽不完整`);
+}
 
 const sideImages = scenes.filter((scene) => scene.type === "side").map((scene) => scene.image);
 const filmImages = scenes.filter((scene) => scene.type === "film").map((scene) => scene.image);
