@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jerryzuhow77.github.io/Justice-For-Kaikai/sitemap.xml

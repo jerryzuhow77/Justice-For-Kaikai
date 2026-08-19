@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111816">
+  <meta name="description" content="剴剴案特別專題第一章：十場皮影、十場陰翳側視與四場電影式動畫的互動長卷。">
+  <meta property="og:title" content="剴剴案特別專題｜沒有父母的孤兒">
+  <meta property="og:description" content="24場原創動畫劇場，以文學、查證與制度追問，記住一個孩子本來應有的明天。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
+  <meta property="og:image" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-b-hair-to-white.webp">
+  <link rel="canonical" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
+  <title>剴剴案特別專題｜24場GSAP動畫長卷</title>
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/vendor/gsap/gsap.min.js"></script>
+  <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
+  <script defer src="assets/data/scenes.js"></script>
+  <script defer src="assets/js/app.js"></script>
+</head>
+<body class="is-gated">
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <div class="badge-field" aria-hidden="true"></div>
+
+  <section class="entry-gate" id="entry-gate" aria-labelledby="gate-title">
+    <div class="gate-grain" aria-hidden="true"></div>
+    <div class="gate-panel">
+      <p class="eyebrow">Justice for Kaikai · 第一章</p>
+      <h1 id="gate-title">花有重開日，<br>人無再少年。</h1>
+      <p class="gate-lead">應須惜兒孫，安樂是天倫。</p>
+      <p class="gate-copy">本專題含兒少受害、急診情境重構、法院與哀悼內容。動畫不呈現施虐、傷口或兒童遺體；人物均為原創、匿名或非肖像化設計。</p>
+      <div class="gate-actions">
+        <button class="primary-button" id="enter-site">進入第一章</button>
+        <button class="ghost-button" id="enter-reading">直接閱讀文字</button>
+      </div>
+      <label class="quiet-toggle"><input id="gate-reduced" type="checkbox"> 使用低動態模式</label>
+      <p class="gate-note">聲音預設關閉；所有動畫皆可暫停、略過與閱讀完整逐字稿。</p>
+    </div>
+  </section>
+
+  <header class="site-header" id="site-header">
+    <a class="brand" href="#top" aria-label="返回頁首">
+      <span class="brand-mark" aria-hidden="true">開</span>
+      <span><b>剴剴案特別專題</b><small>24場原創動畫長卷</small></span>
+    </a>
+    <nav aria-label="主要導覽">
+      <a href="#animations">動畫</a>
+      <a href="#visual-system">美術</a>
+      <a href="story.html">完整文案</a>
+      <a href="#action">守護行動</a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-button" id="motion-toggle" aria-pressed="false" title="切換低動態">動態</button>
+      <button class="icon-button" id="sound-toggle" aria-pressed="false" title="聲音尚未啟用">靜音</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-image" role="img" aria-label="從清代古厝、現代醫院到法院的陰翳長卷概念圖"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow">調查紀錄片 × 司法檔案 × 互動長卷</p>
+        <h2>一個孩子生命最後的<br><em>一百一十五天</em></h2>
+        <p>花有重開日，人無再少年。孩子失去的年歲，不能寄放在下一個明天。</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#animations">觀看24場動畫</a>
+          <a class="ghost-button" href="story.html">閱讀完整文案</a>
+        </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true"><span></span>向下展卷</div>
+    </section>
+
+    <section class="intro section-shell" aria-labelledby="intro-title">
+      <div class="section-index">00</div>
+      <div class="intro-copy">
+        <p class="kicker">文學命題，不取代證據</p>
+        <h2 id="intro-title">不是觀看悲傷，<br>而是辨認門為何沒有更早打開。</h2>
+        <p>十場皮影以成年守門人提出命題；十場原創臺灣陰翳側視劇場觀察物件、程序與交接；四場電影式動畫承接傳說、思念、法庭與跨時空收束。每一段都在進入正文前交還來源牌。</p>
+      </div>
+      <blockquote>
+        <span>「</span>
+        今日所讀，是一個仍然有人愛著的孩子，如何在大人各自完整的理由之間，失去他本來應有的明天。
+      </blockquote>
+    </section>
+
+    <section class="stats-band" aria-label="動畫組成">
+      <article><strong>10</strong><span>皮影詩劇</span><small>完整V6母稿對話</small></article>
+      <article><strong>10</strong><span>陰翳側視劇場</span><small>每場10個動作節拍</small></article>
+      <article><strong>4</strong><span>電影式動畫</span><small>多時代電影分鏡</small></article>
+      <article><strong>24</strong><span>可獨立播放場次</span><small>逐字稿與低動態備援</small></article>
+    </section>
+
+    <section class="animations section-shell" id="animations" aria-labelledby="animations-title">
+      <div class="section-heading">
+        <div>
+          <p class="kicker">Scene Registry · V7.1 GSAP</p>
+          <h2 id="animations-title">二十四部劇，逐場打開</h2>
+        </div>
+        <p>選擇任一場次進入全螢幕劇場。對話框採電玩敘事節奏，但所有介面、人物與場景均為原創；每場包含十個動作節拍與十格分鏡。</p>
+      </div>
+
+      <div class="filters" role="toolbar" aria-label="篩選動畫類型">
+        <button class="filter is-active" data-filter="all" aria-pressed="true">全部 24</button>
+        <button class="filter" data-filter="shadow" aria-pressed="false">皮影 10</button>
+        <button class="filter" data-filter="side" aria-pressed="false">陰翳側視 10</button>
+        <button class="filter" data-filter="film" aria-pressed="false">電影式 4</button>
+      </div>
+
+      <div class="scene-grid" id="scene-grid" aria-live="polite"></div>
+      <noscript><p class="noscript-note">目前瀏覽器停用了 JavaScript。請開啟 <a href="story.html">完整文字版</a>；所有對話與分鏡說明仍可閱讀。</p></noscript>
+    </section>
+
+    <section class="visual-system" id="visual-system" aria-labelledby="visual-title">
+      <div class="visual-copy section-shell">
+        <p class="kicker">Visual Direction</p>
+        <h2 id="visual-title">潮濕臺灣空間，<br>工藝細節與克制的鏡頭。</h2>
+        <p>美術以黛青、煙墨、蟹青、退紅與暖褐為主；人物採2.5D紙纖維關節偶，避免真實肖像。古厝木窗、醫院磨石子、法院木門、竹編、藺草、木雕、剪黏與閩南圓章，共同構成同一條時間長卷。</p>
+        <dl class="design-tokens">
+          <div><dt>人物</dt><dd>十組姿勢、完整無傷、非肖像化</dd></div>
+          <div><dt>鏡頭</dt><dd>24mm觀察遠景至50mm物件特寫</dd></div>
+          <div><dt>動作</dt><dd>呼吸、回望、停筆、扶椅、核對、開門</dd></div>
+          <div><dt>倫理</dt><dd>不重演施虐，不以傷勢製造刺激</dd></div>
+        </dl>
+      </div>
+      <div class="visual-board" aria-label="四部電影式動畫概念圖">
+        <figure><img src="assets/img/films/fm-a-buried-name.webp" alt="土掩不住的名字：清代古厝到現代法院的四段分鏡" loading="lazy"><figcaption>FM-A｜土掩不住的名字</figcaption></figure>
+        <figure><img src="assets/img/films/fm-d-unarrived-visit.webp" alt="沒有抵達的探望：外婆交付衣物、電話等待與空長廊分鏡" loading="lazy"><figcaption>FM-D｜沒有抵達的探望</figcaption></figure>
+        <figure><img src="assets/img/films/fm-b-hair-to-white.webp" alt="青絲變白頭：清代婦女、護士、法院旁聽席與外婆證人席分鏡" loading="lazy"><figcaption>FM-B｜青絲變白頭</figcaption></figure>
+        <figure><img src="assets/img/films/fm-c-two-worlds.webp" alt="兩個世界同一扇門：清代女童與現代幼童隔著時間門縫的概念圖" loading="lazy"><figcaption>FM-C｜兩個世界，同一扇門</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="production section-shell" aria-labelledby="production-title">
+      <div class="section-index">24</div>
+      <div>
+        <p class="kicker">Production Standard</p>
+        <h2 id="production-title">每一場都是一部小型動畫片。</h2>
+        <div class="production-grid">
+          <article><b>01</b><h3>十拍動作</h3><p>每場固定十個可驗收的姿勢與動作節拍，不以單張圖反覆淡入取代表演。</p></article>
+          <article><b>02</b><h3>遊戲式對話</h3><p>說話者、逐句文字、上一句／下一句、播放與完整逐字稿皆為可存取HTML。</p></article>
+          <article><b>03</b><h3>GSAP多層分鏡</h3><p>前景工藝物、中景人物、後景空間與光影分離，由時間軸同步2.5D推鏡、橫移與焦點轉換。</p></article>
+          <article><b>04</b><h3>尊重界線</h3><p>急診停在簾外，外婆不被追拍，兒童維持完整無傷，查證標籤不因戲劇而消失。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="documents section-shell" aria-labelledby="documents-title">
+      <div>
+        <p class="kicker">Mother Script & Handoff</p>
+        <h2 id="documents-title">完整文案與製作交付</h2>
+        <p>公開閱讀頁收錄V6繁中正文；母稿檔保留查證、視覺、動畫、四語、資產與QA規格。第24場〈沒有抵達的探望〉另在V7製作說明列明引用範圍。</p>
+      </div>
+      <div class="document-links">
+        <a href="story.html"><span>閱讀</span><b>完整網站文案</b><small>繁中公開閱讀版</small></a>
+        <a href="docs/V6.2-mother-script.md" download><span>下載</span><b>V6.2 母稿 MD</b><small>文案、查證、動畫、美術與四語</small></a>
+        <a href="docs/V7.1-GSAP-production-notes.md" download><span>下載</span><b>V7.1 GSAP製作說明</b><small>24場時間軸、資產與驗收</small></a>
+      </div>
+    </section>
+
+    <section class="action" id="action" aria-labelledby="action-title">
+      <div class="action-inner">
+        <p class="kicker">讓下一扇門更早打開</p>
+        <h2 id="action-title">記住他，不只是記住一場悲劇。</h2>
+        <p>願下一個孩子，在傷害發生以前，就有人伸手接住。</p>
+        <div class="action-cards">
+          <article><strong>113</strong><span>疑似兒少受虐、疏忽或需要保護，可撥保護專線。</span></article>
+          <article><strong>110</strong><span>若有立即人身危險，請先聯絡警方。</span></article>
+          <article><strong>119</strong><span>若有緊急傷病或救護需求，立即呼叫救護。</span></article>
+        </div>
+        <p class="action-note">通報不是司法定罪；先描述可觀察到的事實，讓專業人員評估與介入。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Justice for Kaikai · V7.1 · GSAP 24 Scene Edition</p>
+    <p><a href="https://github.com/jerryzuhow77/Justice-For-Kaikai">GitHub 專案</a> · <a href="docs/V6.2-mother-script.md">來源與編輯規格</a></p>
+  </footer>
+
+  <dialog class="scene-dialog" id="scene-dialog" aria-labelledby="scene-title">
+    <div class="player-shell">
+      <header class="player-header">
+        <div>
+          <p class="player-type" id="scene-type"></p>
+          <h2 id="scene-title"></h2>
+          <p id="scene-subtitle"></p>
+        </div>
+        <button class="close-button" id="close-player" aria-label="關閉動畫">×</button>
+      </header>
+
+      <div class="source-ribbon" id="scene-source"></div>
+
+      <div class="stage" id="stage" aria-live="off">
+        <div class="stage-bg" id="stage-bg"></div>
+        <div class="stage-atmosphere" id="stage-atmosphere" aria-hidden="true"></div>
+        <div class="stage-focus-light" id="stage-focus-light" aria-hidden="true"></div>
+        <div class="stage-red-thread" id="stage-red-thread" aria-hidden="true"></div>
+        <div class="stage-paper" aria-hidden="true"></div>
+        <div class="stage-prop" id="stage-prop" aria-hidden="true"></div>
+        <div class="actor actor-female" aria-hidden="true"><i class="head"></i><i class="body"></i><i class="arm arm-a"></i><i class="arm arm-b"></i></div>
+        <div class="actor actor-male" aria-hidden="true"><i class="head"></i><i class="body"></i><i class="arm arm-a"></i><i class="arm arm-b"></i></div>
+        <div class="curtain curtain-left" aria-hidden="true"></div>
+        <div class="curtain curtain-right" aria-hidden="true"></div>
+        <div class="frame-counter" id="frame-counter">01 / 10</div>
+        <div class="dialogue-box" id="dialogue-box">
+          <div class="speaker" id="speaker">旁白</div>
+          <p id="dialogue-text"></p>
+          <span class="continue-mark" aria-hidden="true">⌄</span>
+        </div>
+      </div>
+
+      <div class="player-controls" aria-label="動畫控制">
+        <button id="prev-beat">上一拍</button>
+        <button class="play-button" id="play-scene" aria-pressed="false">播放</button>
+        <button id="next-beat">下一拍</button>
+        <button id="toggle-transcript" aria-expanded="false">完整逐字稿</button>
+      </div>
+
+      <div class="timeline-control">
+        <label for="timeline-progress">動畫進度</label>
+        <input id="timeline-progress" type="range" min="0" max="1000" value="0" step="1" aria-valuetext="0%">
+        <output id="timeline-time" for="timeline-progress">00:00 / 00:00</output>
+      </div>
+
+      <div class="shot-caption"><span id="shot-number">分鏡 01</span><p id="shot-action"></p></div>
+      <div class="storyboard" id="storyboard" aria-label="十格分鏡"></div>
+      <section class="transcript" id="transcript" hidden aria-labelledby="transcript-title">
+        <h3 id="transcript-title">完整逐字稿</h3>
+        <div id="transcript-body"></div>
+      </section>
+    </div>
+  </dialog>
+</body>
+</html>
