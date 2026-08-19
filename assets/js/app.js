@@ -46,6 +46,7 @@
   const SHADOW_POSE_ROOT = "public/media/poses";
   const SIDE_POSE_ROOT = "assets/img/actors/side";
   const posePlanCache = new Map();
+  let copyNavObserver = null;
 
   const state = {
     scene: null,
@@ -312,6 +313,32 @@
       field.append(badge);
     }
     target.prepend(field);
+    $$('h4', target).forEach((heading) => {
+      const chapter = heading.textContent.trim().match(/^(\d{2})\s*[｜|]/)?.[1];
+      if (!chapter) return;
+      heading.classList.add("story-chapter-heading");
+      heading.dataset.chapterLabel = `CHAPTER ${chapter}`;
+    });
+  }
+
+  function setupCopyNavigation(headings, nav) {
+    copyNavObserver?.disconnect();
+    const links = new Map($$("a", nav).map((link) => [decodeURIComponent(link.hash.slice(1)), link]));
+    const setCurrent = (id) => {
+      links.forEach((link, targetId) => {
+        if (targetId === id) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    };
+    if (headings[0]) setCurrent(headings[0].id);
+    if (!("IntersectionObserver" in window)) return;
+    copyNavObserver = new IntersectionObserver((entries) => {
+      const current = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (current) setCurrent(current.target.id);
+    }, { rootMargin: "-18% 0px -70% 0px", threshold: [0, 1] });
+    headings.forEach((heading) => copyNavObserver.observe(heading));
   }
 
   async function loadInlineStory() {
@@ -340,6 +367,7 @@
         nav.append(link);
       });
       if (!headings.length) nav.textContent = "完整正文";
+      else setupCopyNavigation(headings, nav);
       window.ScrollTrigger?.refresh();
     } catch (error) {
       target.removeAttribute("aria-busy");

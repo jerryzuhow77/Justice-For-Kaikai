@@ -45,6 +45,9 @@ if (!html.includes("stage-atmosphere") || !html.includes("stage-focus-light") ||
 if (!html.includes('id="stage-visual"')) errors.push("手機版舞臺與對話區尚未分層");
 if (!html.includes('id="nav-toggle"') || !html.includes('id="reading-progress-bar"')) errors.push("手機導覽或閱讀進度尚未接入");
 if (!html.includes('id="toggle-all-scenes"') || !app.includes("FEATURED_SCENE_IDS")) errors.push("六場精選與24場總覽切換尚未接入");
+if (!html.includes('class="gate-stage"') || !html.includes('class="hero-brief"') || !html.includes('id="reading-map"')) errors.push("參考專題式序幕、案件快覽或閱讀地圖尚未接入");
+if (!html.includes('class="full-copy-intro"') || !css.includes(".story-chapter-heading") || !app.includes("setupCopyNavigation")) errors.push("正文層級、章節標記或導覽狀態尚未加強");
+if ((html.match(/<\/main>/g) || []).length !== 1) errors.push("首頁主要內容結束標籤數量不正確");
 if (html.includes('id="sound-toggle"') || app.includes("待掛曲")) errors.push("公開頁面仍顯示未完成的音樂控制");
 if (!html.includes('id="source-guide"') || !story.includes('id="source-index"')) errors.push("來源分層或完整來源索引尚未公開");
 if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(420px, 112vw, 720px)") || !css.includes('.stage[data-type="side"] .actor img { object-fit: cover')) errors.push("手機舞臺比例或全身角色構圖尚未重構");

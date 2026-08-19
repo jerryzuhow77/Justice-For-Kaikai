@@ -26,11 +26,11 @@
   <title>剴剴案特別專題｜沒有父母的孤兒</title>
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260819-3">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260819-4">
   <script defer src="assets/vendor/gsap/gsap.min.js"></script>
   <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
   <script defer src="assets/data/scenes.js"></script>
-  <script defer src="assets/js/app.js?v=20260819-3"></script>
+  <script defer src="assets/js/app.js?v=20260819-4"></script>
 </head>
 <body class="is-gated">
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -40,17 +40,30 @@
   <section class="entry-gate" id="entry-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
     <div class="gate-grain" aria-hidden="true"></div>
     <div class="gate-panel">
-      <p class="eyebrow">Justice for Kaikai · 第一章</p>
-      <h1 id="gate-title">花有重開日，<br>人無再少年。</h1>
-      <p class="gate-lead">應須惜兒孫，安樂是天倫。</p>
-      <p class="gate-copy">本專題含兒少受害、急診情境重構、法院與哀悼內容。動畫不呈現施虐、傷口或兒童遺體；人物均為原創、匿名或非肖像化設計。</p>
-      <div class="gate-actions">
-        <button class="primary-button" id="enter-site">進入互動長卷</button>
-        <button class="ghost-button" id="enter-reading">直接開始閱讀</button>
+      <div class="gate-copy-panel">
+        <p class="eyebrow">Justice for Kaikai · 第一章</p>
+        <h1 id="gate-title">花有重開日，<br>人無再少年。</h1>
+        <p class="gate-lead">應須惜兒孫，安樂是天倫。</p>
+        <p class="gate-copy">本專題含兒少受害、急診情境重構、法院與哀悼內容。動畫不呈現施虐、傷口或兒童遺體；人物均為原創、匿名或非肖像化設計。</p>
+        <div class="gate-actions">
+          <button class="primary-button" id="enter-site">進入互動長卷</button>
+          <button class="ghost-button" id="enter-reading">直接開始閱讀</button>
+        </div>
       </div>
-      <label class="quiet-toggle"><input id="gate-reduced" type="checkbox"> 使用低動態模式</label>
-      <p class="gate-note">所有動畫皆可暫停、略過，並可改讀完整逐字稿。</p>
-      <noscript><p class="gate-noscript">瀏覽器目前停用JavaScript，請直接開啟 <a href="story.html">完整文字版</a>。</p></noscript>
+      <div class="gate-stage" aria-hidden="true">
+        <p>PROLOGUE 00 · 一百一十五天</p>
+        <div class="gate-stage-window">
+          <i class="gate-curtain gate-curtain-left"></i>
+          <i class="gate-curtain gate-curtain-right"></i>
+          <span class="gate-stage-line"></span>
+          <div><small>傳說止於此</small><strong>幕開</strong><small>紀錄從這裡開始</small></div>
+        </div>
+      </div>
+      <div class="gate-options">
+        <label class="quiet-toggle"><input id="gate-reduced" type="checkbox"> 使用低動態模式</label>
+        <p class="gate-note">所有動畫皆可暫停、略過，並可改讀完整逐字稿。</p>
+        <noscript><p class="gate-noscript">瀏覽器目前停用JavaScript，請直接開啟 <a href="story.html">完整文字版</a>。</p></noscript>
+      </div>
     </div>
   </section>
 
@@ -60,10 +73,10 @@
       <span><b>剴剴案特別專題</b><small>24場原創動畫長卷</small></span>
     </a>
     <nav id="main-nav" aria-label="主要導覽">
-      <a href="#full-copy">開始閱讀</a>
-      <a href="#animations">動畫精選</a>
-      <a href="#source-guide">來源界線</a>
-      <a href="#action">守護行動</a>
+      <a href="#reading-map">速讀</a>
+      <a href="#full-copy">正文</a>
+      <a href="#source-guide">來源</a>
+      <a href="#action">求助</a>
       <span class="locale-links" aria-label="其他語言文字版">
         <a href="#full-copy" lang="zh-Hant" aria-current="page">繁</a>
         <a href="story-zh-hans.html" lang="zh-Hans">简</a>
@@ -92,6 +105,16 @@
           <a class="ghost-button" href="#animations">觀看精選動畫</a>
         </div>
       </div>
+      <aside class="hero-brief" aria-label="本章快覽">
+        <p>CASE FILE 01 · 本章快覽</p>
+        <dl>
+          <div><dt>追蹤範圍</dt><dd>115日</dd></div>
+          <div><dt>正文架構</dt><dd>8篇</dd></div>
+          <div><dt>隨文劇場</dt><dd>24場</dd></div>
+          <div><dt>材料界線</dt><dd>4層</dd></div>
+        </dl>
+        <a href="#reading-map">開啟閱讀地圖 <span aria-hidden="true">↓</span></a>
+      </aside>
       <div class="scroll-cue" aria-hidden="true"><span></span>向下展卷</div>
     </section>
 
@@ -108,11 +131,18 @@
       </blockquote>
     </section>
 
-    <section class="stats-band" aria-label="閱讀入口">
-      <a href="#full-copy"><strong>5</strong><span>關鍵節點</span><small>先掌握案件時間線</small></a>
-      <a href="#full-copy"><strong>8</strong><span>正文章節</span><small>依序閱讀制度接縫</small></a>
-      <a href="#source-guide"><strong>4</strong><span>來源層級</span><small>先辨識材料性質</small></a>
-      <a href="#action"><strong>3</strong><span>守護專線</span><small>危險時先採取行動</small></a>
+    <section class="reading-map section-shell" id="reading-map" aria-labelledby="reading-map-title">
+      <header class="reading-map-heading">
+        <p class="kicker">READING MAP · 閱讀地圖</p>
+        <h2 id="reading-map-title">先看日期，再讀制度；<br>先辨來源，再形成判斷。</h2>
+        <p>不必一次看完全部動畫。四條路徑都能獨立抵達正文、查證與求助資訊。</p>
+      </header>
+      <nav class="reading-map-grid" aria-label="專題閱讀路徑">
+        <a href="#full-copy"><strong>01</strong><span>案件速讀</span><small>掌握115日與五個關鍵節點</small><i aria-hidden="true">↘</i></a>
+        <a href="#full-copy"><strong>02</strong><span>八篇正文</span><small>沿著照顧、訪視與制度接縫閱讀</small><i aria-hidden="true">↘</i></a>
+        <a href="#source-guide"><strong>03</strong><span>來源界線</span><small>分清裁判、報導、來函與文學重構</small><i aria-hidden="true">↘</i></a>
+        <a href="#action"><strong>04</strong><span>守護行動</span><small>若孩子正有危險，先取得協助</small><i aria-hidden="true">↘</i></a>
+      </nav>
     </section>
 
     <section class="source-guide section-shell" id="source-guide" aria-labelledby="source-guide-title">
@@ -121,7 +151,10 @@
           <p class="kicker">先辨識材料，再進入故事</p>
           <h2 id="source-guide-title">文學保留感受，<br>證據決定能說到哪裡。</h2>
         </div>
-        <p>每一段文字與動畫都標示材料屬性；不同來源不互相冒充，也不以戲劇效果預先替司法下結論。</p>
+        <div class="source-guide-aside">
+          <p>每一段文字與動畫都標示材料屬性；不同來源不互相冒充，也不以戲劇效果預先替司法下結論。</p>
+          <a href="story.html#source-index">查看完整查證索引 <span aria-hidden="true">→</span></a>
+        </div>
       </div>
       <div class="source-guide-grid">
         <article class="source-kind official"><b>法院／官方</b><span>裁判、新聞稿、法規與統計資料</span></article>
@@ -137,13 +170,17 @@
           <p class="kicker">第一章｜沒有父母的孤兒</p>
           <h2 id="full-copy-title">完整文案與動畫，<br>在章節裡彼此照應。</h2>
         </div>
-        <p>正文依序整理案件節點、制度背景、急診記憶與法庭敘事；相關動畫只在段落旁出現，不播放任何內容也能完整閱讀。</p>
+        <div class="full-copy-intro">
+          <p>正文依序整理案件節點、制度背景、急診記憶與法庭敘事；相關動畫只在段落旁出現，不播放任何內容也能完整閱讀。</p>
+          <div><span>8篇正文</span><span>24場隨文動畫</span><span>動畫皆可略過</span></div>
+        </div>
       </div>
       <div class="inline-copy-frame section-shell">
         <aside class="copy-rail" aria-label="完整文案章節導覽">
-          <p>閱讀地圖</p>
+          <header><span>READING MAP</span><strong>章節導覽</strong></header>
           <nav id="copy-chapter-nav"><span>正在整理章節……</span></nav>
-          <a href="story.html">開啟純文字閱讀模式</a>
+          <p>動畫是隨文轉場；略過後仍可連續閱讀全部正文。</p>
+          <a href="story.html">開啟純文字閱讀模式 <span aria-hidden="true">→</span></a>
         </aside>
         <article class="inline-story-content" id="inline-story-content" aria-busy="true">
           <p class="copy-loading">完整文案載入中……</p>
