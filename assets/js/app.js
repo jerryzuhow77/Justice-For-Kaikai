@@ -95,7 +95,10 @@
       const targetElement = $(target);
       targetElement?.focus?.({ preventScroll: true });
       window.ScrollTrigger?.refresh();
-      if (target !== "#top") targetElement?.scrollIntoView?.({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
+      if (target !== "#top") {
+        window.history.replaceState(null, "", target);
+        window.requestAnimationFrame(() => targetElement?.scrollIntoView?.({ behavior: state.reduced ? "auto" : "smooth", block: "start" }));
+      }
     }, 160);
   }
 
