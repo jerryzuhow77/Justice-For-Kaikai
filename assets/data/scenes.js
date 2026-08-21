@@ -273,6 +273,6 @@
   window.KAIKAI_SCENES = [...shadowScenes, ...sideScenes, ...films];
   window.KAIKAI_SCENE_ORDER = [
     "FM-A", "SP00", "DV00", "SP01", "DV01", "SP02", "DV02", "SP03", "DV03", "SP04", "DV04",
-    "SP05", "DV05", "SP06", "DV06", "SP07", "DV07", "FM-D", "SP08", "FM-B", "DV08", "SP09", "DV09", "FM-C"
+    "SP05", "DV05", "SP06", "DV06", "SP07", "DV07", "FM-D", "SP08", "DV08", "FM-B", "SP09", "DV09", "FM-C"
   ];
 })();

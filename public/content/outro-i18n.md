@@ -15,9 +15,11 @@
 
 如果你此刻看见的是现实中的孩子，而不是网页里的故事，请先判断是否存在立即危险：
 
-1. **暴力正在发生、孩子可能立刻受伤，或需要警察到场：拨打110。**
-2. **有紧急伤病、意识或呼吸异常，需要救护：拨打119。**
-3. **怀疑儿童或少年遭受虐待、疏忽或不当照护，或不确定应当如何处理：拨打113保护专线。**113提供24小时免费咨询与通报服务；如果存在立即危险，仍应优先拨打110或119。
+1. **暴力正在发生、孩子可能立刻受伤，或需要警察到场：[拨打110](tel:110)。**
+2. **有紧急伤病、意识或呼吸异常，需要救护：[拨打119](tel:119)。**
+3. **怀疑儿童或少年遭受虐待、疏忽或不当照护，或不确定应当如何处理：[拨打113保护专线](tel:113)。**113提供24小时免费咨询与通报服务；如果存在立即危险，仍应优先拨打110或119。
+
+以上号码适用于台湾；如果你在其他地区，请联系所在地的儿童保护、警察或紧急医疗服务。
 
 通报时，请说明你**亲眼看见、亲耳听见或能够安全保存**的具体信息：时间、地点、孩子当前的状况、能够辨识的危险，以及孩子是否仍与可能造成伤害的人处在同一地点。请把观察与推测分开；不要为了取得影像，让自己或孩子再次暴露于危险，也不要把孩子的姓名、面孔、伤势照片或未经核实的指控散布到社交平台。
 
@@ -71,9 +73,11 @@ The bamboo chair remains onstage in warm light. The bamboo tenon engraved with t
 
 If what you are seeing now is a child in the real world—not a story on a webpage—first consider whether there is immediate danger:
 
-1. **If violence is taking place, the child may be injured at once, or police are needed at the scene: call 110.**
-2. **If there is an urgent injury or illness, abnormal consciousness or breathing, and emergency medical help is needed: call 119.**
-3. **If you suspect that a child or young person is being abused, neglected, or improperly cared for, or you are unsure what to do: call the 113 Protection Hotline.** The 113 hotline provides toll-free consultation and reporting 24 hours a day. If danger is immediate, call 110 or 119 first.
+1. **If violence is taking place, the child may be injured at once, or police are needed at the scene: [call 110](tel:110).**
+2. **If there is an urgent injury or illness, abnormal consciousness or breathing, and emergency medical help is needed: [call 119](tel:119).**
+3. **If you suspect that a child or young person is being abused, neglected, or improperly cared for, or you are unsure what to do: [call the 113 Protection Hotline](tel:113).** The 113 hotline provides toll-free consultation and reporting 24 hours a day. If danger is immediate, call 110 or 119 first.
+
+These numbers are for Taiwan. Elsewhere, contact your local child-protection service, police, or emergency medical service.
 
 When making a report, provide the specific information that you **personally saw, personally heard, or can preserve without creating further danger**: the time, place, the child’s current condition, identifiable risks, and whether the child remains in the same location as the person who may cause harm. Keep observation separate from inference. Do not put yourself or the child in danger again merely to obtain an image, and do not circulate the child’s name, face, photographs of injuries, or unverified allegations on social media.
 
@@ -127,9 +131,11 @@ Chapter Two does not presume any party guilty, nor does it turn a child who cann
 
 いま目にしているのが、ウェブページの物語ではなく、現実にいる子どもであるなら、まず差し迫った危険があるかを確認してください。
 
-1. **暴力が起きている、子どもがすぐに傷つけられるおそれがある、または警察官に現場へ来てもらう必要がある場合：110番へ。**
-2. **緊急のけがや病気、意識や呼吸の異常があり、救急搬送が必要な場合：119番へ。**
-3. **児童・少年への虐待、ネグレクト、不適切な養育が疑われる、またはどう対応すべきか分からない場合：113保護ホットラインへ。**113は、24時間無料で相談と通報を受け付けています。差し迫った危険がある場合は、110または119を優先してください。
+1. **暴力が起きている、子どもがすぐに傷つけられるおそれがある、または警察官に現場へ来てもらう必要がある場合：[110番へ](tel:110)。**
+2. **緊急のけがや病気、意識や呼吸の異常があり、救急搬送が必要な場合：[119番へ](tel:119)。**
+3. **児童・少年への虐待、ネグレクト、不適切な養育が疑われる、またはどう対応すべきか分からない場合：[113保護ホットラインへ](tel:113)。**113は、24時間無料で相談と通報を受け付けています。差し迫った危険がある場合は、110または119を優先してください。
+
+これらの番号は台湾向けです。台湾以外では、所在地の児童保護機関、警察、または救急医療サービスへ連絡してください。
 
 通報するときは、自分が**実際に見たこと、実際に聞いたこと、または危険を生じさせずに保存できること**を具体的に伝えてください。時刻、場所、子どもの現在の状態、確認できる危険、危害を加える可能性のある人と今も同じ場所にいるかどうか、という情報です。観察したことと推測は分けてください。画像を得るために、自分や子どもを再び危険へさらしてはなりません。子どもの名前、顔、傷の写真、未確認の非難をSNSへ広めないでください。
 

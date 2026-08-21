@@ -725,3 +725,7 @@ The next chapter begins with a sentence repeated in the course of legal proceedi
 > **To remember him is not only to remember a tragedy.**
 
 > **May the next child be met by an outstretched hand before harm occurs.**
+
+## Help in Taiwan
+
+If a child is in immediate danger, contact the emergency service where you are. These numbers are for Taiwan: [113 Protection Hotline](tel:113), [110 Police](tel:110), and [119 Ambulance](tel:119). Elsewhere, contact your local child-protection service, police, or emergency medical service.

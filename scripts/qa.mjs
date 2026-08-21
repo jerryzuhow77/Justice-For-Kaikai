@@ -52,10 +52,19 @@ if (html.includes('id="sound-toggle"') || app.includes("待掛曲")) errors.push
 if (!html.includes('id="source-guide"') || !story.includes('id="source-index"')) errors.push("來源分層或完整來源索引尚未公開");
 if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(420px, 112vw, 720px)") || !css.includes('.stage[data-type="side"] .actor img { object-fit: cover')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
 if (!app.includes("mobileTwoWorldShots") || !app.includes('scene.type === "side" ? .34 : .42')) errors.push("手機電影構圖或人物移動比例尚未接入");
+if (app.includes(".stats-band") || app.includes('trigger: ".stats-band"')) errors.push("播放器仍引用不存在的stats-band動畫目標");
+if (!html.includes('id="stage-play"') || !html.includes('id="share-scene"') || !app.includes("shareScene")) errors.push("播放器中央播放鍵或單場分享尚未接入");
+if (!html.includes('class="player-control-dock"') || !css.includes(".player-control-dock { position: fixed")) errors.push("播放器控制列尚未固定於可視範圍");
+if (!html.includes('href="story.html">省流量文字版') || !html.includes('class="text-mode-link"')) errors.push("首頁尚未提供明確的省流量文字入口");
+if (!html.includes('href="tel:113"') || !html.includes('href="tel:110"') || !html.includes('href="tel:119"')) errors.push("臺灣求助卡尚未提供直撥連結");
+if (!html.includes('type="application/ld+json"') || !html.includes('name="twitter:title"')) errors.push("首頁JSON-LD或Twitter分享資訊不完整");
+if (story.includes("PRODUCTION SPEC") || story.includes("本區只放讀者會看到的文字")) errors.push("繁中公開文字版仍顯示內部製作備註");
+if (order.slice(17, 21).join(",") !== "FM-D,SP08,DV08,FM-B") errors.push("第八篇動畫編號未依閱讀順序排列");
 
 for (const [file, lang] of [["story-zh-hans.html", "zh-Hans"], ["story-en.html", "en"], ["story-ja.html", "ja"]]) {
   const localePage = fs.readFileSync(path.join(root, file), "utf8");
   if (!localePage.includes(`<html lang="${lang}">`) || !localePage.includes("story-locales")) errors.push(`${file}語言或切換導覽不完整`);
+  if (!localePage.includes("story-mode") || !localePage.includes("story-help") || !localePage.includes('href="tel:113"')) errors.push(`${file}省流量標籤或在地求助提示不完整`);
 }
 
 const sideImages = scenes.filter((scene) => scene.type === "side").map((scene) => scene.image);

@@ -58,7 +58,9 @@
     stepTimes: [],
     pageMedia: null,
     inlineMedia: null,
-    allScenesExpanded: false
+    allScenesExpanded: false,
+    sceneReturnUrl: null,
+    shareTimer: null
   };
 
   const dialog = $("#scene-dialog");
@@ -98,7 +100,7 @@
       window.ScrollTrigger?.refresh();
       if (target !== "#top") {
         window.history.replaceState(null, "", target);
-        window.requestAnimationFrame(() => targetElement?.scrollIntoView?.({ behavior: state.reduced ? "auto" : "smooth", block: "start" }));
+        window.requestAnimationFrame(() => targetElement?.scrollIntoView?.({ behavior: "auto", block: "start" }));
       }
     }, 160);
   }
@@ -313,6 +315,9 @@
       field.append(badge);
     }
     target.prepend(field);
+    $$('code', target).forEach((code) => {
+      if (/^S\d{2}-L\d{2}$/.test(code.textContent.trim())) code.classList.add("line-id");
+    });
     $$('h4', target).forEach((heading) => {
       const chapter = heading.textContent.trim().match(/^(\d{2})\s*[｜|]/)?.[1];
       if (!chapter) return;
@@ -351,6 +356,7 @@
       const documentCopy = new DOMParser().parseFromString(await response.text(), "text/html");
       const source = $(".story-content", documentCopy);
       if (!source) throw new Error("完整文案節點不存在");
+      source.querySelector("#title-block-header")?.remove();
       source.querySelectorAll("a[download]").forEach((link) => link.remove());
       target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true)));
       target.removeAttribute("aria-busy");
@@ -476,13 +482,6 @@
         start: "top 92%",
         once: true,
         onEnter: (batch) => gsap.fromTo(batch, { autoAlpha: 0, y: 46 }, { autoAlpha: 1, y: 0, duration: .85, stagger: .08, ease: "power3.out", clearProps: "opacity,visibility,transform" })
-      });
-      gsap.from(".stats-band > a", {
-        y: 24,
-        autoAlpha: 0,
-        duration: .7,
-        stagger: .1,
-        scrollTrigger: { trigger: ".stats-band", start: "top 88%", once: true }
       });
       gsap.utils.toArray(".visual-board figure").forEach((figure, index) => {
         gsap.from(figure, {
@@ -788,9 +787,84 @@
     gsap.set(targets, { clearProps: "transform,opacity,visibility,filter,backgroundPosition,backgroundSize" });
   }
 
+  function relativeUrl(url) {
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+
+  function urlWithoutScene() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("scene");
+    return relativeUrl(url);
+  }
+
+  function setSceneUrl(id) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("scene", id);
+    url.hash = "";
+    window.history.replaceState({ scene: id }, "", relativeUrl(url));
+  }
+
+  function sceneShareUrl(scene) {
+    const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href;
+    const url = new URL(canonical, window.location.href);
+    url.searchParams.set("scene", scene.id);
+    url.hash = "";
+    return url.href;
+  }
+
+  function setShareStatus(message) {
+    const status = $("#share-status");
+    if (!status) return;
+    window.clearTimeout(state.shareTimer);
+    status.textContent = message;
+    state.shareTimer = window.setTimeout(() => { status.textContent = ""; }, 3200);
+  }
+
+  async function shareScene() {
+    if (!state.scene) return;
+    const shareData = {
+      title: `${state.scene.title}｜剴剴案特別專題`,
+      text: `${state.scene.subtitle}（${typeLabels[state.scene.type]}）`,
+      url: sceneShareUrl(state.scene)
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        setShareStatus("分享面板已開啟");
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      setShareStatus("專屬連結已複製");
+    } catch {
+      setShareStatus("請從網址列複製此場連結");
+    }
+  }
+
+  function preloadSceneImage(scene) {
+    stage.classList.toggle("is-loading", Boolean(scene.image));
+    if (!scene.image) return;
+    const image = new Image();
+    let settled = false;
+    const finish = () => {
+      if (settled || state.scene !== scene) return;
+      settled = true;
+      stage.classList.remove("is-loading");
+    };
+    image.addEventListener("load", finish, { once: true });
+    image.addEventListener("error", finish, { once: true });
+    image.src = scene.image;
+    if (image.complete) finish();
+    window.setTimeout(finish, 4000);
+  }
+
   function openScene(id) {
     const scene = sceneById.get(id);
     if (!scene) return;
+    if (!dialog.open) state.sceneReturnUrl = urlWithoutScene();
     pausePlayback();
     destroyTimeline();
     resetStageInline();
@@ -801,6 +875,7 @@
     $("#scene-subtitle").textContent = scene.subtitle;
     $("#scene-source").textContent = scene.source;
     stageBg.style.backgroundImage = scene.image ? `url('${scene.image}')` : "none";
+    preloadSceneImage(scene);
     preloadActorSet(scene);
     renderStoryboard(scene);
     renderTranscript(scene);
@@ -808,18 +883,18 @@
     $("#toggle-transcript").setAttribute("aria-expanded", "false");
     renderStep(0, true);
     dialog.showModal();
+    setSceneUrl(scene.id);
     document.body.style.overflow = "hidden";
     stage.classList.toggle("is-gsap", hasGSAP && !state.reduced);
     buildTimeline(scene);
     goToStep(0);
-    $("#close-player").focus();
+    $("#stage-play").focus();
   }
 
   function closeScene() {
     pausePlayback();
     destroyTimeline();
     if (dialog.open) dialog.close();
-    document.body.style.overflow = "";
   }
 
   function goToStep(step) {
@@ -852,13 +927,25 @@
 
   function updatePlayButton() {
     const button = $("#play-scene");
-    if (!button) return;
-    button.textContent = state.playing ? "暫停" : "播放";
-    button.setAttribute("aria-pressed", String(state.playing));
+    const overlay = $("#stage-play");
+    if (button) {
+      button.textContent = state.playing ? "暫停" : (state.reduced ? "下一拍" : "播放");
+      button.setAttribute("aria-pressed", String(state.playing));
+    }
+    if (overlay) {
+      overlay.classList.toggle("is-playing", state.playing);
+      overlay.setAttribute("aria-label", state.reduced ? "前往下一拍" : "播放動畫");
+      const label = $("small", overlay);
+      if (label) label.textContent = state.reduced ? "下一拍" : "播放";
+    }
   }
 
   function startPlayback() {
-    if (state.reduced || !state.scene) return;
+    if (!state.scene) return;
+    if (state.reduced) {
+      stepScene(1);
+      return;
+    }
     state.playing = true;
     updatePlayButton();
     if (state.timeline) {
@@ -884,11 +971,17 @@
   dialog?.addEventListener("close", () => {
     pausePlayback();
     destroyTimeline();
+    stage.classList.remove("is-loading");
     document.body.style.overflow = "";
+    if (state.sceneReturnUrl) window.history.replaceState(null, "", state.sceneReturnUrl);
+    state.sceneReturnUrl = null;
+    state.scene = null;
   });
   $("#prev-beat")?.addEventListener("click", () => stepScene(-1));
   $("#next-beat")?.addEventListener("click", () => stepScene(1));
   $("#play-scene")?.addEventListener("click", () => state.playing ? pausePlayback() : startPlayback());
+  $("#stage-play")?.addEventListener("click", () => state.playing ? pausePlayback() : startPlayback());
+  $("#share-scene")?.addEventListener("click", shareScene);
   $("#dialogue-box")?.addEventListener("click", () => stepScene(1));
   $("#toggle-transcript")?.addEventListener("click", (event) => {
     const panel = $("#transcript");
@@ -919,7 +1012,8 @@
     if (event.key === "ArrowLeft") stepScene(-1);
     if (event.key === " ") {
       event.preventDefault();
-      state.playing ? pausePlayback() : startPlayback();
+      if (state.playing) pausePlayback();
+      else startPlayback();
     }
   });
 

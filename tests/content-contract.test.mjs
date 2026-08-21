@@ -55,3 +55,20 @@ test("sensitive reconstructions keep permanent source boundaries", async () => {
   assert.match(copy, /未具名讀者來函／情境重構｜非病歷、非錄音、非法院認定/);
   assert.match(copy, /家屬庭上陳述｜具名庭審報導可支持的間接引述/);
 });
+
+test("reader experience exposes low-data, sharing, and localized safety paths", async () => {
+  const index = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("assets/js/app.js", root), "utf8");
+  const traditional = await readFile(new URL("public/content/zh-Hant.md", root), "utf8");
+  assert.match(index, /省流量文字版/);
+  assert.match(index, /id="share-scene"/);
+  assert.match(index, /href="tel:113"/);
+  assert.match(index, /type="application\/ld\+json"/);
+  assert.match(app, /async function shareScene/);
+  assert.doesNotMatch(app, /\.stats-band/);
+  assert.doesNotMatch(traditional, /PRODUCTION SPEC|本區只放讀者會看到的文字/);
+  for (const locale of ["zh-Hans", "en", "ja"]) {
+    const copy = await readFile(new URL(`public/content/${locale}.md`, root), "utf8");
+    assert.match(copy, /tel:113/, locale);
+  }
+});

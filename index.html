@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#101918">
-  <meta name="description" content="剴剴案特別專題第一章〈沒有父母的孤兒〉：以案件時間線、來源分層、文學敘事與隨文動畫，追問保護的門為何沒有更早打開。">
-  <meta property="og:title" content="剴剴案特別專題｜沒有父母的孤兒">
-  <meta property="og:description" content="以案件時間線、來源分層與互動長卷，記住一個孩子本來應有的明天。">
-  <meta property="og:type" content="website">
+  <meta name="description" content="剴剴案特別專題第一章〈沒有父母的孤兒〉：題名是文學命題、不是法律身分。以案件時間線、來源分層與互動長卷，追問保護的門為何沒有更早打開。">
+  <meta property="og:title" content="剴剴案特別專題｜沒有父母的孤兒（文學命題）">
+  <meta property="og:description" content="題名是文學命題、不是法律身分。以案件時間線、來源分層與互動長卷，記住一個孩子本來應有的明天。">
+  <meta property="og:type" content="article">
   <meta property="og:url" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
   <meta property="og:image" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-c-two-worlds-v2.webp">
   <meta property="og:image:width" content="1672">
@@ -17,6 +17,9 @@
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:locale:alternate" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="剴剴案特別專題｜沒有父母的孤兒（文學命題）">
+  <meta name="twitter:description" content="題名是文學命題、不是法律身分。沿案件時間線辨認來源與制度接縫。">
+  <meta name="twitter:image" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-c-two-worlds-v2.webp">
   <link rel="canonical" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
   <link rel="alternate" hreflang="zh-Hant" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
   <link rel="alternate" hreflang="zh-Hans" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-zh-hans.html">
@@ -26,11 +29,31 @@
   <title>剴剴案特別專題｜沒有父母的孤兒</title>
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260819-5">
+  <link rel="preload" as="image" href="assets/img/films/fm-a-buried-name.webp" fetchpriority="high">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260822-1">
   <script defer src="assets/vendor/gsap/gsap.min.js"></script>
   <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
   <script defer src="assets/data/scenes.js"></script>
-  <script defer src="assets/js/app.js?v=20260819-5"></script>
+  <script defer src="assets/js/app.js?v=20260822-1"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "剴剴案特別專題｜沒有父母的孤兒",
+    "alternativeHeadline": "題名是文學命題，不是法律身分",
+    "description": "以案件時間線、來源分層、文學敘事與互動長卷，追問保護的門為何沒有更早打開。",
+    "inLanguage": "zh-Hant",
+    "dateModified": "2026-08-22",
+    "isAccessibleForFree": true,
+    "mainEntityOfPage": "https://jerryzuhow77.github.io/Justice-For-Kaikai/",
+    "image": "https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-c-two-worlds-v2.webp",
+    "author": {
+      "@type": "Organization",
+      "name": "護童行動聯盟",
+      "url": "https://jerryzuhow77.github.io/child-advocacy-site/"
+    }
+  }
+  </script>
 </head>
 <body class="is-gated">
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -42,12 +65,13 @@
     <div class="gate-panel">
       <div class="gate-copy-panel">
         <p class="eyebrow">Justice for Kaikai · 第一章</p>
-        <h1 id="gate-title">花有重開日，<br>人無再少年。</h1>
+        <h2 id="gate-title">花有重開日，<br>人無再少年。</h2>
         <p class="gate-lead">應須惜兒孫，安樂是天倫。</p>
         <p class="gate-copy">本專題含兒少受害、急診情境重構、法院與哀悼內容。動畫不呈現施虐、傷口或兒童遺體；人物均為原創、匿名或非肖像化設計。</p>
         <div class="gate-actions">
           <button class="primary-button" id="enter-site">進入互動長卷</button>
           <button class="ghost-button" id="enter-reading">直接開始閱讀</button>
+          <a class="text-button" href="story.html">省流量文字版</a>
         </div>
       </div>
       <div class="gate-stage" aria-hidden="true">
@@ -77,8 +101,9 @@
       <a href="#full-copy">正文</a>
       <a href="#source-guide">來源</a>
       <a href="#action">求助</a>
-      <span class="locale-links" aria-label="其他語言文字版">
-        <a href="#full-copy" lang="zh-Hant" aria-current="page">繁</a>
+      <a class="text-mode-link" href="story.html">省流量文字版</a>
+      <span class="locale-links" aria-label="文字版語言">
+        <a href="story.html" lang="zh-Hant">繁</a>
         <a href="story-zh-hans.html" lang="zh-Hans">简</a>
         <a href="story-en.html" lang="en">EN</a>
         <a href="story-ja.html" lang="ja">日</a>
@@ -97,12 +122,13 @@
       <div class="hero-vignette" aria-hidden="true"></div>
       <div class="hero-copy">
         <p class="eyebrow">調查紀錄片 × 司法檔案 × 互動長卷</p>
-        <h2>一個孩子生命<br>最後的<br><em>一百一十五天</em></h2>
+        <h1>一個孩子生命<br>最後的<br><em>一百一十五天</em></h1>
         <p>花有重開日，人無再少年。孩子失去的年歲，不能寄放在下一個明天。</p>
         <p class="update-chip">資料與司法狀態核對至 2026年8月16日</p>
         <div class="hero-actions">
           <a class="primary-button" href="#full-copy">開始閱讀正文</a>
           <a class="ghost-button" href="#animations">觀看精選動畫</a>
+          <a class="text-button" href="story.html">省流量文字版</a>
         </div>
       </div>
       <aside class="hero-brief" aria-label="本章快覽">
@@ -226,10 +252,10 @@
         </dl>
       </div>
       <div class="visual-board" aria-label="四部電影式動畫概念圖">
-        <figure><img src="assets/img/films/fm-a-buried-name.webp" alt="土掩不住的名字：清代古厝到現代法院的四段分鏡" loading="lazy"><figcaption>FM-A｜土掩不住的名字</figcaption></figure>
-        <figure><img src="assets/img/films/fm-d-unarrived-visit.webp" alt="沒有抵達的探望：外婆交付衣物、電話等待與空長廊分鏡" loading="lazy"><figcaption>FM-D｜沒有抵達的探望</figcaption></figure>
-        <figure><img src="assets/img/films/fm-b-hair-to-white.webp" alt="青絲變白頭：清代婦女、護士、法院旁聽席與外婆證人席分鏡" loading="lazy"><figcaption>FM-B｜青絲變白頭</figcaption></figure>
-        <figure><img src="assets/img/films/fm-c-two-worlds-v2.webp" alt="兩個世界同一扇門：清代女童與穿淺藍、深藍條紋衣的非肖像化現代幼童，隔著時間門縫相望" loading="lazy"><figcaption>FM-C｜兩個世界，同一扇門</figcaption></figure>
+        <figure><img src="assets/img/films/fm-a-buried-name.webp" alt="土掩不住的名字：清代古厝到現代法院的四段分鏡" width="1600" height="900" loading="lazy" decoding="async"><figcaption>FM-A｜土掩不住的名字</figcaption></figure>
+        <figure><img src="assets/img/films/fm-d-unarrived-visit.webp" alt="沒有抵達的探望：外婆交付衣物、電話等待與空長廊分鏡" width="1600" height="900" loading="lazy" decoding="async"><figcaption>FM-D｜沒有抵達的探望</figcaption></figure>
+        <figure><img src="assets/img/films/fm-b-hair-to-white.webp" alt="青絲變白頭：清代婦女、護士、法院旁聽席與外婆證人席分鏡" width="1600" height="900" loading="lazy" decoding="async"><figcaption>FM-B｜青絲變白頭</figcaption></figure>
+        <figure><img src="assets/img/films/fm-c-two-worlds-v2.webp" alt="兩個世界同一扇門：清代女童與穿淺藍、深藍條紋衣的非肖像化現代幼童，隔著時間門縫相望" width="1672" height="941" loading="lazy" decoding="async"><figcaption>FM-C｜兩個世界，同一扇門</figcaption></figure>
       </div>
     </section>
 
@@ -287,22 +313,22 @@
         <h2 id="action-title">記住他，不只是記住一場悲劇。</h2>
         <p>願下一個孩子，在傷害發生以前，就有人伸手接住。</p>
         <div class="action-cards">
-          <article><strong>113</strong><span>疑似兒少受虐、疏忽或需要保護，可撥保護專線。</span></article>
-          <article><strong>110</strong><span>若有立即人身危險，請先聯絡警方。</span></article>
-          <article><strong>119</strong><span>若有緊急傷病或救護需求，立即呼叫救護。</span></article>
+          <a href="tel:113"><strong>113</strong><span>疑似兒少受虐、疏忽或需要保護，可撥臺灣保護專線。</span><b>立即撥號</b></a>
+          <a href="tel:110"><strong>110</strong><span>若有立即人身危險，請先聯絡臺灣警方。</span><b>立即撥號</b></a>
+          <a href="tel:119"><strong>119</strong><span>若有緊急傷病或救護需求，立即呼叫救護。</span><b>立即撥號</b></a>
         </div>
-        <p class="action-note">通報不是司法定罪；先描述可觀察到的事實，讓專業人員評估與介入。</p>
+        <p class="action-note">以上號碼適用臺灣；若人在其他地區，請聯絡所在地的兒童保護、警察或緊急救護服務。通報不是司法定罪；先描述可觀察到的事實，讓專業人員評估與介入。</p>
       </div>
     </section>
   </main>
 
   <a class="help-fab" href="#action" aria-label="前往110、113與119守護專線資訊">
-    <span>立即求助</span><small>110 · 113 · 119</small>
+    <span>臺灣求助</span><small>110 · 113 · 119</small>
   </a>
 
   <footer>
     <p>Justice for Kaikai · 第一章〈沒有父母的孤兒〉</p>
-    <p><a href="https://jerryzuhow77.github.io/child-advocacy-site/">護童行動聯盟</a> · <a href="https://github.com/jerryzuhow77/Justice-For-Kaikai">版本與製作紀錄</a> · <a href="story.html#source-index">查證來源</a></p>
+    <p><a href="https://jerryzuhow77.github.io/child-advocacy-site/">護童行動聯盟</a> · <a href="https://global-protection.jerryzuhow77.chatgpt.site/">全球守護留言牆</a> · <a href="https://github.com/jerryzuhow77/Justice-For-Kaikai">版本與製作紀錄</a> · <a href="story.html#source-index">查證來源</a></p>
   </footer>
 
   <dialog class="scene-dialog" id="scene-dialog" aria-labelledby="scene-title">
@@ -313,7 +339,11 @@
           <h2 id="scene-title"></h2>
           <p id="scene-subtitle"></p>
         </div>
-        <button class="close-button" id="close-player" aria-label="關閉動畫">×</button>
+        <div class="player-header-actions">
+          <button class="share-button" id="share-scene" aria-describedby="share-status">分享此場</button>
+          <span class="share-status" id="share-status" role="status" aria-live="polite"></span>
+          <button class="close-button" id="close-player" aria-label="關閉動畫">×</button>
+        </div>
       </header>
 
       <div class="source-ribbon" id="scene-source"></div>
@@ -332,6 +362,7 @@
           <div class="curtain curtain-right" aria-hidden="true"></div>
           <div class="frame-counter" id="frame-counter">01 / 10</div>
         </div>
+        <button class="stage-play-overlay" id="stage-play" type="button" aria-label="播放動畫"><span aria-hidden="true">▶</span><small>播放</small></button>
         <div class="dialogue-box" id="dialogue-box">
           <div class="speaker" id="speaker">旁白</div>
           <p id="dialogue-text"></p>
@@ -339,17 +370,19 @@
         </div>
       </div>
 
-      <div class="player-controls" aria-label="動畫控制">
-        <button id="prev-beat">上一拍</button>
-        <button class="play-button" id="play-scene" aria-pressed="false">播放</button>
-        <button id="next-beat">下一拍</button>
-        <button id="toggle-transcript" aria-expanded="false">完整逐字稿</button>
-      </div>
+      <div class="player-control-dock">
+        <div class="player-controls" aria-label="動畫控制">
+          <button id="prev-beat">上一拍</button>
+          <button class="play-button" id="play-scene" aria-pressed="false">播放</button>
+          <button id="next-beat">下一拍</button>
+          <button id="toggle-transcript" aria-expanded="false">完整逐字稿</button>
+        </div>
 
-      <div class="timeline-control">
-        <label for="timeline-progress">動畫進度</label>
-        <input id="timeline-progress" type="range" min="0" max="1000" value="0" step="1" aria-valuetext="0%">
-        <output id="timeline-time" for="timeline-progress">00:00 / 00:00</output>
+        <div class="timeline-control">
+          <label for="timeline-progress">動畫進度</label>
+          <input id="timeline-progress" type="range" min="0" max="1000" value="0" step="1" aria-valuetext="0%">
+          <output id="timeline-time" for="timeline-progress">00:00 / 00:00</output>
+        </div>
       </div>
 
       <div class="shot-caption"><span id="shot-number">分鏡 01</span><p id="shot-action"></p></div>
