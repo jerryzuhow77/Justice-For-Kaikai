@@ -1,0 +1,213 @@
+name: Validate cinematic revamp
+
+on:
+  push:
+    branches:
+      - feat/cinematic-revamp-20260822
+  pull_request:
+    paths:
+      - index.html
+      - assets/css/cinematic-revamp.css
+      - assets/js/cinematic-revamp.js
+      - assets/data/scenes.js
+      - .github/workflows/validate-cinematic-revamp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  static-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate JavaScript syntax
+        run: node --check assets/js/cinematic-revamp.js
+
+      - name: Validate HTML structure and referenced assets
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+
+          root = Path.cwd()
+          html_path = root / "index.html"
+          css_path = root / "assets/css/cinematic-revamp.css"
+          js_path = root / "assets/js/cinematic-revamp.js"
+
+          class AuditParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+                  self.refs = []
+                  self.has_text_fallback = False
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if attrs.get("id"):
+                      self.ids.add(attrs["id"])
+                  if tag == "script" and attrs.get("src"):
+                      self.refs.append(attrs["src"].split("?")[0])
+                  if tag == "link" and attrs.get("href") and attrs.get("rel") == "stylesheet":
+                      self.refs.append(attrs["href"].split("?")[0])
+                  if tag == "a" and attrs.get("href") == "story.html":
+                      self.has_text_fallback = True
+
+          parser = AuditParser()
+          html = html_path.read_text(encoding="utf-8")
+          parser.feed(html)
+
+          required_ids = {
+              "entry-gate", "site-header", "main", "film-reel", "full-copy",
+              "scene-library", "source-guide", "action", "cinema-dialog",
+              "cinema-stage", "cinema-bg-a", "cinema-bg-b", "dialogue-box",
+              "timeline-progress", "play-cinema", "toggle-transcript"
+          }
+          missing_ids = sorted(required_ids - parser.ids)
+          if missing_ids:
+              raise SystemExit(f"Missing required IDs: {missing_ids}")
+
+          if not parser.has_text_fallback:
+              raise SystemExit("Missing direct story.html fallback link")
+
+          missing_refs = [ref for ref in parser.refs if not (root / ref).is_file()]
+          if missing_refs:
+              raise SystemExit(f"Missing referenced scripts/styles: {missing_refs}")
+
+          if "assets/css/styles.css" in html or "assets/js/app.js" in html:
+              raise SystemExit("Legacy public CSS/JS is still loaded by index.html")
+
+          css = css_path.read_text(encoding="utf-8")
+          if css.count("{") != css.count("}"):
+              raise SystemExit("Unbalanced CSS braces")
+          for token in ("@media (max-width: 760px)", "prefers-reduced-motion", ".cinema-dialog", ".film-act-grid"):
+              if token not in css:
+                  raise SystemExit(f"Missing CSS regression token: {token}")
+
+          css_urls = re.findall(r'url\(["\']?([^"\')]+)', css)
+          missing_css_assets = []
+          for url in css_urls:
+              # SVG filter references inside encoded data URLs can surface as
+              # %23g / %23n in this lightweight parser; they are not files.
+              if url.startswith(("data:", "http://", "https://", "#", "%23")):
+                  continue
+              resolved = (css_path.parent / url).resolve()
+              if not resolved.is_file():
+                  missing_css_assets.append(url)
+          if missing_css_assets:
+              raise SystemExit(f"Missing CSS assets: {sorted(set(missing_css_assets))}")
+
+          js = js_path.read_text(encoding="utf-8")
+          for token in ("FILM_ORDER", "buildTimeline", "openCinema", "setReduced", "loadInlineStory"):
+              if token not in js:
+                  raise SystemExit(f"Missing JavaScript regression token: {token}")
+
+          print("Static cinematic regression checks passed.")
+          PY
+
+      - name: Install CJK fonts for visual regression
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Browser smoke test and responsive captures
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$BROWSER" ]; then
+            echo "No headless Chromium executable is available on this runner."
+            exit 1
+          fi
+
+          mkdir -p visual-regression /tmp/kaikai-preview
+          cp -a . /tmp/kaikai-preview/site
+
+          # CI-only preview copy: bypass the first-visit gate and force the
+          # installed Traditional Chinese Noto fonts for readable captures.
+          python3 - <<'PY'
+          from pathlib import Path
+
+          js_path = Path('/tmp/kaikai-preview/site/assets/js/cinematic-revamp.js')
+          js = js_path.read_text(encoding='utf-8')
+          needle = 'if (sessionStorage.getItem("kk-entered-v8") === "true") setPageGate(false); else setPageGate(true);'
+          if needle not in js:
+              raise SystemExit('Preview gate-bypass anchor was not found')
+          js_path.write_text(js.replace(needle, 'setPageGate(false);', 1), encoding='utf-8')
+
+          css_path = Path('/tmp/kaikai-preview/site/assets/css/cinematic-revamp.css')
+          css = css_path.read_text(encoding='utf-8')
+          css += '''
+          :root {
+            --sans: "Noto Sans CJK TC", sans-serif;
+            --serif: "Noto Serif CJK TC", serif;
+          }
+          .entry-gate { display: none !important; }
+          '''
+          css_path.write_text(css, encoding='utf-8')
+          PY
+
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/kaikai-server.log 2>&1 &
+          SERVER_PID=$!
+          (cd /tmp/kaikai-preview/site && python3 -m http.server 4174 --bind 127.0.0.1 >/tmp/kaikai-preview-server.log 2>&1) &
+          PREVIEW_PID=$!
+          trap 'kill "$SERVER_PID" "$PREVIEW_PID" 2>/dev/null || true' EXIT
+
+          for port in 4173 4174; do
+            for attempt in $(seq 1 30); do
+              if curl -fsS "http://127.0.0.1:${port}/" >/dev/null; then break; fi
+              sleep 0.2
+            done
+          done
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --dump-dom \
+            'http://127.0.0.1:4173/?scene=FM-A' \
+            > visual-regression/player-dom.html 2> visual-regression/player-console.log
+
+          grep -q 'class="film-act-card"' visual-regression/player-dom.html
+          grep -q 'class="scene-card film"' visual-regression/player-dom.html
+          grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' visual-regression/player-dom.html
+          if grep -Eq 'Uncaught|ReferenceError|TypeError|SyntaxError' visual-regression/player-console.log; then
+            cat visual-regression/player-console.log
+            exit 1
+          fi
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=1440,1200 \
+            --screenshot=visual-regression/home-desktop.png \
+            'http://127.0.0.1:4174/'
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=390,844 \
+            --screenshot=visual-regression/home-mobile.png \
+            'http://127.0.0.1:4174/'
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=1440,1000 \
+            --screenshot=visual-regression/player-desktop.png \
+            'http://127.0.0.1:4174/?reel=1'
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=390,844 \
+            --screenshot=visual-regression/player-mobile.png \
+            'http://127.0.0.1:4174/?scene=FM-C'
+
+          test -s visual-regression/home-desktop.png
+          test -s visual-regression/home-mobile.png
+          test -s visual-regression/player-desktop.png
+          test -s visual-regression/player-mobile.png
+
+      - name: Upload responsive visual captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-revamp-visual-regression
+          path: visual-regression
+          if-no-files-found: error
+          retention-days: 14
