@@ -157,6 +157,7 @@
   const actorFemaleImage = $("img", actorFemale);
   const actorMaleImage = $("img", actorMale);
   const dialogueBox = $("#dialogue-box");
+  const transcript = $("#transcript");
   const progressInput = $("#timeline-progress");
   const timelineTime = $("#timeline-time");
 
@@ -222,6 +223,43 @@
 
   function normalizeText(value) {
     return String(value || "").replace(/\s+/g, "").replace(/[｜|：:、，。；！？「」『』【】（）()]/g, "").toLowerCase();
+  }
+
+  function speakerTone(value) {
+    const speaker = String(value || "").trim();
+    if (/醫師|護理/.test(speaker)) return "medical";
+    if (/照顧者|外婆|家屬|剴剴/.test(speaker)) return "family";
+    if (/^(女|嫂)|婦人|椅仔姑/.test(speaker)) return "female";
+    if (/^(男|兄)/.test(speaker)) return "male";
+    return "narrator";
+  }
+
+  function enhanceStoryTypography(target) {
+    $$('blockquote', target).forEach((quote) => {
+      const text = normalizeText(quote.textContent);
+      let type = "callout-quote";
+      if (/來源門牌|官方資訊|資料口徑/.test(text)) type = "callout-source";
+      else if (/非案件人物對話|非真實錄音|閱讀界線|情境重構說明|編輯註/.test(text)) type = "callout-boundary";
+      else if (/過場句|記住他|願下一個孩子|花有重開日/.test(text)) type = "callout-key";
+      quote.classList.add(type);
+    });
+
+    $$("p", target).forEach((paragraph) => {
+      const label = $("strong", paragraph)?.textContent || "";
+      const tone = speakerTone(label);
+      if (tone !== "narrator") {
+        paragraph.classList.add("story-dialogue", `dialogue-${tone}`);
+        const item = paragraph.closest("li");
+        if (item) {
+          item.classList.add("dialogue-item");
+          item.closest("ul")?.classList.add("dialogue-list");
+        }
+        return;
+      }
+      if (paragraph.closest("blockquote")) return;
+      const text = normalizeText(paragraph.textContent);
+      if (/孩子的一日不能寄放在下一日|傳說止於此紀錄從這裡開始|記住他不只是記住一場悲劇|願下一個孩子|下一扇門更早打開/.test(text)) paragraph.classList.add("story-key-line");
+    });
   }
 
   function poseAsset(scene, sex, poseNumber) {
@@ -396,7 +434,7 @@
       const source = $(".story-content", sourceDocument);
       if (!source) throw new Error("完整文案節點不存在");
       source.querySelector("#title-block-header")?.remove(); source.querySelectorAll("a[download]").forEach((link) => link.remove());
-      target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true))); target.removeAttribute("aria-busy"); insertInlineScenes(target);
+      target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true))); target.removeAttribute("aria-busy"); enhanceStoryTypography(target); insertInlineScenes(target);
       navRoot.replaceChildren(); const headings = $$("h2, h4", target);
       headings.forEach((heading, index) => { if (!heading.id) heading.id = `copy-heading-${index + 1}`; const link = document.createElement("a"); link.href = `#${heading.id}`; link.textContent = heading.textContent.replace(/\s+/g, " ").trim(); navRoot.append(link); });
       if (!headings.length) navRoot.textContent = "完整正文"; else setupCopyNavigation(headings, navRoot);
@@ -450,10 +488,27 @@
     return { ...base, scale: 1 + (base.scale - 1) * .56, x: base.x * .35, y: base.y * .45, light: base.light * .55 };
   }
 
+  function actorOpticalScale(scene, sex, compact) {
+    if (scene.type !== "shadow") return 1;
+    // The shadow-puppet PNG crops carry different transparent margins. These
+    // optical factors equalise visible body height while keeping one shared
+    // animation frame; the narrower male puppet needs slightly more lift on mobile.
+    if (sex === "male") return compact ? 1.1 : 1.06;
+    return compact ? .97 : .98;
+  }
+
   function actorTargets(scene, actionIndex) {
-    const pose = MOTION_POSES[actionIndex]; const compact = window.matchMedia("(max-width: 760px)").matches; const ratio = compact ? (scene.type === "side" ? .3 : .38) : (scene.type === "side" ? .7 : 1);
-    const target = (values) => ({ x: values[0] * ratio, y: values[1] * ratio, rotation: values[2], scale: values[3] * (scene.type === "side" ? .94 : 1) });
-    return { female: target(pose.f), male: target(pose.m) };
+    const pose = MOTION_POSES[actionIndex];
+    const compact = window.matchMedia("(max-width: 760px)").matches;
+    const ratio = compact ? (scene.type === "side" ? .3 : .38) : (scene.type === "side" ? .7 : 1);
+    const sharedScale = (pose.f[3] + pose.m[3]) / 2;
+    const target = (values, sex) => ({
+      x: values[0] * ratio,
+      y: values[1] * ratio,
+      rotation: values[2],
+      scale: sharedScale * (scene.type === "side" ? .94 : 1) * actorOpticalScale(scene, sex, compact)
+    });
+    return { female: target(pose.f, "female"), male: target(pose.m, "male") };
   }
 
   function effectForMeta(meta) {
@@ -560,7 +615,9 @@
     $("#frame-counter").textContent = `${String(meta.actionIndex + 1).padStart(2, "0")} / 10`;
     $("#shot-number").textContent = `分鏡 ${String(meta.actionIndex + 1).padStart(2, "0")}`;
     $("#shot-action").textContent = meta.scene.actions[meta.actionIndex] || "場景推進";
-    $("#speaker").textContent = line?.speaker || "旁白"; $("#dialogue-text").textContent = line?.text || meta.scene.title;
+    const activeSpeaker = line?.speaker || "旁白";
+    $("#speaker").textContent = activeSpeaker; $("#dialogue-text").textContent = line?.text || meta.scene.title;
+    dialogueBox.dataset.speakerTone = speakerTone(activeSpeaker);
     $$(".story-beat", $("#storyboard")).forEach((beat, beatIndex) => beat.classList.toggle("is-current", beatIndex === meta.actionIndex)); updateActMarkers(meta.scene.id);
     if (staticVisuals || state.reduced || !hasGSAP) applyStaticVisuals(meta); if (!state.player.timeline) syncFallbackProgress();
   }
@@ -607,9 +664,35 @@
     }
   }
 
+  function syncTranscriptToggle(shouldScroll = false) {
+    const button = $("#toggle-transcript");
+    if (!button || !transcript) return;
+    button.setAttribute("aria-expanded", String(transcript.open));
+    button.textContent = transcript.open ? "收合逐字稿 ↑" : "展開逐字稿 ↓";
+    if (shouldScroll && transcript.open) transcript.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "nearest" });
+  }
+
   function renderTranscript() {
     const root = $("#transcript-body"); if (!root) return; root.replaceChildren();
-    state.player.sequence.forEach((scene) => { const section = document.createElement("section"); const heading = document.createElement("h4"); heading.textContent = `${scene.id}｜${scene.title}`; section.append(heading); scene.dialogue.forEach((line) => { const paragraph = document.createElement("p"); const speaker = document.createElement("b"); speaker.textContent = line.id ? `${line.speaker} · ${line.id}` : line.speaker; const text = document.createElement("span"); text.textContent = line.text; paragraph.append(speaker, text); section.append(paragraph); }); root.append(section); });
+    if (transcript) transcript.open = false;
+    state.player.sequence.forEach((scene, sceneIndex) => {
+      const section = document.createElement("details");
+      section.className = "transcript-scene";
+      section.open = state.player.sequence.length === 1 || sceneIndex === 0;
+      const summary = document.createElement("summary");
+      const heading = document.createElement("strong"); heading.textContent = `${scene.id}｜${scene.title}`;
+      const source = document.createElement("small"); source.textContent = scene.source;
+      summary.append(heading, source);
+      const lines = document.createElement("div"); lines.className = "transcript-lines";
+      scene.dialogue.forEach((line) => {
+        const paragraph = document.createElement("p");
+        const speaker = document.createElement("b"); speaker.textContent = line.id ? `${line.speaker} · ${line.id}` : line.speaker;
+        const text = document.createElement("span"); text.textContent = line.text;
+        paragraph.append(speaker, text); lines.append(paragraph);
+      });
+      section.append(summary, lines); root.append(section);
+    });
+    syncTranscriptToggle(false);
   }
 
   function relativeUrl(url) { return `${url.pathname}${url.search}${url.hash}`; }
@@ -663,7 +746,8 @@
     $("#hero-play-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel")); $("#play-full-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel"));
     $("#close-cinema")?.addEventListener("click", closeCinema); $("#share-cinema")?.addEventListener("click", shareCinema); $("#prev-beat")?.addEventListener("click", () => goToStep(state.player.stepIndex - 1)); $("#next-beat")?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
     $("#play-cinema")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); $("#cinema-play-overlay")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); dialogueBox?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
-    $("#toggle-transcript")?.addEventListener("click", (event) => { const transcript = $("#transcript"); transcript.hidden = !transcript.hidden; event.currentTarget.setAttribute("aria-expanded", String(!transcript.hidden)); if (!transcript.hidden) transcript.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "nearest" }); });
+    $("#toggle-transcript")?.addEventListener("click", () => { if (!transcript) return; transcript.open = !transcript.open; syncTranscriptToggle(true); });
+    transcript?.addEventListener("toggle", () => syncTranscriptToggle(false));
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); state.player.timeline.pause(time, true); renderStep(stepAtTime(time), false); syncTimelineProgress(); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
     dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); });
     $$(".filter").forEach((button) => button.addEventListener("click", () => { $$(".filter").forEach((item) => { const active = item === button; item.classList.toggle("is-active", active); item.setAttribute("aria-pressed", String(active)); }); const filter = button.dataset.filter; $$(".scene-card", sceneGrid).forEach((card) => card.classList.toggle("is-hidden", filter !== "all" && card.dataset.type !== filter)); window.setTimeout(() => window.ScrollTrigger?.refresh(), 60); }));
