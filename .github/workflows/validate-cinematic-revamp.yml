@@ -1,0 +1,108 @@
+name: Validate cinematic revamp
+
+on:
+  push:
+    branches:
+      - feat/cinematic-revamp-20260822
+  pull_request:
+    paths:
+      - index.html
+      - assets/css/cinematic-revamp.css
+      - assets/js/cinematic-revamp.js
+      - assets/data/scenes.js
+      - .github/workflows/validate-cinematic-revamp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  static-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate JavaScript syntax
+        run: node --check assets/js/cinematic-revamp.js
+
+      - name: Validate HTML structure and referenced assets
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          import sys
+
+          root = Path.cwd()
+          html_path = root / "index.html"
+          css_path = root / "assets/css/cinematic-revamp.css"
+          js_path = root / "assets/js/cinematic-revamp.js"
+
+          class AuditParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+                  self.refs = []
+                  self.has_text_fallback = False
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if attrs.get("id"):
+                      self.ids.add(attrs["id"])
+                  if tag == "script" and attrs.get("src"):
+                      self.refs.append(attrs["src"].split("?")[0])
+                  if tag == "link" and attrs.get("href") and attrs.get("rel") == "stylesheet":
+                      self.refs.append(attrs["href"].split("?")[0])
+                  if tag == "a" and attrs.get("href") == "story.html":
+                      self.has_text_fallback = True
+
+          parser = AuditParser()
+          html = html_path.read_text(encoding="utf-8")
+          parser.feed(html)
+
+          required_ids = {
+              "entry-gate", "site-header", "main", "film-reel", "full-copy",
+              "scene-library", "source-guide", "action", "cinema-dialog",
+              "cinema-stage", "cinema-bg-a", "cinema-bg-b", "dialogue-box",
+              "timeline-progress", "play-cinema", "toggle-transcript"
+          }
+          missing_ids = sorted(required_ids - parser.ids)
+          if missing_ids:
+              raise SystemExit(f"Missing required IDs: {missing_ids}")
+
+          if not parser.has_text_fallback:
+              raise SystemExit("Missing direct story.html fallback link")
+
+          missing_refs = [ref for ref in parser.refs if not (root / ref).is_file()]
+          if missing_refs:
+              raise SystemExit(f"Missing referenced scripts/styles: {missing_refs}")
+
+          if "assets/css/styles.css" in html or "assets/js/app.js" in html:
+              raise SystemExit("Legacy public CSS/JS is still loaded by index.html")
+
+          css = css_path.read_text(encoding="utf-8")
+          if css.count("{") != css.count("}"):
+              raise SystemExit("Unbalanced CSS braces")
+          for token in ("@media (max-width: 760px)", "prefers-reduced-motion", ".cinema-dialog", ".film-act-grid"):
+              if token not in css:
+                  raise SystemExit(f"Missing CSS regression token: {token}")
+
+          css_urls = re.findall(r'url\(["\']?([^"\')]+)', css)
+          missing_css_assets = []
+          for url in css_urls:
+              if url.startswith(("data:", "http://", "https://", "#")):
+                  continue
+              resolved = (css_path.parent / url).resolve()
+              if not resolved.is_file():
+                  missing_css_assets.append(url)
+          if missing_css_assets:
+              raise SystemExit(f"Missing CSS assets: {sorted(set(missing_css_assets))}")
+
+          js = js_path.read_text(encoding="utf-8")
+          for token in ("FILM_ORDER", "buildTimeline", "openCinema", "setReduced", "loadInlineStory"):
+              if token not in js:
+                  raise SystemExit(f"Missing JavaScript regression token: {token}")
+
+          print("Static cinematic regression checks passed.")
+          PY
