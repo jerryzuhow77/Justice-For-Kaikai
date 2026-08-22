@@ -107,3 +107,88 @@ jobs:
 
           print("Static cinematic regression checks passed.")
           PY
+
+      - name: Browser smoke test and responsive captures
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$BROWSER" ]; then
+            echo "No headless Chromium executable is available on this runner."
+            exit 1
+          fi
+
+          mkdir -p visual-regression /tmp/kaikai-preview
+          cp -a . /tmp/kaikai-preview/site
+
+          # CI-only preview copy: bypass the first-visit gate so the underlying
+          # responsive homepage can be captured without changing production.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('/tmp/kaikai-preview/site/assets/js/cinematic-revamp.js')
+          text = path.read_text(encoding='utf-8')
+          needle = 'if (sessionStorage.getItem("kk-entered-v8") === "true") setPageGate(false); else setPageGate(true);'
+          if needle not in text:
+              raise SystemExit('Preview gate-bypass anchor was not found')
+          path.write_text(text.replace(needle, 'setPageGate(false);', 1), encoding='utf-8')
+          PY
+
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/kaikai-server.log 2>&1 &
+          SERVER_PID=$!
+          (cd /tmp/kaikai-preview/site && python3 -m http.server 4174 --bind 127.0.0.1 >/tmp/kaikai-preview-server.log 2>&1) &
+          PREVIEW_PID=$!
+          trap 'kill "$SERVER_PID" "$PREVIEW_PID" 2>/dev/null || true' EXIT
+
+          for port in 4173 4174; do
+            for attempt in $(seq 1 30); do
+              if curl -fsS "http://127.0.0.1:${port}/" >/dev/null; then break; fi
+              sleep 0.2
+            done
+          done
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --dump-dom \
+            'http://127.0.0.1:4173/?scene=FM-A' \
+            > visual-regression/player-dom.html 2> visual-regression/player-console.log
+
+          grep -q 'class="film-act-card"' visual-regression/player-dom.html
+          grep -q 'class="scene-card film"' visual-regression/player-dom.html
+          grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' visual-regression/player-dom.html
+          if grep -Eq 'Uncaught|ReferenceError|TypeError|SyntaxError' visual-regression/player-console.log; then
+            cat visual-regression/player-console.log
+            exit 1
+          fi
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=1440,1200 \
+            --screenshot=visual-regression/home-desktop.png \
+            'http://127.0.0.1:4174/'
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=390,844 \
+            --screenshot=visual-regression/home-mobile.png \
+            'http://127.0.0.1:4174/'
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=1440,1000 \
+            --screenshot=visual-regression/player-desktop.png \
+            'http://127.0.0.1:4173/?reel=1'
+
+          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --virtual-time-budget=8000 --window-size=390,844 \
+            --screenshot=visual-regression/player-mobile.png \
+            'http://127.0.0.1:4173/?scene=FM-C'
+
+          test -s visual-regression/home-desktop.png
+          test -s visual-regression/home-mobile.png
+          test -s visual-regression/player-desktop.png
+          test -s visual-regression/player-mobile.png
+
+      - name: Upload responsive visual captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-revamp-visual-regression
+          path: visual-regression
+          if-no-files-found: error
+          retention-days: 14
