@@ -30,10 +30,12 @@ test("keeps transcripts vertically collapsible and screen-reader labelled", asyn
 });
 
 test("sets the opening proverb as four lines and varies article emphasis", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
   const story = await readFile(new URL("story.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
   assert.match(story, /<strong>花有重開日，<\/strong><br \/>\s*<strong>人無再少年。<\/strong><br \/>\s*<strong>應須惜兒孫，<\/strong><br \/>\s*<strong>安樂是天倫。<\/strong>/);
+  assert.match(html, /<h1 class="gate-quatrain" id="gate-title"><span>花有重開日，<\/span><span>人無再少年。<\/span><span>應須惜兒孫，<\/span><span>安樂是天倫。<\/span><\/h1>/);
   assert.match(app, /story-data-line/);
   assert.match(app, /story-question/);
   assert.match(app, /story-contrast/);
