@@ -167,6 +167,9 @@
   const cinemaAudioBar = $("#cinema-audio-bar");
   const cinemaAudioTrack = $("#cinema-audio-track");
   const musicToggle = $("#toggle-music");
+  const scoreLibraryAudio = $("#score-library-audio");
+  const scoreLibraryLabel = $("#score-library-label");
+  const scoreLibraryButtons = $$("[data-score]");
   const progressInput = $("#timeline-progress");
   const timelineTime = $("#timeline-time");
 
@@ -278,23 +281,17 @@
       if (!list.classList.contains("dialogue-list")) list.classList.add("story-fact-list");
     });
 
-    $$("h5", target).filter((heading) => normalizeText(heading.textContent).startsWith("完整皮影戲對話")).forEach((heading) => {
+    $$(".dialogue-list", target).forEach((list) => {
       const details = document.createElement("details");
       details.className = "story-transcript";
-      if (heading.id) details.id = heading.id;
       const summary = document.createElement("summary");
-      const title = document.createElement("span"); title.textContent = "完整皮影戲逐字稿";
+      const title = document.createElement("span"); title.textContent = "完整對話紀錄";
       const hint = document.createElement("small"); hint.textContent = "點擊可上下展開／收合";
       summary.append(title, hint);
       const body = document.createElement("div"); body.className = "story-transcript-body";
-      let cursor = heading.nextSibling;
-      while (cursor && !(cursor.nodeType === 1 && /^H[1-5]$/.test(cursor.tagName))) {
-        const next = cursor.nextSibling;
-        body.append(cursor);
-        cursor = next;
-      }
+      list.replaceWith(details);
+      body.append(list);
       details.append(summary, body);
-      heading.replaceWith(details);
     });
   }
 
@@ -547,6 +544,23 @@
     return SCORE_TRACKS[String(scene.chapter || "").padStart(2, "0")] || null;
   }
 
+  function selectLibraryScore(button, autoplay = true) {
+    if (!button || !scoreLibraryAudio) return;
+    const chapter = button.dataset.score;
+    const track = SCORE_TRACKS[chapter];
+    if (!track) return;
+    scoreLibraryButtons.forEach((item) => {
+      const active = item === button;
+      item.classList.toggle("is-active", active);
+      item.setAttribute("aria-pressed", String(active));
+    });
+    const nextSrc = new URL(track.src, window.location.href).href;
+    if (scoreLibraryAudio.src !== nextSrc) scoreLibraryAudio.src = track.src;
+    if (scoreLibraryLabel) scoreLibraryLabel.textContent = button.querySelector("span")?.textContent || track.label;
+    cinemaAudio?.pause();
+    if (autoplay) scoreLibraryAudio.play().catch(() => {});
+  }
+
   function updateMusicUi(track = scoreForScene(state.player.currentScene)) {
     const available = Boolean(track);
     cinemaAudioBar?.setAttribute("data-available", String(available));
@@ -742,7 +756,7 @@
     if (overlay) { overlay.classList.toggle("is-playing", state.player.playing); overlay.setAttribute("aria-label", state.reduced ? "前往下一拍" : "播放動畫"); const small = $("small", overlay); if (small) small.textContent = state.reduced ? "下一拍" : "播放"; }
   }
 
-  function startPlayback() { if (!state.player.stepMeta.length) return; if (state.reduced || !state.player.timeline) { goToStep(state.player.stepIndex + 1); return; } if (state.player.timeline.progress() >= .999) { state.player.timeline.pause(0, true); renderStep(0, false); } state.player.playing = true; updatePlayButton(); playSceneAudio(); state.player.timeline.play(); }
+  function startPlayback() { if (!state.player.stepMeta.length) return; if (state.reduced || !state.player.timeline) { goToStep(state.player.stepIndex + 1); return; } if (state.player.timeline.progress() >= .999) { state.player.timeline.pause(0, true); renderStep(0, false); } scoreLibraryAudio?.pause(); state.player.playing = true; updatePlayButton(); playSceneAudio(); state.player.timeline.play(); }
   function pausePlayback() { state.player.timeline?.pause(); cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); }
   function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); }
   function jumpToScene(id) { const index = state.player.stepMeta.findIndex((meta) => meta.scene.id === id); if (index >= 0) goToStep(index); }
@@ -850,6 +864,8 @@
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); state.player.timeline.pause(time, true); renderStep(stepAtTime(time), false); syncTimelineProgress(); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
     dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); });
     musicToggle?.addEventListener("click", toggleMusic);
+    scoreLibraryButtons.forEach((button) => button.addEventListener("click", () => selectLibraryScore(button, true)));
+    scoreLibraryAudio?.addEventListener("play", () => cinemaAudio?.pause());
     $$(".filter").forEach((button) => button.addEventListener("click", () => { $$(".filter").forEach((item) => { const active = item === button; item.classList.toggle("is-active", active); item.setAttribute("aria-pressed", String(active)); }); const filter = button.dataset.filter; $$(".scene-library-item", sceneGrid).forEach((card) => card.classList.toggle("is-hidden", filter !== "all" && card.dataset.type !== filter)); window.setTimeout(() => window.ScrollTrigger?.refresh(), 60); }));
     document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") goToStep(state.player.stepIndex + 1); if (event.key === "ArrowLeft") goToStep(state.player.stepIndex - 1); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
     document.addEventListener("visibilitychange", () => { if (document.hidden) pausePlayback(); });
