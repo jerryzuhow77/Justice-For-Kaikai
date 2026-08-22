@@ -18,7 +18,7 @@
   }
 
   const core = document.createElement("script");
-  core.src = "assets/js/cinematic-revamp-core.js?v=20260822-core";
+  core.src = "assets/js/cinematic-revamp-core.js?v=20260822-ratio2";
   core.async = false;
   core.addEventListener("load", () => {
     updateMobileSafetyShortcut();
