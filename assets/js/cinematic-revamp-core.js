@@ -12,6 +12,10 @@
   const TYPE_LABELS = { film: "主線電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
   const ACT_LABELS = { "FM-A": "第一幕", "FM-D": "第二幕", "FM-B": "第三幕", "FM-C": "第四幕" };
   const FILM_POSITIONS = { "FM-A": "9% 50%", "FM-D": "36% 50%", "FM-B": "70% 50%", "FM-C": "50% 50%" };
+  const SCORE_TRACKS = Object.fromEntries(Array.from({ length: 6 }, (_, index) => {
+    const chapter = String(index + 1).padStart(2, "0");
+    return [chapter, { src: `public/media/chapter-${chapter}.m4a`, label: `第 ${chapter} 章原創配樂` }];
+  }));
   const INLINE_PLACEMENTS = [
     { match: ["開頭引言", "花會再開", "童年不會重來"], label: "序幕電影", scenes: ["FM-A"] },
     { match: ["皮影序問", "六扇門"], label: "序問雙劇場", scenes: ["SP00", "DV00"] },
@@ -113,6 +117,7 @@
     reduced: localStorage.getItem("kk-reduced-v8") === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     navOpen: false,
     pageMedia: null,
+    musicEnabled: localStorage.getItem("kk-music-v8") !== "false",
     player: {
       mode: "single",
       sequence: [],
@@ -158,6 +163,10 @@
   const actorMaleImage = $("img", actorMale);
   const dialogueBox = $("#dialogue-box");
   const transcript = $("#transcript");
+  const cinemaAudio = $("#cinema-audio");
+  const cinemaAudioBar = $("#cinema-audio-bar");
+  const cinemaAudioTrack = $("#cinema-audio-track");
+  const musicToggle = $("#toggle-music");
   const progressInput = $("#timeline-progress");
   const timelineTime = $("#timeline-time");
 
@@ -260,6 +269,33 @@
       const text = normalizeText(paragraph.textContent);
       if (/孩子的一日不能寄放在下一日|傳說止於此紀錄從這裡開始|記住他不只是記住一場悲劇|願下一個孩子|下一扇門更早打開/.test(text)) paragraph.classList.add("story-key-line");
     });
+
+    $$("h4", target).forEach((heading) => {
+      const match = heading.textContent.trim().match(/^(\d{2})[｜|]/);
+      if (match) heading.dataset.chapterNumber = match[1];
+    });
+    $$(':scope > ul, :scope > ol', target).forEach((list) => {
+      if (!list.classList.contains("dialogue-list")) list.classList.add("story-fact-list");
+    });
+
+    $$("h5", target).filter((heading) => normalizeText(heading.textContent).startsWith("完整皮影戲對話")).forEach((heading) => {
+      const details = document.createElement("details");
+      details.className = "story-transcript";
+      if (heading.id) details.id = heading.id;
+      const summary = document.createElement("summary");
+      const title = document.createElement("span"); title.textContent = "完整皮影戲逐字稿";
+      const hint = document.createElement("small"); hint.textContent = "點擊可上下展開／收合";
+      summary.append(title, hint);
+      const body = document.createElement("div"); body.className = "story-transcript-body";
+      let cursor = heading.nextSibling;
+      while (cursor && !(cursor.nodeType === 1 && /^H[1-5]$/.test(cursor.tagName))) {
+        const next = cursor.nextSibling;
+        body.append(cursor);
+        cursor = next;
+      }
+      details.append(summary, body);
+      heading.replaceWith(details);
+    });
   }
 
   function poseAsset(scene, sex, poseNumber) {
@@ -342,7 +378,29 @@
     FILM_ORDER.forEach((id, index) => { const scene = sceneById.get(id); if (scene) filmActGrid.append(createFilmActCard(scene, index)); });
   }
 
+  function createLibraryTranscript(scene) {
+    const details = document.createElement("details");
+    details.className = "library-transcript";
+    const summary = document.createElement("summary");
+    const title = document.createElement("span"); title.textContent = `${TYPE_LABELS[scene.type]}逐字稿`;
+    const hint = document.createElement("small"); hint.textContent = "上下展開／收合";
+    summary.append(title, hint);
+    const lines = document.createElement("div"); lines.className = "library-transcript-lines";
+    scene.dialogue.forEach((line) => {
+      const paragraph = document.createElement("p");
+      const speaker = document.createElement("b"); speaker.textContent = line.speaker;
+      const copy = document.createElement("span"); copy.textContent = line.text;
+      paragraph.append(speaker, copy); lines.append(paragraph);
+    });
+    details.append(summary, lines);
+    return details;
+  }
+
   function createSceneCard(scene, position) {
+    const item = document.createElement("article");
+    item.className = `scene-library-item ${scene.type}`;
+    item.dataset.type = scene.type;
+    item.dataset.sceneId = scene.id;
     const button = document.createElement("button");
     button.type = "button";
     button.className = `scene-card ${scene.type}`;
@@ -364,7 +422,9 @@
     const paragraph = document.createElement("p"); paragraph.textContent = scene.subtitle;
     meta.append(small, heading, paragraph); button.append(poster, play, meta);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
-    return button;
+    item.append(button);
+    if (scene.type === "shadow" || scene.type === "side") item.append(createLibraryTranscript(scene));
+    return item;
   }
 
   function renderSceneLibrary() {
@@ -479,7 +539,46 @@
     state.player.currentScene = scene; stage.dataset.type = scene.type; stage.dataset.scene = scene.id;
     $("#cinema-type").textContent = state.player.mode === "reel" ? `四幕連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${scene.id}`;
     $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = scene.subtitle; $("#cinema-source").textContent = scene.source; stageProp.textContent = scene.prop || scene.motif || "";
-    if (changed) { setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); }
+    if (changed) { setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); }
+  }
+
+  function scoreForScene(scene) {
+    if (!scene || (scene.type !== "shadow" && scene.type !== "side")) return null;
+    return SCORE_TRACKS[String(scene.chapter || "").padStart(2, "0")] || null;
+  }
+
+  function updateMusicUi(track = scoreForScene(state.player.currentScene)) {
+    const available = Boolean(track);
+    cinemaAudioBar?.setAttribute("data-available", String(available));
+    if (cinemaAudioTrack) cinemaAudioTrack.textContent = available ? track.label : "本場無配樂";
+    if (musicToggle) {
+      musicToggle.disabled = !available;
+      musicToggle.setAttribute("aria-pressed", String(state.musicEnabled));
+      musicToggle.textContent = state.musicEnabled ? "配樂：開" : "配樂：關";
+    }
+  }
+
+  function playSceneAudio() {
+    if (!cinemaAudio || !state.musicEnabled || !scoreForScene(state.player.currentScene)) return;
+    cinemaAudio.volume = .48;
+    cinemaAudio.play().catch(() => {});
+  }
+
+  function syncSceneAudio(scene) {
+    if (!cinemaAudio) return;
+    const track = scoreForScene(scene);
+    updateMusicUi(track);
+    if (!track) { cinemaAudio.pause(); cinemaAudio.removeAttribute("src"); cinemaAudio.load(); return; }
+    const nextSrc = new URL(track.src, window.location.href).href;
+    if (cinemaAudio.src !== nextSrc) { cinemaAudio.src = track.src; cinemaAudio.load(); }
+    if (state.player.playing) playSceneAudio();
+  }
+
+  function toggleMusic() {
+    state.musicEnabled = !state.musicEnabled;
+    localStorage.setItem("kk-music-v8", String(state.musicEnabled));
+    updateMusicUi();
+    if (state.musicEnabled && state.player.playing) playSceneAudio(); else cinemaAudio?.pause();
   }
 
   function currentFilmShot(scene, actionIndex) {
@@ -627,7 +726,7 @@
     if (!hasGSAP || state.reduced) { state.player.timeline = null; syncFallbackProgress(); return; }
     const timeline = window.gsap.timeline({ paused: true }); let cursor = 0; stage.classList.add("is-gsap");
     state.player.stepMeta.forEach((meta, index) => { state.player.stepTimes.push(cursor); timeline.addLabel(`step-${index}`, cursor); if (meta.isSceneStart) timeline.addLabel(`scene-${meta.scene.id}`, cursor); timeline.call(() => renderStep(index, false), null, cursor); addBeatAnimation(timeline, meta, cursor); timeline.to({}, { duration: meta.duration }, cursor); cursor += meta.duration; });
-    timeline.eventCallback("onUpdate", syncTimelineProgress); timeline.eventCallback("onComplete", () => { state.player.playing = false; updatePlayButton(); syncTimelineProgress(); });
+    timeline.eventCallback("onUpdate", syncTimelineProgress); timeline.eventCallback("onComplete", () => { cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); syncTimelineProgress(); });
     state.player.timeline = timeline; syncTimelineProgress();
   }
 
@@ -643,8 +742,8 @@
     if (overlay) { overlay.classList.toggle("is-playing", state.player.playing); overlay.setAttribute("aria-label", state.reduced ? "前往下一拍" : "播放動畫"); const small = $("small", overlay); if (small) small.textContent = state.reduced ? "下一拍" : "播放"; }
   }
 
-  function startPlayback() { if (!state.player.stepMeta.length) return; if (state.reduced || !state.player.timeline) { goToStep(state.player.stepIndex + 1); return; } if (state.player.timeline.progress() >= .999) { state.player.timeline.pause(0, true); renderStep(0, false); } state.player.playing = true; updatePlayButton(); state.player.timeline.play(); }
-  function pausePlayback() { state.player.timeline?.pause(); state.player.playing = false; updatePlayButton(); }
+  function startPlayback() { if (!state.player.stepMeta.length) return; if (state.reduced || !state.player.timeline) { goToStep(state.player.stepIndex + 1); return; } if (state.player.timeline.progress() >= .999) { state.player.timeline.pause(0, true); renderStep(0, false); } state.player.playing = true; updatePlayButton(); playSceneAudio(); state.player.timeline.play(); }
+  function pausePlayback() { state.player.timeline?.pause(); cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); }
   function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); }
   function jumpToScene(id) { const index = state.player.stepMeta.findIndex((meta) => meta.scene.id === id); if (index >= 0) goToStep(index); }
 
@@ -750,7 +849,8 @@
     transcript?.addEventListener("toggle", () => syncTranscriptToggle(false));
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); state.player.timeline.pause(time, true); renderStep(stepAtTime(time), false); syncTimelineProgress(); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
     dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); });
-    $$(".filter").forEach((button) => button.addEventListener("click", () => { $$(".filter").forEach((item) => { const active = item === button; item.classList.toggle("is-active", active); item.setAttribute("aria-pressed", String(active)); }); const filter = button.dataset.filter; $$(".scene-card", sceneGrid).forEach((card) => card.classList.toggle("is-hidden", filter !== "all" && card.dataset.type !== filter)); window.setTimeout(() => window.ScrollTrigger?.refresh(), 60); }));
+    musicToggle?.addEventListener("click", toggleMusic);
+    $$(".filter").forEach((button) => button.addEventListener("click", () => { $$(".filter").forEach((item) => { const active = item === button; item.classList.toggle("is-active", active); item.setAttribute("aria-pressed", String(active)); }); const filter = button.dataset.filter; $$(".scene-library-item", sceneGrid).forEach((card) => card.classList.toggle("is-hidden", filter !== "all" && card.dataset.type !== filter)); window.setTimeout(() => window.ScrollTrigger?.refresh(), 60); }));
     document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") goToStep(state.player.stepIndex + 1); if (event.key === "ArrowLeft") goToStep(state.player.stepIndex - 1); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
     document.addEventListener("visibilitychange", () => { if (document.hidden) pausePlayback(); });
   }
