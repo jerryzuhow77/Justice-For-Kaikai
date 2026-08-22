@@ -32,7 +32,6 @@ jobs:
           from html.parser import HTMLParser
           from pathlib import Path
           import re
-          import sys
 
           root = Path.cwd()
           html_path = root / "index.html"
@@ -91,7 +90,9 @@ jobs:
           css_urls = re.findall(r'url\(["\']?([^"\')]+)', css)
           missing_css_assets = []
           for url in css_urls:
-              if url.startswith(("data:", "http://", "https://", "#")):
+              # SVG filter references inside encoded data URLs can surface as
+              # %23g / %23n in this lightweight parser; they are not files.
+              if url.startswith(("data:", "http://", "https://", "#", "%23")):
                   continue
               resolved = (css_path.parent / url).resolve()
               if not resolved.is_file():
