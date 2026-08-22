@@ -31,11 +31,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preload" as="image" href="assets/img/films/fm-a-buried-name.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/img/films/fm-c-two-worlds-v2.webp">
-  <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260822-2">
+  <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260822-3">
   <script defer src="assets/vendor/gsap/gsap.min.js"></script>
   <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
   <script defer src="assets/data/scenes.js"></script>
-  <script defer src="assets/js/cinematic-revamp.js?v=20260822-2"></script>
+  <script defer src="assets/js/cinematic-revamp.js?v=20260822-3"></script>
   <title>剴剴案特別專題｜沒有父母的孤兒</title>
   <script type="application/ld+json">
   {
@@ -153,6 +153,11 @@
     <div class="cinema-shell">
       <header class="cinema-header"><div><p class="cinema-type" id="cinema-type">四幕連續電影</p><h2 id="cinema-title">土掩不住的名字</h2><p id="cinema-subtitle">民間傳說到司法終局</p></div><div class="cinema-header-actions"><button id="share-cinema" type="button">分享</button><button id="close-cinema" type="button" aria-label="關閉播放器">×</button><span id="share-status" role="status" aria-live="polite"></span></div></header>
       <div class="source-ribbon" id="cinema-source">文學／藝術重構</div>
+      <div class="cinema-audio-bar" id="cinema-audio-bar" data-available="false">
+        <div><span>ORIGINAL SCORE · 原創配樂</span><strong id="cinema-audio-track">本場無配樂</strong></div>
+        <button id="toggle-music" type="button" aria-pressed="true" disabled>配樂：開</button>
+        <audio id="cinema-audio" preload="metadata" loop></audio>
+      </div>
       <section class="cinema-stage" id="cinema-stage" data-type="film" aria-label="動畫舞臺">
         <div class="cinema-visual"><div class="cinema-bg cinema-bg-a" id="cinema-bg-a"></div><div class="cinema-bg cinema-bg-b" id="cinema-bg-b"></div><div class="cinema-depth cinema-depth-far" id="cinema-depth-far"></div><div class="cinema-depth cinema-depth-mid" id="cinema-depth-mid"></div><div class="cinema-depth cinema-depth-near" id="cinema-depth-near"></div><div class="cinema-atmosphere" id="cinema-atmosphere"></div><div class="cinema-rain" id="cinema-rain"></div><div class="cinema-mist" id="cinema-mist"></div><div class="cinema-focus" id="cinema-focus"></div><div class="cinema-door" id="cinema-door"><i></i><b></b></div><div class="cinema-thread" id="cinema-thread"><span></span></div><div class="cinema-papers" id="cinema-papers"><i></i><i></i><i></i><i></i><i></i></div><div class="cinema-prop" id="cinema-prop"></div><div class="cinema-actor cinema-actor-female" id="cinema-actor-female"><img alt="" draggable="false"></div><div class="cinema-actor cinema-actor-male" id="cinema-actor-male"><img alt="" draggable="false"></div><div class="cinema-frame-bars" aria-hidden="true"></div><div class="cinema-grain" aria-hidden="true"></div><span class="frame-counter" id="frame-counter">01 / 10</span><button class="cinema-play-overlay" id="cinema-play-overlay" type="button" aria-label="播放動畫"><span>▶</span><small>播放</small></button></div>
         <div class="dialogue-box" id="dialogue-box" data-speaker-tone="narrator" aria-live="polite"><span class="speaker" id="speaker">旁白</span><p id="dialogue-text">按下播放，從第一幕開始。</p><span class="continue-mark" aria-hidden="true">⌄</span></div>
