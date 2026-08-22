@@ -1,0 +1,55 @@
+name: Apply dialogue-driven game animation revamp
+
+on:
+  push:
+    branches:
+      - feat/dialogue-game-animation-video-20260822
+
+permissions:
+  contents: write
+
+jobs:
+  apply-revamp:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/dialogue-game-animation-video-20260822
+          fetch-depth: 0
+
+      - name: Decode and apply tested revamp payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .github/dialogue-game-revamp-payload.b64 > /tmp/dialogue-game-revamp.tar.xz
+          echo 'f23b74e2ec11376147a74d6899b332c3cacafd68852a928b0752042f371d12b0  /tmp/dialogue-game-revamp.tar.xz' | sha256sum -c -
+          tar -xJf /tmp/dialogue-game-revamp.tar.xz -C .
+
+          node --check assets/js/cinematic-revamp.js
+          node --check assets/js/cinematic-revamp-core.js
+
+          grep -q 'id="game-world"' index.html
+          grep -q 'transcript-fold-top' index.html
+          grep -q 'dialogueGamePlan' assets/js/cinematic-revamp-core.js
+          grep -q 'publicDialogueText' assets/js/cinematic-revamp-core.js
+          grep -q 'maleCompensation = scene.type === "shadow" ? 1.085 : 1' assets/js/cinematic-revamp-core.js
+          grep -q 'body.capture-mode .cinema-play-overlay' assets/css/cinematic-revamp.css
+          grep -q 'GAME LOCATION' assets/css/cinematic-revamp.css
+
+          if grep -Eq '母稿原句|本專題筆記整理|來函情境重構' index.html; then
+            echo 'Public index still contains internal reference-copy wording.'
+            exit 1
+          fi
+
+      - name: Commit tested website files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- index.html assets/css/cinematic-revamp.css assets/css/cinematic-revamp-core.css assets/js/cinematic-revamp.js assets/js/cinematic-revamp-core.js
+          git rm -- .github/dialogue-game-revamp-payload.b64 .github/workflows/apply-dialogue-game-revamp.yml
+          git commit -m 'feat: rebuild animations as dialogue-driven game scenes'
+          git push origin HEAD:feat/dialogue-game-animation-video-20260822
