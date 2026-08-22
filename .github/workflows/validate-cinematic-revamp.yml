@@ -108,6 +108,13 @@ jobs:
           print("Static cinematic regression checks passed.")
           PY
 
+      - name: Install CJK fonts for visual regression
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
       - name: Browser smoke test and responsive captures
         shell: bash
         run: |
@@ -121,16 +128,28 @@ jobs:
           mkdir -p visual-regression /tmp/kaikai-preview
           cp -a . /tmp/kaikai-preview/site
 
-          # CI-only preview copy: bypass the first-visit gate so the underlying
-          # responsive homepage can be captured without changing production.
+          # CI-only preview copy: bypass the first-visit gate and force the
+          # installed Traditional Chinese Noto fonts for readable captures.
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('/tmp/kaikai-preview/site/assets/js/cinematic-revamp.js')
-          text = path.read_text(encoding='utf-8')
+
+          js_path = Path('/tmp/kaikai-preview/site/assets/js/cinematic-revamp.js')
+          js = js_path.read_text(encoding='utf-8')
           needle = 'if (sessionStorage.getItem("kk-entered-v8") === "true") setPageGate(false); else setPageGate(true);'
-          if needle not in text:
+          if needle not in js:
               raise SystemExit('Preview gate-bypass anchor was not found')
-          path.write_text(text.replace(needle, 'setPageGate(false);', 1), encoding='utf-8')
+          js_path.write_text(js.replace(needle, 'setPageGate(false);', 1), encoding='utf-8')
+
+          css_path = Path('/tmp/kaikai-preview/site/assets/css/cinematic-revamp.css')
+          css = css_path.read_text(encoding='utf-8')
+          css += '''
+          :root {
+            --sans: "Noto Sans CJK TC", sans-serif;
+            --serif: "Noto Serif CJK TC", serif;
+          }
+          .entry-gate { display: none !important; }
+          '''
+          css_path.write_text(css, encoding='utf-8')
           PY
 
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/kaikai-server.log 2>&1 &
@@ -172,12 +191,12 @@ jobs:
           "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
             --virtual-time-budget=8000 --window-size=1440,1000 \
             --screenshot=visual-regression/player-desktop.png \
-            'http://127.0.0.1:4173/?reel=1'
+            'http://127.0.0.1:4174/?reel=1'
 
           "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
             --virtual-time-budget=8000 --window-size=390,844 \
             --screenshot=visual-regression/player-mobile.png \
-            'http://127.0.0.1:4173/?scene=FM-C'
+            'http://127.0.0.1:4174/?scene=FM-C'
 
           test -s visual-regression/home-desktop.png
           test -s visual-regression/home-mobile.png
