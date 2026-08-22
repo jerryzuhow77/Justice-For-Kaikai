@@ -269,8 +269,17 @@
         return;
       }
       if (paragraph.closest("blockquote")) return;
+      if (paragraph.parentElement !== target) return;
       const text = normalizeText(paragraph.textContent);
-      if (/孩子的一日不能寄放在下一日|傳說止於此紀錄從這裡開始|記住他不只是記住一場悲劇|願下一個孩子|下一扇門更早打開/.test(text)) paragraph.classList.add("story-key-line");
+      if (/孩子的一日不能寄放在下一日|傳說止於此紀錄從這裡開始|記住他不只是記住一場悲劇|願下一個孩子|下一扇門更早打開/.test(text)) {
+        paragraph.classList.add("story-key-line");
+      } else if (/(62314|59559|57090|10810|一百一十五天|115日|24小時|202[0-9]年)/.test(text)) {
+        paragraph.classList.add("story-data-line");
+      } else if (/[？?]/.test(paragraph.textContent)) {
+        paragraph.classList.add("story-question");
+      } else if (/(不是.+而是|不等於|不能.+只)/.test(text)) {
+        paragraph.classList.add("story-contrast");
+      }
     });
 
     $$("h4", target).forEach((heading) => {
@@ -432,6 +441,9 @@
   }
 
   function createInlineSceneCard(scene) {
+    const item = document.createElement("article");
+    item.className = `copy-scene-item ${scene.type}`;
+    item.dataset.sceneId = scene.id;
     const button = document.createElement("button"); button.type = "button"; button.className = `copy-scene-card ${scene.type}`; button.setAttribute("aria-label", `播放隨文${TYPE_LABELS[scene.type]}：${scene.title}`);
     const poster = document.createElement("span"); poster.className = "copy-scene-poster";
     if (scene.image) poster.style.setProperty("--poster", `url('${scene.image}')`);
@@ -444,7 +456,9 @@
     const description = document.createElement("span"); description.textContent = scene.subtitle;
     meta.append(small, strong, description); button.append(poster, meta);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
-    return button;
+    item.append(button);
+    if (scene.type === "shadow" || scene.type === "side") item.append(createLibraryTranscript(scene));
+    return item;
   }
 
   function findPlacementHeading(target, placement) {
@@ -463,7 +477,7 @@
       const groupHeader = document.createElement("header");
       const label = document.createElement("span"); label.textContent = "文學化影像轉場";
       const title = document.createElement("b"); title.textContent = placement.label;
-      const note = document.createElement("small"); note.textContent = `${validScenes.length} 部 · 點選後進入全螢幕劇場`;
+      const note = document.createElement("small"); note.textContent = `${validScenes.length} 部 · 可播放，也可上下展開逐字稿`;
       groupHeader.append(label, title, note);
       const grid = document.createElement("div"); grid.className = "copy-scene-grid";
       validScenes.forEach((scene) => { inserted.add(scene.id); grid.append(createInlineSceneCard(scene)); });
@@ -846,7 +860,7 @@
 
   function animateNewContent(root) {
     if (!hasGSAP || state.reduced || !window.ScrollTrigger) return;
-    window.ScrollTrigger.batch($$(".copy-scene-card", root), { start: "top 92%", once: true, onEnter: (batch) => window.gsap.fromTo(batch, { autoAlpha: 0, y: 26, scale: .985 }, { autoAlpha: 1, y: 0, scale: 1, duration: .72, stagger: .09, ease: "power3.out", clearProps: "opacity,visibility,transform" }) });
+    window.ScrollTrigger.batch($$(".copy-scene-item", root), { start: "top 92%", once: true, onEnter: (batch) => window.gsap.fromTo(batch, { autoAlpha: 0, y: 26, scale: .985 }, { autoAlpha: 1, y: 0, scale: 1, duration: .72, stagger: .09, ease: "power3.out", clearProps: "opacity,visibility,transform" }) });
   }
   function teardownPageMotion() { state.pageMedia?.revert(); state.pageMedia = null; }
 
