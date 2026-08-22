@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/offline-computer-animation-20260822
+      - fix/offline-package-hidden-files-20260822
     paths:
       - index.html
       - story*.html
@@ -97,6 +98,7 @@ jobs:
             find . -type f ! -name SHA256SUMS.txt -print0 \
               | sort -z \
               | xargs -0 sha256sum > SHA256SUMS.txt
+            sha256sum -c SHA256SUMS.txt
           )
 
       - name: Smoke-test packaged site
@@ -128,5 +130,6 @@ jobs:
           name: Justice-For-Kaikai-Computer-Animation-20260822
           path: release/Justice-For-Kaikai-Computer-Animation
           if-no-files-found: error
+          include-hidden-files: true
           compression-level: 9
           retention-days: 30
