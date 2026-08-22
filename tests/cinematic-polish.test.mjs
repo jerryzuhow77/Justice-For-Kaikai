@@ -24,7 +24,21 @@ test("keeps transcripts vertically collapsible and screen-reader labelled", asyn
   assert.match(app, /className = "library-transcript"/);
   assert.match(app, /className = "story-transcript"/);
   assert.match(app, /\$\$\("\.dialogue-list", target\)/);
+  assert.match(app, /className = `copy-scene-item \$\{scene\.type\}`/);
+  assert.match(app, /item\.append\(createLibraryTranscript\(scene\)\)/);
   assert.match(app, /完整對話紀錄/);
+});
+
+test("sets the opening proverb as four lines and varies article emphasis", async () => {
+  const story = await readFile(new URL("story.html", root), "utf8");
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
+  assert.match(story, /<strong>花有重開日，<\/strong><br \/>\s*<strong>人無再少年。<\/strong><br \/>\s*<strong>應須惜兒孫，<\/strong><br \/>\s*<strong>安樂是天倫。<\/strong>/);
+  assert.match(app, /story-data-line/);
+  assert.match(app, /story-question/);
+  assert.match(app, /story-contrast/);
+  assert.equal((css.match(/h4\[data-chapter-number="\d{2}"\]/g) ?? []).length, 8);
+  assert.match(css, /blockquote\.opening-quatrain/);
 });
 
 test("restores six original scores to shadow and side theatre playback", async () => {
