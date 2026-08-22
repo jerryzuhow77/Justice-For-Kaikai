@@ -1,0 +1,132 @@
+name: Build offline computer animation package
+
+on:
+  push:
+    branches:
+      - main
+      - feat/offline-computer-animation-20260822
+    paths:
+      - index.html
+      - story*.html
+      - desktop-animation.html
+      - run_animation.py
+      - START-WINDOWS.bat
+      - START-MAC-LINUX.command
+      - OFFLINE-README.txt
+      - assets/**
+      - public/**
+      - docs/**
+      - manifest.webmanifest
+      - .nojekyll
+      - .github/workflows/build-offline-computer-animation.yml
+  pull_request:
+    paths:
+      - index.html
+      - story*.html
+      - desktop-animation.html
+      - run_animation.py
+      - START-WINDOWS.bat
+      - START-MAC-LINUX.command
+      - OFFLINE-README.txt
+      - assets/**
+      - public/**
+      - docs/**
+      - manifest.webmanifest
+      - .nojekyll
+      - .github/workflows/build-offline-computer-animation.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate launcher and animation JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile run_animation.py
+          node --check assets/js/cinematic-revamp.js
+          node --check assets/js/cinematic-revamp-core.js
+          test -f index.html
+          test -f story.html
+          test -f desktop-animation.html
+          test -d assets
+          test -d public
+
+      - name: Assemble offline animation folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE_ROOT="$GITHUB_WORKSPACE/release/Justice-For-Kaikai-Computer-Animation"
+          mkdir -p "$PACKAGE_ROOT"
+
+          cp -a index.html "$PACKAGE_ROOT/"
+          cp -a story*.html "$PACKAGE_ROOT/"
+          cp -a desktop-animation.html "$PACKAGE_ROOT/"
+          cp -a run_animation.py "$PACKAGE_ROOT/"
+          cp -a START-WINDOWS.bat "$PACKAGE_ROOT/"
+          cp -a START-MAC-LINUX.command "$PACKAGE_ROOT/"
+          cp -a OFFLINE-README.txt "$PACKAGE_ROOT/"
+          cp -a assets "$PACKAGE_ROOT/"
+          cp -a public "$PACKAGE_ROOT/"
+
+          if [ -d docs ]; then cp -a docs "$PACKAGE_ROOT/"; fi
+          if [ -f manifest.webmanifest ]; then cp -a manifest.webmanifest "$PACKAGE_ROOT/"; fi
+          if [ -f .nojekyll ]; then cp -a .nojekyll "$PACKAGE_ROOT/"; fi
+          if [ -f LICENSE-NOTICE.md ]; then cp -a LICENSE-NOTICE.md "$PACKAGE_ROOT/"; fi
+          if [ -f THIRD-PARTY-NOTICES.md ]; then cp -a THIRD-PARTY-NOTICES.md "$PACKAGE_ROOT/"; fi
+
+          chmod +x "$PACKAGE_ROOT/START-MAC-LINUX.command"
+          chmod +x "$PACKAGE_ROOT/run_animation.py"
+
+          cat > "$PACKAGE_ROOT/VERSION.txt" <<EOF
+          Justice for Kaikai computer animation
+          Build date: 2026-08-22
+          Commit: ${GITHUB_SHA}
+          Four-act order: FM-A -> FM-D -> FM-B -> FM-C
+          Direct player: http://127.0.0.1:8787/?reel=1
+          EOF
+
+          (
+            cd "$PACKAGE_ROOT"
+            find . -type f ! -name SHA256SUMS.txt -print0 \
+              | sort -z \
+              | xargs -0 sha256sum > SHA256SUMS.txt
+          )
+
+      - name: Smoke-test packaged site
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE_ROOT="$GITHUB_WORKSPACE/release/Justice-For-Kaikai-Computer-Animation"
+          cd "$PACKAGE_ROOT"
+          python3 -m http.server 8787 --bind 127.0.0.1 >/tmp/kaikai-offline.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:8787/?reel=1' >/tmp/offline-index.html; then break; fi
+            sleep .2
+          done
+
+          grep -q 'cinematic-revamp.js' /tmp/offline-index.html
+          curl -fsS 'http://127.0.0.1:8787/assets/js/cinematic-revamp-core.js' >/dev/null
+          curl -fsS 'http://127.0.0.1:8787/assets/css/cinematic-revamp-core.css' >/dev/null
+          curl -fsS 'http://127.0.0.1:8787/assets/data/scenes.js' >/dev/null
+          curl -fsS 'http://127.0.0.1:8787/story.html' >/dev/null
+          curl -fsS 'http://127.0.0.1:8787/public/media/poses/female-01.webp' >/dev/null
+          curl -fsS 'http://127.0.0.1:8787/assets/img/films/fm-c-two-worlds-v2.webp' >/dev/null
+
+      - name: Upload offline computer-animation package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Justice-For-Kaikai-Computer-Animation-20260822
+          path: release/Justice-For-Kaikai-Computer-Animation
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 30
