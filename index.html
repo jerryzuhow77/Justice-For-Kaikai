@@ -31,11 +31,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preload" as="image" href="assets/img/films/fm-a-buried-name.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/img/films/fm-c-two-worlds-v2.webp">
-  <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260822-3">
+  <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260822-4">
   <script defer src="assets/vendor/gsap/gsap.min.js"></script>
   <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
   <script defer src="assets/data/scenes.js"></script>
-  <script defer src="assets/js/cinematic-revamp.js?v=20260822-3"></script>
+  <script defer src="assets/js/cinematic-revamp.js?v=20260822-4"></script>
   <title>剴剴案特別專題｜沒有父母的孤兒</title>
   <script type="application/ld+json">
   {
@@ -128,6 +128,22 @@
       <header class="section-heading film-heading"><div><p class="kicker">ONE FILM · FOUR ACTS</p><h2 id="film-reel-title">四部不再各自停下，<br>而是沿同一條線走到清晨。</h2></div><div class="section-intro"><p>土、繡線、布包、青絲與門縫彼此承接。四幕仍分別穿插正文，也能在同一播放器裡連續觀看。</p><button class="button button-primary" id="play-full-reel" type="button">播放四幕完整版</button></div></header>
       <div class="reel-stage" id="reel-stage" aria-hidden="true"><div class="reel-stage-image"></div><div class="reel-stage-shadow"></div><div class="reel-stage-thread"></div><div class="reel-stage-copy"><span>ACT I–IV</span><strong>門沒有更早打開以前</strong><small>每一幕都回到活著的大人</small></div></div>
       <div class="film-act-grid" id="film-act-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="score-library section-shell" id="original-scores" aria-labelledby="score-library-title">
+      <header><div><p class="kicker">ORIGINAL SCORE · 六首原創配樂</p><h2 id="score-library-title">不必進入劇場，<br>在正文頁直接播放。</h2></div><p>六首配樂依序對應第一至第六章。點選曲目後立即播放，也可使用下方原生播放器暫停、調整進度與音量。</p></header>
+      <div class="score-player-card">
+        <div class="score-track-grid" role="group" aria-label="選擇原創配樂">
+          <button class="is-active" type="button" data-score="01" aria-pressed="true"><b>01</b><span>第一章配樂</span></button>
+          <button type="button" data-score="02" aria-pressed="false"><b>02</b><span>第二章配樂</span></button>
+          <button type="button" data-score="03" aria-pressed="false"><b>03</b><span>第三章配樂</span></button>
+          <button type="button" data-score="04" aria-pressed="false"><b>04</b><span>第四章配樂</span></button>
+          <button type="button" data-score="05" aria-pressed="false"><b>05</b><span>第五章配樂</span></button>
+          <button type="button" data-score="06" aria-pressed="false"><b>06</b><span>第六章配樂</span></button>
+        </div>
+        <div class="score-now-playing"><span>目前曲目</span><strong id="score-library-label">第一章配樂</strong></div>
+        <audio id="score-library-audio" controls preload="metadata" src="public/media/chapter-01.m4a">您的瀏覽器不支援音訊播放。</audio>
+      </div>
     </section>
 
     <section class="reading-map section-shell" id="reading-map" aria-labelledby="reading-map-title">
