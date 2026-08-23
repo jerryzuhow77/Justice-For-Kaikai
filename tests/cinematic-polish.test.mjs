@@ -43,26 +43,56 @@ test("sets the opening proverb as four lines and varies article emphasis", async
   assert.match(css, /blockquote\.opening-quatrain/);
 });
 
-test("restores six original scores to shadow and side theatre playback", async () => {
+test("ships ten theatre scores and one consent-based site background track", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   assert.match(html, /id="cinema-audio"/);
   assert.match(html, /id="toggle-music"/);
   assert.match(html, /id="score-library-audio"/);
-  assert.equal((html.match(/data-score="\d{2}"/g) ?? []).length, 6);
+  assert.match(html, /id="ambient-audio"/);
+  assert.match(html, /id="gate-music"[^>]*checked/);
+  assert.equal((html.match(/data-score="\d{2}"/g) ?? []).length, 10);
   assert.match(app, /const SCORE_TRACKS/);
+  assert.match(app, /chapter-00\.m4a/);
+  assert.match(app, /chapter-09\.m4a/);
+  assert.match(app, /site-background\.m4a/);
   assert.match(app, /public\/media\/chapter-\$\{chapter\}\.m4a/);
   assert.match(app, /scene\.type !== "shadow" && scene\.type !== "side"/);
   assert.match(app, /playSceneAudio\(\)/);
   assert.match(app, /function selectLibraryScore/);
+  assert.match(app, /function toggleAmbient/);
 });
 
 test("applies optical one-to-one actor calibration and dialogue hierarchy", async () => {
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
   assert.match(app, /function actorOpticalScale/);
+  assert.match(app, /ACTOR_ASSET_BOUNDS/);
+  assert.match(app, /projectedVisibleHeight/);
   assert.match(app, /const sharedScale = \(pose\.f\[3\] \+ pose\.m\[3\]\) \/ 2/);
   assert.match(app, /function enhanceStoryTypography/);
   assert.match(css, /dialogue-box\[data-speaker-tone="female"\]/);
   assert.match(css, /\.story-dialogue\.dialogue-male/);
+});
+
+test("synchronizes four act names and repairs single film cards and the dark first cover", async () => {
+  const registry = await readFile(new URL("assets/data/scenes.js", root), "utf8");
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
+  for (const title of ["土掩埋不住的清朝民間傳說", "無法再相見▪︎天涯各自分", "青絲變白髮", "兩個朝代▪︎不同世界▪︎同一扇門"]) {
+    assert.match(registry, new RegExp(title));
+  }
+  assert.match(app, /grid\.classList\.toggle\("is-single", validScenes\.length === 1\)/);
+  assert.match(css, /\.copy-scene-grid\.is-single/);
+  assert.match(css, /data-scene-id="FM-A"/);
+});
+
+test("layers GSAP motion across the gate, seals, score cards, copy, and cinema", async () => {
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
+  for (const token of ["function playGateIntro", "function playPageIntro", "function animateCinemaEntrance", "function animateTranscriptOpen", "revealBatch", ".minnan-seal-field img", ".score-track-grid button", "storyHighlights"]) {
+    assert.match(app, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+  assert.match(css, /perspective: 1100px/);
+  assert.match(css, /html\.has-gsap \.gate-film-image/);
 });

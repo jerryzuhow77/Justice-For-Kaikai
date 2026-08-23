@@ -11,11 +11,32 @@
   const FILM_ORDER = ["FM-A", "FM-D", "FM-B", "FM-C"];
   const TYPE_LABELS = { film: "主線電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
   const ACT_LABELS = { "FM-A": "第一幕", "FM-D": "第二幕", "FM-B": "第三幕", "FM-C": "第四幕" };
-  const FILM_POSITIONS = { "FM-A": "9% 50%", "FM-D": "36% 50%", "FM-B": "70% 50%", "FM-C": "50% 50%" };
-  const SCORE_TRACKS = Object.fromEntries(Array.from({ length: 6 }, (_, index) => {
-    const chapter = String(index + 1).padStart(2, "0");
-    return [chapter, { src: `public/media/chapter-${chapter}.m4a`, label: `第 ${chapter} 章原創配樂` }];
-  }));
+  const FILM_POSITIONS = { "FM-A": "22% 50%", "FM-D": "36% 50%", "FM-B": "70% 50%", "FM-C": "50% 50%" };
+  const SCORE_TRACKS = {
+    "00": { src: "public/media/chapter-00.m4a", label: "序問｜石階雨滴" },
+    ...Object.fromEntries(Array.from({ length: 6 }, (_, index) => {
+      const chapter = String(index + 1).padStart(2, "0");
+      return [chapter, { src: `public/media/chapter-${chapter}.m4a`, label: `第 ${chapter} 篇原創配樂` }];
+    })),
+    "07": { src: "public/media/chapter-07.m4a", label: "第七篇｜第一百一十五日" },
+    "08": { src: "public/media/chapter-08.m4a", label: "第八篇｜穿過竹屋簷" },
+    "09": { src: "public/media/chapter-09.m4a", label: "終章｜杉木上的晨光" }
+  };
+  const SITE_BACKGROUND_TRACK = { src: "public/media/site-background.m4a", label: "全站背景｜玩偶落淚之處" };
+
+  // [canvas width, canvas height, visible alpha height]. Pose-specific bounds
+  // let every pair share one optical body height even when source canvases use
+  // very different transparent margins or aspect ratios.
+  const ACTOR_ASSET_BOUNDS = {
+    shadow: {
+      female: [[362,362,361],[362,362,343],[362,362,362],[362,362,362],[362,362,361],[362,362,356],[362,362,362],[362,362,362],[362,362,346],[362,362,362],[362,362,346],[362,362,346]],
+      male: [[384,341,308],[384,341,312],[384,341,316],[384,341,316],[384,341,332],[384,341,332],[384,341,286],[384,341,297],[384,342,302],[384,342,311],[384,342,298],[384,342,304]]
+    },
+    side: {
+      female: [[420,360,324],[403,348,312],[405,364,328],[410,347,311],[412,375,339],[391,378,342],[371,378,342],[393,378,342],[403,327,291],[417,347,311],[401,347,311],[393,353,317]],
+      male: [[303,360,324],[322,362,326],[385,357,321],[349,377,341],[415,378,342],[387,378,342],[419,378,342],[398,377,341],[331,362,326],[321,377,341],[341,363,327],[376,365,329]]
+    }
+  };
   const INLINE_PLACEMENTS = [
     { match: ["開頭引言", "花會再開", "童年不會重來"], label: "序幕電影", scenes: ["FM-A"] },
     { match: ["皮影序問", "六扇門"], label: "序問雙劇場", scenes: ["SP00", "DV00"] },
@@ -112,12 +133,20 @@
   const posePlanCache = new Map();
   let copyNavObserver = null;
   let readingProgressFrame = 0;
+  let actorCalibrationFrame = 0;
+  let gateMotionContext = null;
+  let pageIntroPlayed = false;
 
   const state = {
     reduced: localStorage.getItem("kk-reduced-v8") === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     navOpen: false,
     pageMedia: null,
     musicEnabled: localStorage.getItem("kk-music-v8") !== "false",
+    ambient: {
+      requested: false,
+      resumeAfterForeground: false,
+      resumeAfterVisibility: false
+    },
     player: {
       mode: "single",
       sequence: [],
@@ -170,6 +199,8 @@
   const scoreLibraryAudio = $("#score-library-audio");
   const scoreLibraryLabel = $("#score-library-label");
   const scoreLibraryButtons = $$("[data-score]");
+  const ambientAudio = $("#ambient-audio");
+  const ambientToggles = $$("[data-ambient-toggle]");
   const progressInput = $("#timeline-progress");
   const timelineTime = $("#timeline-time");
 
@@ -178,7 +209,44 @@
     if (window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
   }
 
+  function stopGateMotion() {
+    gateMotionContext?.revert();
+    gateMotionContext = null;
+  }
+
+  function playGateIntro() {
+    if (!hasGSAP || state.reduced || !entryGate || !document.body.classList.contains("is-gated")) return;
+    stopGateMotion();
+    const { gsap } = window;
+    gateMotionContext = gsap.context(() => {
+      const entrance = gsap.timeline({ defaults: { ease: "power3.out" } });
+      entrance
+        .from(".gate-panel", { scale: .975, y: 18, duration: .85 })
+        .from(".gate-quatrain span", { y: 15, duration: .58, stagger: .075 }, "-=.54")
+        .from(".gate-lead, .content-note", { y: 12, autoAlpha: .45, duration: .55, stagger: .08 }, "-=.42")
+        .from(".gate-actions > *, .gate-options > *", { y: 10, autoAlpha: 0, duration: .45, stagger: .055 }, "-=.34")
+        .from(".gate-film-frame", { scale: .94, autoAlpha: .2, duration: .8 }, .12)
+        .from(".gate-film-copy > *", { y: 10, autoAlpha: 0, duration: .5, stagger: .08 }, .42);
+      gsap.to(".gate-film-image", { scale: 1.065, xPercent: 1.4, duration: 7.5, repeat: -1, yoyo: true, ease: "sine.inOut" });
+      gsap.to(".gate-door-line", { scaleY: .58, opacity: .48, duration: 2.6, repeat: -1, yoyo: true, transformOrigin: "center", ease: "sine.inOut" });
+      gsap.to(".gate-backdrop", { scale: 1.085, xPercent: -1.2, duration: 10, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    }, entryGate);
+  }
+
+  function playPageIntro() {
+    if (!hasGSAP || state.reduced || pageIntroPlayed) return;
+    pageIntroPlayed = true;
+    const { gsap } = window;
+    const intro = gsap.timeline({ delay: .28, defaults: { ease: "power3.out" } });
+    intro
+      .fromTo(header, { y: -18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .58, clearProps: "transform,opacity,visibility" })
+      .from(".hero-copy > *", { y: 24, autoAlpha: 0, duration: .72, stagger: .075, clearProps: "transform,opacity,visibility" }, "-=.26")
+      .from(".hero-brief", { x: 24, autoAlpha: 0, duration: .72, clearProps: "transform,opacity,visibility" }, "-=.54")
+      .from(".scroll-cue", { y: -10, autoAlpha: 0, duration: .45, clearProps: "transform,opacity,visibility" }, "-=.3");
+  }
+
   function setPageGate(locked) {
+    if (!locked) stopGateMotion();
     document.body.classList.toggle("is-gated", locked);
     if (header) header.inert = locked;
     if (main) main.inert = locked;
@@ -186,8 +254,11 @@
   }
 
   function enterSite(target = "#top") {
+    const startWithMusic = $("#gate-music")?.checked === true;
     setPageGate(false);
     sessionStorage.setItem("kk-entered-v8", "true");
+    if (startWithMusic) playAmbient();
+    if (target === "#top") playPageIntro();
     window.setTimeout(() => {
       const targetElement = $(target);
       if (target !== "#top") targetElement?.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
@@ -212,6 +283,9 @@
     pausePlayback();
     teardownPageMotion();
     setupPageMotion();
+    if (document.body.classList.contains("is-gated")) {
+      if (state.reduced) stopGateMotion(); else playGateIntro();
+    }
     if (dialog?.open) {
       buildTimeline();
       goToStep(state.player.stepIndex);
@@ -301,6 +375,7 @@
       list.replaceWith(details);
       body.append(list);
       details.append(summary, body);
+      details.addEventListener("toggle", () => animateTranscriptOpen(details, ".story-dialogue"));
     });
   }
 
@@ -361,10 +436,39 @@
     });
   }
 
+  function configurePreviewActor(image, scene, sex, pose) {
+    image.dataset.actorType = scene.type;
+    image.dataset.actorSex = sex;
+    image.dataset.actorPose = String(pose);
+    image.addEventListener("load", () => calibratePreviewActor(image), { once: true });
+  }
+
+  function calibratePreviewActor(image) {
+    const type = image.dataset.actorType;
+    const sex = image.dataset.actorSex;
+    const pose = Number(image.dataset.actorPose);
+    if (!type || !sex || !pose || !image.isConnected) return;
+    const scale = actorOpticalScale({ type }, sex, pose, image);
+    image.style.setProperty("--actor-optical-scale", scale.toFixed(3));
+  }
+
+  function calibratePreviewActors(root = document) {
+    $$('[data-actor-pose]', root).forEach(calibratePreviewActor);
+  }
+
+  function requestActorCalibration(root = document) {
+    if (actorCalibrationFrame) window.cancelAnimationFrame(actorCalibrationFrame);
+    actorCalibrationFrame = window.requestAnimationFrame(() => {
+      actorCalibrationFrame = 0;
+      calibratePreviewActors(root);
+    });
+  }
+
   function createFilmActCard(scene, index) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "film-act-card";
+    button.dataset.sceneId = scene.id;
     button.style.setProperty("--film-image", `url('${scene.image}')`);
     button.style.setProperty("--film-position", FILM_POSITIONS[scene.id] || "center");
     button.setAttribute("aria-label", `播放${ACT_LABELS[scene.id]}：${scene.title}`);
@@ -399,6 +503,7 @@
       paragraph.append(speaker, copy); lines.append(paragraph);
     });
     details.append(summary, lines);
+    details.addEventListener("toggle", () => animateTranscriptOpen(details, ".library-transcript-lines p"));
     return details;
   }
 
@@ -418,7 +523,8 @@
     if (scene.type !== "film") {
       const previewBeat = scene.chapter === "終章" ? 9 : 4;
       ["female", "male"].forEach((sex) => {
-        const image = document.createElement("img"); image.className = `scene-card-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, actorPosePlan(scene, sex)[previewBeat]); button.append(image);
+        const pose = actorPosePlan(scene, sex)[previewBeat];
+        const image = document.createElement("img"); image.className = `scene-card-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, pose); configurePreviewActor(image, scene, sex, pose); button.append(image);
       });
     }
     const play = document.createElement("span"); play.className = "scene-card-play"; play.textContent = scene.type === "film" ? "電影" : "播放";
@@ -438,6 +544,7 @@
     const fragment = document.createDocumentFragment();
     order.forEach((id, index) => { const scene = sceneById.get(id); if (scene) fragment.append(createSceneCard(scene, index)); });
     sceneGrid.replaceChildren(fragment);
+    requestActorCalibration(sceneGrid);
   }
 
   function createInlineSceneCard(scene) {
@@ -448,7 +555,7 @@
     const poster = document.createElement("span"); poster.className = "copy-scene-poster";
     if (scene.image) poster.style.setProperty("--poster", `url('${scene.image}')`);
     if (scene.type !== "film") {
-      ["female", "male"].forEach((sex) => { const image = document.createElement("img"); image.className = `copy-scene-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, actorPosePlan(scene, sex)[4]); poster.append(image); });
+      ["female", "male"].forEach((sex) => { const pose = actorPosePlan(scene, sex)[4]; const image = document.createElement("img"); image.className = `copy-scene-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, pose); configurePreviewActor(image, scene, sex, pose); poster.append(image); });
     }
     const meta = document.createElement("span"); meta.className = "copy-scene-meta";
     const small = document.createElement("small"); small.textContent = `${scene.id} · ${TYPE_LABELS[scene.type]}`;
@@ -480,9 +587,11 @@
       const note = document.createElement("small"); note.textContent = `${validScenes.length} 部 · 可播放，也可上下展開逐字稿`;
       groupHeader.append(label, title, note);
       const grid = document.createElement("div"); grid.className = "copy-scene-grid";
+      grid.classList.toggle("is-single", validScenes.length === 1);
       validScenes.forEach((scene) => { inserted.add(scene.id); grid.append(createInlineSceneCard(scene)); });
       group.append(groupHeader, grid); heading.insertAdjacentElement("afterend", group);
     });
+    requestActorCalibration(target);
   }
 
   function setupCopyNavigation(headings, navRoot) {
@@ -553,9 +662,67 @@
     if (changed) { setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); }
   }
 
+  function scoreKeyForScene(scene) {
+    if (!scene) return "";
+    if (scene.chapter === "序問") return "00";
+    if (scene.chapter === "終章") return "09";
+    const numericChapter = String(scene.chapter || "").match(/^\d{1,2}$/)?.[0];
+    return numericChapter ? numericChapter.padStart(2, "0") : "";
+  }
+
   function scoreForScene(scene) {
     if (!scene || (scene.type !== "shadow" && scene.type !== "side")) return null;
-    return SCORE_TRACKS[String(scene.chapter || "").padStart(2, "0")] || null;
+    return SCORE_TRACKS[scoreKeyForScene(scene)] || null;
+  }
+
+  function refreshAmbientUi() {
+    if (!ambientAudio) return;
+    const playing = !ambientAudio.paused;
+    ambientToggles.forEach((button) => {
+      button.classList.toggle("is-playing", playing);
+      button.setAttribute("aria-pressed", String(playing));
+      button.setAttribute("aria-label", playing ? `暫停${SITE_BACKGROUND_TRACK.label}` : `播放${SITE_BACKGROUND_TRACK.label}`);
+      button.title = playing ? "暫停背景音樂" : "播放背景音樂";
+      const status = $(".ambient-status", button);
+      if (status) status.textContent = playing ? "暫停" : "播放";
+    });
+  }
+
+  function playAmbient() {
+    if (!ambientAudio) return;
+    state.ambient.requested = true;
+    ambientAudio.volume = .34;
+    const nextSrc = new URL(SITE_BACKGROUND_TRACK.src, window.location.href).href;
+    if (ambientAudio.src !== nextSrc) ambientAudio.src = SITE_BACKGROUND_TRACK.src;
+    ambientAudio.play().then(refreshAmbientUi).catch(refreshAmbientUi);
+  }
+
+  function pauseAmbient(userInitiated = false) {
+    if (!ambientAudio) return;
+    ambientAudio.pause();
+    if (userInitiated) {
+      state.ambient.requested = false;
+      state.ambient.resumeAfterForeground = false;
+      state.ambient.resumeAfterVisibility = false;
+    }
+    refreshAmbientUi();
+  }
+
+  function toggleAmbient() {
+    if (!ambientAudio) return;
+    if (ambientAudio.paused) playAmbient(); else pauseAmbient(true);
+  }
+
+  function suspendAmbient() {
+    if (!ambientAudio || ambientAudio.paused) return;
+    state.ambient.resumeAfterForeground = state.ambient.requested;
+    pauseAmbient(false);
+  }
+
+  function resumeAmbient() {
+    if (!state.ambient.resumeAfterForeground || !state.ambient.requested) return;
+    state.ambient.resumeAfterForeground = false;
+    playAmbient();
   }
 
   function selectLibraryScore(button, autoplay = true) {
@@ -572,7 +739,10 @@
     if (scoreLibraryAudio.src !== nextSrc) scoreLibraryAudio.src = track.src;
     if (scoreLibraryLabel) scoreLibraryLabel.textContent = button.querySelector("span")?.textContent || track.label;
     cinemaAudio?.pause();
-    if (autoplay) scoreLibraryAudio.play().catch(() => {});
+    if (autoplay) {
+      suspendAmbient();
+      scoreLibraryAudio.play().catch(() => {});
+    }
   }
 
   function updateMusicUi(track = scoreForScene(state.player.currentScene)) {
@@ -615,13 +785,16 @@
     return { ...base, scale: 1 + (base.scale - 1) * .56, x: base.x * .35, y: base.y * .45, light: base.light * .55 };
   }
 
-  function actorOpticalScale(scene, sex, compact) {
-    if (scene.type !== "shadow") return 1;
-    // The shadow-puppet PNG crops carry different transparent margins. These
-    // optical factors equalise visible body height while keeping one shared
-    // animation frame; the narrower male puppet needs slightly more lift on mobile.
-    if (sex === "male") return compact ? 1.1 : 1.06;
-    return compact ? .97 : .98;
+  function actorOpticalScale(scene, sex, pose, element) {
+    const bounds = ACTOR_ASSET_BOUNDS[scene.type]?.[sex]?.[Math.max(0, Number(pose) - 1)];
+    if (!bounds) return 1;
+    const [canvasWidth, canvasHeight, visibleHeight] = bounds;
+    const boxWidth = element?.offsetWidth || (window.matchMedia("(max-width: 760px)").matches ? 260 : 340);
+    const boxHeight = element?.offsetHeight || (window.matchMedia("(max-width: 760px)").matches ? 330 : 430);
+    const containScale = Math.min(boxWidth / canvasWidth, boxHeight / canvasHeight);
+    const projectedVisibleHeight = Math.max(1, visibleHeight * containScale);
+    const targetRatio = scene.type === "side" ? .74 : .78;
+    return clamp((boxHeight * targetRatio) / projectedVisibleHeight, .72, 1.28);
   }
 
   function actorTargets(scene, actionIndex) {
@@ -629,13 +802,13 @@
     const compact = window.matchMedia("(max-width: 760px)").matches;
     const ratio = compact ? (scene.type === "side" ? .3 : .38) : (scene.type === "side" ? .7 : 1);
     const sharedScale = (pose.f[3] + pose.m[3]) / 2;
-    const target = (values, sex) => ({
+    const target = (values, sex, actorElement) => ({
       x: values[0] * ratio,
       y: values[1] * ratio,
       rotation: values[2],
-      scale: sharedScale * (scene.type === "side" ? .94 : 1) * actorOpticalScale(scene, sex, compact)
+      scale: sharedScale * (scene.type === "side" ? .94 : 1) * actorOpticalScale(scene, sex, actorPosePlan(scene, sex)[actionIndex], actorElement)
     });
-    return { female: target(pose.f, "female"), male: target(pose.m, "male") };
+    return { female: target(pose.f, "female", actorFemale), male: target(pose.m, "male", actorMale) };
   }
 
   function effectForMeta(meta) {
@@ -799,6 +972,13 @@
     if (shouldScroll && transcript.open) transcript.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "nearest" });
   }
 
+  function animateTranscriptOpen(details, selector) {
+    if (!details?.open || !hasGSAP || state.reduced) return;
+    const lines = $$(selector, details);
+    if (!lines.length) return;
+    window.gsap.fromTo(lines, { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .42, stagger: .045, ease: "power2.out", clearProps: "transform,opacity,visibility" });
+  }
+
   function renderTranscript() {
     const root = $("#transcript-body"); if (!root) return; root.replaceChildren();
     if (transcript) transcript.open = false;
@@ -829,7 +1009,22 @@
   function openCinema(id, mode = "single") {
     const scene = sceneById.get(id) || sceneById.get(FILM_ORDER[0]); if (!scene || !dialog) return;
     state.player.returnFocus = document.activeElement; state.player.returnUrl = urlWithoutPlayer(); state.player.mode = mode; state.player.sequence = mode === "reel" ? FILM_ORDER.map((filmId) => sceneById.get(filmId)).filter(Boolean) : [scene]; state.player.currentScene = null; state.player.currentBackdrop = 0;
-    preloadSequence(state.player.sequence); renderActMarkers(); renderTranscript(); buildTimeline(); if (!dialog.open) dialog.showModal(); document.body.style.overflow = "hidden"; renderStep(0, true); setPlayerUrl(scene.id, mode); updatePlayButton(); $("#cinema-play-overlay")?.focus();
+    suspendAmbient();
+    if (!dialog.open) dialog.showModal();
+    document.body.style.overflow = "hidden";
+    scoreLibraryAudio?.pause();
+    preloadSequence(state.player.sequence); renderActMarkers(); renderTranscript(); buildTimeline(); renderStep(0, true); setPlayerUrl(scene.id, mode); updatePlayButton(); animateCinemaEntrance(); $("#cinema-play-overlay")?.focus();
+  }
+
+  function animateCinemaEntrance() {
+    if (!hasGSAP || state.reduced || !dialog?.open) return;
+    const { gsap } = window;
+    const entrance = gsap.timeline({ defaults: { ease: "power3.out" } });
+    entrance
+      .fromTo(".cinema-header, .source-ribbon, .cinema-audio-bar", { y: -10, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .46, stagger: .055, clearProps: "transform,opacity,visibility" })
+      .fromTo(stage, { scale: .985, autoAlpha: .25 }, { scale: 1, autoAlpha: 1, duration: .62, clearProps: "transform,opacity,visibility" }, "-=.3")
+      .fromTo(".cinema-meta-row, .storyboard, .transcript", { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .48, stagger: .06, clearProps: "transform,opacity,visibility" }, "-=.38")
+      .fromTo(".cinema-control-dock", { autoAlpha: 0 }, { autoAlpha: 1, duration: .35, clearProps: "opacity,visibility" }, "-=.26");
   }
   function closeCinema() { pausePlayback(); destroyTimeline(); if (dialog?.open) dialog.close(); }
   function sceneShareUrl() { const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href; const url = new URL(canonical, window.location.href); if (state.player.mode === "reel") url.searchParams.set("reel", "1"); else if (state.player.currentScene) url.searchParams.set("scene", state.player.currentScene.id); return url.href; }
@@ -844,14 +1039,36 @@
 
   function setupPageMotion() {
     if (!hasGSAP || !window.ScrollTrigger || state.reduced || state.pageMedia) return;
-    const { gsap } = window; state.pageMedia = gsap.matchMedia();
+    const { gsap } = window;
+    const scroll = window.ScrollTrigger;
+    const revealBatch = (selector, fromVars = {}) => {
+      const targets = gsap.utils.toArray(selector);
+      if (!targets.length) return;
+      scroll.batch(targets, {
+        start: "top 92%",
+        once: true,
+        interval: .08,
+        batchMax: 5,
+        onEnter: (batch) => gsap.fromTo(batch, { y: 32, autoAlpha: 0, ...fromVars }, { y: 0, x: 0, rotation: 0, rotationX: 0, scale: 1, autoAlpha: 1, duration: .82, stagger: .085, ease: "power3.out", clearProps: "transform,opacity,visibility" })
+      });
+    };
+    state.pageMedia = gsap.matchMedia();
     state.pageMedia.add({ desktop: "(min-width: 761px)", motion: "(prefers-reduced-motion: no-preference)" }, (context) => {
       if (!context.conditions.motion || state.reduced) return undefined;
       gsap.to(".hero-layer-far", { scale: context.conditions.desktop ? 1.1 : 1.045, yPercent: context.conditions.desktop ? 5 : 2, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: .75 } });
       gsap.to(".hero-layer-mid", { xPercent: context.conditions.desktop ? -2.2 : -.8, yPercent: context.conditions.desktop ? 3 : 1, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
       gsap.fromTo(".reel-stage-image", { scale: 1.015 }, { scale: 1.09, xPercent: 1.5, ease: "none", scrollTrigger: { trigger: ".reel-stage", start: "top bottom", end: "bottom top", scrub: 1 } });
       gsap.fromTo(".reel-stage-thread", { scaleX: .08 }, { scaleX: 1, transformOrigin: "left center", ease: "none", scrollTrigger: { trigger: ".reel-stage", start: "top 82%", end: "bottom 34%", scrub: .8 } });
-      gsap.utils.toArray(".section-heading, .film-act-card, .reading-map-grid a, .source-grid article, .scene-card, .visual-copy, .visual-montage figure, .action-cards a").forEach((target) => gsap.from(target, { y: 34, autoAlpha: 0, duration: .85, ease: "power3.out", scrollTrigger: { trigger: target, start: "top 91%", once: true } }));
+      gsap.utils.toArray(".section-heading, .score-library > header, .full-copy-heading, .visual-copy, .action > .section-shell > p").forEach((target) => gsap.from(target, { y: 34, autoAlpha: 0, duration: .85, ease: "power3.out", scrollTrigger: { trigger: target, start: "top 91%", once: true } }));
+      revealBatch(".film-act-card", { y: 42, rotationX: context.conditions.desktop ? 7 : 0, scale: .965 });
+      revealBatch(".score-track-grid button", { y: 24, scale: .95 });
+      revealBatch(".reading-map-grid a", { y: 28, scale: .975 });
+      revealBatch(".source-grid article, .scene-library-item, .visual-montage figure, .action-cards a", { y: 30, scale: .98 });
+      gsap.from(".ambient-track-row, .score-now-playing, .score-player-card audio", { y: 18, autoAlpha: 0, duration: .62, stagger: .09, ease: "power2.out", scrollTrigger: { trigger: ".score-player-card", start: "top 86%", once: true } });
+      gsap.utils.toArray(".minnan-seal-field img").forEach((seal, index) => {
+        const direction = index % 2 ? -1 : 1;
+        gsap.fromTo(seal, { xPercent: 0, yPercent: -direction * (3 + index % 3) }, { xPercent: direction * (2 + index % 4), yPercent: direction * (8 + index % 4), ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1.15 } });
+      });
       gsap.to(".page-light-a", { xPercent: 18, yPercent: 14, duration: 18, repeat: -1, yoyo: true, ease: "sine.inOut" });
       gsap.to(".page-light-b", { xPercent: -16, yPercent: -10, duration: 21, repeat: -1, yoyo: true, ease: "sine.inOut" });
       return () => undefined;
@@ -861,6 +1078,8 @@
   function animateNewContent(root) {
     if (!hasGSAP || state.reduced || !window.ScrollTrigger) return;
     window.ScrollTrigger.batch($$(".copy-scene-item", root), { start: "top 92%", once: true, onEnter: (batch) => window.gsap.fromTo(batch, { autoAlpha: 0, y: 26, scale: .985 }, { autoAlpha: 1, y: 0, scale: 1, duration: .72, stagger: .09, ease: "power3.out", clearProps: "opacity,visibility,transform" }) });
+    const storyHighlights = $$("h4[data-chapter-number], .story-key-line, .story-data-line, .story-contrast, .story-transcript > summary, blockquote", root);
+    window.ScrollTrigger.batch(storyHighlights, { start: "top 91%", once: true, interval: .1, batchMax: 4, onEnter: (batch) => window.gsap.fromTo(batch, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: .68, stagger: .075, ease: "power3.out", clearProps: "opacity,visibility,transform" }) });
   }
   function teardownPageMotion() { state.pageMedia?.revert(); state.pageMedia = null; }
 
@@ -868,32 +1087,52 @@
     $("#enter-experience")?.addEventListener("click", () => { if ($("#gate-reduced")?.checked) setReduced(true); enterSite("#top"); });
     $("#enter-reading")?.addEventListener("click", () => enterSite("#full-copy"));
     $("#gate-reduced")?.addEventListener("change", (event) => setReduced(event.target.checked)); motionToggle?.addEventListener("click", () => setReduced(!state.reduced)); navToggle?.addEventListener("click", () => setNavOpen(!state.navOpen));
-    $$("a", nav).forEach((link) => link.addEventListener("click", () => setNavOpen(false))); window.addEventListener("resize", () => { if (window.innerWidth > 1120) setNavOpen(false); });
+    $$("a", nav).forEach((link) => link.addEventListener("click", () => setNavOpen(false))); window.addEventListener("resize", () => { if (window.innerWidth > 1120) setNavOpen(false); requestActorCalibration(); });
     window.addEventListener("scroll", () => { if (!readingProgressFrame) readingProgressFrame = window.requestAnimationFrame(updateReadingProgress); }, { passive: true });
     $("#hero-play-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel")); $("#play-full-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel"));
     $("#close-cinema")?.addEventListener("click", closeCinema); $("#share-cinema")?.addEventListener("click", shareCinema); $("#prev-beat")?.addEventListener("click", () => goToStep(state.player.stepIndex - 1)); $("#next-beat")?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
     $("#play-cinema")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); $("#cinema-play-overlay")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); dialogueBox?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
     $("#toggle-transcript")?.addEventListener("click", () => { if (!transcript) return; transcript.open = !transcript.open; syncTranscriptToggle(true); });
-    transcript?.addEventListener("toggle", () => syncTranscriptToggle(false));
+    transcript?.addEventListener("toggle", () => { syncTranscriptToggle(false); animateTranscriptOpen(transcript, ".transcript-scene"); });
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); state.player.timeline.pause(time, true); renderStep(stepAtTime(time), false); syncTimelineProgress(); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
-    dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); });
+    dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); resumeAmbient(); });
     musicToggle?.addEventListener("click", toggleMusic);
+    ambientToggles.forEach((button) => button.addEventListener("click", toggleAmbient));
+    ambientAudio?.addEventListener("play", refreshAmbientUi);
+    ambientAudio?.addEventListener("pause", refreshAmbientUi);
     scoreLibraryButtons.forEach((button) => button.addEventListener("click", () => selectLibraryScore(button, true)));
-    scoreLibraryAudio?.addEventListener("play", () => cinemaAudio?.pause());
+    scoreLibraryAudio?.addEventListener("play", () => { cinemaAudio?.pause(); suspendAmbient(); });
+    scoreLibraryAudio?.addEventListener("pause", () => { if (!dialog?.open) resumeAmbient(); });
+    scoreLibraryAudio?.addEventListener("ended", () => { if (!dialog?.open) resumeAmbient(); });
     $$(".filter").forEach((button) => button.addEventListener("click", () => { $$(".filter").forEach((item) => { const active = item === button; item.classList.toggle("is-active", active); item.setAttribute("aria-pressed", String(active)); }); const filter = button.dataset.filter; $$(".scene-library-item", sceneGrid).forEach((card) => card.classList.toggle("is-hidden", filter !== "all" && card.dataset.type !== filter)); window.setTimeout(() => window.ScrollTrigger?.refresh(), 60); }));
     document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") goToStep(state.player.stepIndex + 1); if (event.key === "ArrowLeft") goToStep(state.player.stepIndex - 1); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
-    document.addEventListener("visibilitychange", () => { if (document.hidden) pausePlayback(); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        pausePlayback();
+        if (ambientAudio && !ambientAudio.paused) {
+          state.ambient.resumeAfterVisibility = state.ambient.requested;
+          pauseAmbient(false);
+        }
+      } else if (state.ambient.resumeAfterVisibility && !dialog?.open && scoreLibraryAudio?.paused !== false) {
+        state.ambient.resumeAfterVisibility = false;
+        playAmbient();
+      }
+    });
   }
 
   function initDirectPlayer() {
     const params = new URLSearchParams(window.location.search); const sceneId = params.get("scene"); const reel = params.get("reel") === "1";
-    if (reel || (sceneId && sceneById.has(sceneId))) { setPageGate(false); sessionStorage.setItem("kk-entered-v8", "true"); window.setTimeout(() => openCinema(reel ? FILM_ORDER[0] : sceneId, reel ? "reel" : "single"), 120); }
+    if (reel || (sceneId && sceneById.has(sceneId))) { setPageGate(false); sessionStorage.setItem("kk-entered-v8", "true"); window.setTimeout(() => openCinema(reel ? FILM_ORDER[0] : sceneId, reel ? "reel" : "single"), 120); return true; }
+    return false;
   }
 
   function init() {
     if (!scenes.length) { console.error("Scene registry was not loaded."); return; }
-    if (sessionStorage.getItem("kk-entered-v8") === "true") setPageGate(false); else setPageGate(true);
-    refreshMotionUi(); renderFilmActs(); renderSceneLibrary(); bindEvents(); updateReadingProgress(); loadInlineStory(); setupPageMotion(); initDirectPlayer();
+    const gated = sessionStorage.getItem("kk-entered-v8") !== "true";
+    setPageGate(gated);
+    refreshMotionUi(); refreshAmbientUi(); renderFilmActs(); renderSceneLibrary(); bindEvents(); updateReadingProgress(); loadInlineStory(); setupPageMotion();
+    const directPlayer = initDirectPlayer();
+    if (!directPlayer) { if (gated) playGateIntro(); else playPageIntro(); }
   }
 
   init();

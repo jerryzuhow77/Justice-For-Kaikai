@@ -17,12 +17,17 @@
     "fallback": "css_jointed_silhouette"
   },
   "audio": [
+    { "path": "/media/chapter-00.m4a", "duration_seconds": 175.23, "autoplay": false, "role": "prologue_score" },
     { "path": "/media/chapter-01.m4a", "duration_seconds": 30.8, "autoplay": false },
     { "path": "/media/chapter-02.m4a", "duration_seconds": 30.8, "autoplay": false },
     { "path": "/media/chapter-03.m4a", "duration_seconds": 30.67, "autoplay": false },
     { "path": "/media/chapter-04.m4a", "duration_seconds": 27.33, "autoplay": false },
     { "path": "/media/chapter-05.m4a", "duration_seconds": 30.7, "autoplay": false },
-    { "path": "/media/chapter-06.m4a", "duration_seconds": 30.8, "autoplay": false }
+    { "path": "/media/chapter-06.m4a", "duration_seconds": 30.8, "autoplay": false },
+    { "path": "/media/chapter-07.m4a", "duration_seconds": 180.93, "autoplay": false, "role": "chapter_score" },
+    { "path": "/media/chapter-08.m4a", "duration_seconds": 145.43, "autoplay": false, "role": "chapter_score" },
+    { "path": "/media/chapter-09.m4a", "duration_seconds": 150.97, "autoplay": false, "role": "finale_score" },
+    { "path": "/media/site-background.m4a", "duration_seconds": 30.8, "autoplay": false, "loop": true, "role": "site_background" }
   ],
   "source_video": [
     "/media/1000025837.mp4", "/media/1000025838.mp4", "/media/1000025840.mp4",
