@@ -58,7 +58,7 @@
   }
 
   const core = document.createElement("script");
-  core.src = "assets/js/cinematic-revamp-core.js?v=20260823-layout7";
+  core.src = "assets/js/cinematic-revamp-core.js?v=20260823-gsap3";
   core.async = false;
   core.addEventListener("load", () => {
     updateMobileSafetyShortcut();

@@ -1,4 +1,4 @@
-@import url("./cinematic-revamp-core.css?v=20260823-layout7");
+@import url("./cinematic-revamp-core.css?v=20260823-gsap3");
 
 /* Keep all four opening lines visible, including compact mobile screens. */
 .gate-quatrain{display:grid!important;gap:.08em!important}.gate-quatrain span{display:block!important;opacity:1!important;visibility:visible!important}.entry-gate{overflow:auto!important}.gate-panel{min-height:min(100%,760px)}
