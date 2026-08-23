@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
+    "gsap": "3.13.0",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6"
@@ -40,5 +41,5 @@
     "wrangler": "4.92.0"
   },
   "type": "module",
-  "displayName": "\u5274\u5274\u6848\u7279\u5225\u5c08\u984c\uff5cJustice-For-Kaikai"
+  "displayName": "剴剴案特別專題｜Justice-For-Kaikai"
 }
