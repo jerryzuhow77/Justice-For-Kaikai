@@ -1,118 +1,77 @@
 # Justice-For-Kaikai｜剴剴案特別專題
 
-第一章〈沒有父母的孤兒〉可建置網站原始碼。正式專案連結：
+第一章〈沒有父母的孤兒〉公開互動長卷。
 
-https://github.com/jerryzuhow77/Justice-For-Kaikai
+## ⚠️ 發布來源｜Source of Truth
 
-公開長卷版本：V7.4.0
+**GitHub Pages 正式網站唯一以儲存庫根目錄的靜態版本為準。**
 
-製作母稿版本：V6.1.0
-案件資料與司法狀態核對至：2026-08-16  
-角色動畫規格更新：2026-08-18
+正式發布入口：
 
-## 本包已包含
+- `index.html` — GitHub Pages 首頁／互動長卷
+- `story.html`、`story-zh-hans.html`、`story-en.html`、`story-ja.html` — 四語文字版
+- `assets/` — 正式網站 CSS、JavaScript、GSAP、場景及圖片資產
 
-- 可直接公開瀏覽的GitHub Pages靜態長卷：`index.html`、`story.html`、`assets/`。
-- 主頁內嵌完整繁中網站文案，並提供獨立純文字閱讀模式；不提供MD下載入口。
-- 24場GSAP動畫：10場皮影、10場陰翳側視、4場電影式動畫，每場10個動作節拍。
-- 24場動畫依文案內容分布於序章、八篇正文與終章；章內卡片可直接開啟十拍播放器與逐字稿。
-- 網站採玄青、黛藍、天水碧、蟹青、月白、朱砂、胭脂、赭石、松花、鵝黃、烏金與宣紙色。
-- 十二枚閩南工藝圖章分散為全站大型半透明浮印、正文淡墨水印及章內動畫卡裝飾。
-- 男女皮影與男女守門人各12個透明姿勢，共48張表演素材；逐拍依文案動詞配對並避免同場重複。
-- 十張不同陰翳側視場景圖與四張不同電影主視覺；〈兩個朝代▪︎不同世界▪︎同一扇門〉中的幼童穿淺藍／深藍條紋上衣。
+正式網站：https://jerryzuhow77.github.io/Justice-For-Kaikai/
 
-- 繁體中文、簡體中文、英文、日文完整正文。
-- 唯一正式播放順序：序問 → 八篇篇章 → 結尾皮影戲 → 守護行動。
-- 幕開／幕謝、陰翳側視篇章轉場、互動對話卡與「青絲變白髮」視覺變化。
-- 製作母稿另保留外婆12個原創透明WebP姿勢與PNG母表；公開播放器角色使用上列48張皮影／守門人姿勢。
-- 完整角色表演、六種鏡位、前後景視差、對話同步、暫停／繼續與低動態備援。
-- 建議導覽、完整電影版、直接閱讀、減少動態四種模式。
-- 序問、第一至第八篇與終章共十首劇場配樂，另有一首全站背景音樂；新曲均由使用者提供MP4抽取為網頁版M4A。
-- 十張陰翳側視場景、四張電影主視覺、24場Scene Manifest、資產Manifest與來源清單。
-- V6.1.0製作母稿、完整動畫片化逐鏡規格、事實／證據架構、四語與資產規格、製作Scene Manifest。
-- 手機版、列印版、鍵盤操作、跳至正文、`prefers-reduced-motion`與無自動播放。
+### 編輯正式網站時
 
-## 目錄
+1. 首頁結構、第二章預告、導覽與靜態 HTML：修改根目錄 `index.html`。
+2. GSAP／ScrollTrigger 與正式互動：修改 `assets/js/`。
+3. 正式視覺與手機版樣式：修改 `assets/css/`。
+4. 四語文字版：修改根目錄 `story*.html` 及其實際引用內容。
+5. 修改後應直接檢查 GitHub Pages 公開網址，不以 `app/` 預覽結果判定發布成功。
+
+## 非 GitHub Pages 發布來源
+
+`app/`、`public/`、Vinext／React、Cloudflare Worker 相關檔案目前保留作為**製作母稿、實驗版與歷史建置來源**，不是 `jerryzuhow77.github.io/Justice-For-Kaikai/` 的直接發布來源。
+
+**禁止只修改 `app/` 後宣稱 GitHub Pages 已更新。** 若未來重新啟用 React/Vinext 作為正式建置流程，必須先建立明確的 build → Pages deploy workflow，並同步修改本 README 的 Source of Truth。
+
+## 目前公開版重點
+
+- 第一章：〈沒有父母的孤兒〉。
+- 開場四句：**花有重開日，人無再少年。應須惜兒孫，安樂是天倫。**
+- 第二章預告：〈沒人要的孩子〉／**孩子被選擇的人生**。
+- 第二章預告採孩子視角：大人一次次做決定，而孩子承受每一次決定的結果。
+- 正式靜態版已使用 GSAP + ScrollTrigger；相關腳本由 `assets/vendor/gsap/` 與 `assets/js/` 載入。
+- 主頁包含四幕電影長卷、隨文劇場、完整正文、來源分層與守護行動。
+- 支援手機版、鍵盤操作、`prefers-reduced-motion` 與低動態模式。
+
+## 維護規則
+
+- 修改前先確認目標是「GitHub Pages 正式版」還是「React/Vinext 製作母稿」。
+- GitHub Pages 正式版修改一律以根目錄 `index.html` + `assets/` 為主。
+- 不刪除 `app/`，避免遺失既有 React/Vinext 製作成果；但不得讓它與正式版的發布責任混淆。
+- 若同一功能同時存在於靜態版與 React 版，**正式網站行為以靜態版為準**。
+- 重要視覺修改後，同時檢查桌機與手機版。
+- 動畫必須保留減少動態備援，不以動畫作為取得核心資訊的唯一方式。
+- 文學／藝術重構、家屬說法、機構說明、媒體報導與法院認定維持來源分層，不互相冒充。
+
+## 目錄角色
 
 ```text
-app/                    React/Vinext頁面、四語UI、Markdown轉譯、動畫與CSS
-public/content/         四語完整公開文案與結語
-public/media/           圖片、36張角色姿勢、三張姿勢表、六首原創音樂與M4A網頁版
-public/data/            Scene、資產與來源JSON
-public/docs/            V6.1.0製作母稿、動畫片化逐鏡規格與查證文件
-.github/workflows/      CI與選用的Cloudflare部署流程
-scripts/                可重現建置與產物驗證
-tests/                  Worker輸出測試
+index.html              GitHub Pages 正式首頁【正式】
+story*.html             GitHub Pages 四語文字版【正式】
+assets/                  GitHub Pages CSS / JS / GSAP / images【正式】
+app/                     React/Vinext 製作母稿【非 Pages 直接來源】
+public/                  React/Vinext 內容與資產來源【非 Pages 直接來源】
+.github/workflows/       CI／離線建置／驗證流程
+scripts/                 建置與驗證工具
+tests/                   測試
+Justice-For-Kaikai/      歷史／封裝副本；勿作為 Pages 日常編輯入口
 ```
 
-## 本機預覽
+## 提交前檢查
 
-需求：Node.js 22.13以上、npm。
-
-```bash
-npm ci
-npm run dev
-```
-
-瀏覽終端顯示的本機網址。第一次開啟不會自動播放音訊；音樂必須由讀者按下播放。
-
-## 正式建置與驗證
-
-```bash
-npm ci
-npm run lint
-npm run build
-npm run validate:artifact
-```
-
-正式產物會出現在`dist/`：
-
-- `dist/server/index.js`：Cloudflare Worker入口。
-- `dist/client/`：網站靜態資產。
-- `dist/.openai/hosting.json`：建置後網站Manifest。
-
-## 上傳到GitHub
-
-1. 在GitHub建立或開啟`jerryzuhow77/Justice-For-Kaikai`。
-2. 解壓縮本包，把`Justice-For-Kaikai/`資料夾內所有檔案放到儲存庫根目錄。
-3. 不要上傳`node_modules/`、`dist/`、`.wrangler/`或`.env*`。
-4. 提交後，`.github/workflows/ci.yml`會執行Lint與正式建置檢查。
-
-若使用命令列：
-
-```bash
-git init
-git add .
-git commit -m "feat: publish Justice-For-Kaikai V6.1.0"
-git branch -M main
-git remote add origin https://github.com/jerryzuhow77/Justice-For-Kaikai.git
-git push -u origin main
-```
-
-## 部署
-
-專案以Vinext輸出Cloudflare Worker。`wrangler.jsonc`已綁定`dist/client`靜態資產；在Cloudflare建立API Token後，可手動執行：
-
-```bash
-npm run build
-npx wrangler deploy
-```
-
-也可在GitHub Actions設定`CLOUDFLARE_API_TOKEN`與`CLOUDFLARE_ACCOUNT_ID`兩個Repository Secrets，再手動啟動`Deploy to Cloudflare`工作流程。
-
-> GitHub儲存庫網址是本專題的專案連結，不等同正式公開網域。正式網域確定後，請另外補上canonical與Open Graph完整URL。
-
-## 編輯規則
-
-- 公開正文只改`public/content/`；不要在動畫元件另存第二份正文。
-- 篇章順序、秒碼、資產與狀態改動同步更新`public/data/scene-manifest.json`。
-- 案件事實、司法狀態或數據改動前，先依`public/docs/evidence-architecture.md`更新Claim Ledger與來源狀態。
-- 急診段永久標示「未具名讀者來函／情境重構」；外婆段永久標示「公開說法／間接引述／本專題整理」。
-- 民間傳說、文學對白、家屬說法、機構說明、媒體報導與法院認定不得混成同一來源層。
-- 新增圖片或音樂前，先完成`public/docs/ASSET-RIGHTS.md`的權利確認。
+- [ ] 修改的是正確發布來源。
+- [ ] `index.html` 保留開場四句詩。
+- [ ] 第二章預告仍為「孩子被選擇的人生」。
+- [ ] GSAP 載入失敗時，核心文字仍可閱讀。
+- [ ] 手機 320–430px 不裁切四句詩與主要按鈕。
+- [ ] `prefers-reduced-motion` 可正常使用。
+- [ ] 正式公開網址實際顯示本次修改。
 
 ## 重要安全資訊
 
-若你此刻看見現實中的孩子正處於危險：立即暴力或需要警察到場請撥110；緊急傷病請撥119；疑似兒少虐待、疏忽或不當照顧，可撥113保護專線。
-
-官方說明：https://www.mohw.gov.tw/cp-2704-46193-1.html
+若現實中的孩子正處於危險：立即暴力或需要警察到場請撥 110；緊急傷病請撥 119；疑似兒少虐待、疏忽或不當照顧，可撥 113 保護專線。
