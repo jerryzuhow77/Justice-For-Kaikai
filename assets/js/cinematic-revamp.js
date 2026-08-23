@@ -34,6 +34,12 @@
           <strong>對孩子而言——那就是他的人生。</strong>
         </blockquote>
         <p class="chapter-two-note">第二章不先從制度究責開始。我們把鏡頭降到孩子的高度，看大人如何一次次替他選擇，而一個還不能替自己決定的孩子，如何生活在那些選擇之中。</p>
+        <nav class="chapter-actions" aria-label="第二章預告導覽">
+          <a href="https://jerryzuhow77.github.io/child-advocacy-site/">回到護童行動聯盟</a>
+          <a href="#reading-map">回到閱讀地圖</a>
+          <a href="story.html#source-index">查看全部來源</a>
+          <span aria-disabled="true">第二章製作中</span>
+        </nav>
       </div>`;
   }
 
