@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { GsapEnhancements } from "./gsap-enhancements";
 
 export const metadata: Metadata = {
   title: "剴剴案特別專題｜沒有父母的孤兒",
@@ -27,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-Hant">
-      <body>{children}</body>
+      <body>
+        {children}
+        <GsapEnhancements />
+      </body>
     </html>
   );
 }
