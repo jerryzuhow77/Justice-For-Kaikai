@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260823-prologue-v3";
+  const version="20260823-prologue-refined-v2";
   const load=(src,onload,onerror)=>{
     const script=document.createElement("script");
     script.src=src;
@@ -9,15 +9,18 @@
     script.onerror=onerror;
     document.head.append(script);
   };
+  const preload=document.createElement("link");
+  preload.rel="preload";
+  preload.as="image";
+  preload.href=`assets/img/prologue/chair-maiden-concept.webp?v=${version}`;
+  preload.fetchPriority="high";
+  document.head.append(preload);
   const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${version}`,null,()=>{});
-  const start=()=>{
+  load(`assets/js/chair-prologue-refined.js?v=${version}`,()=>{
     try{
-      if(typeof window.initChairPrologueV2==="function") window.initChairPrologueV2();
+      if(typeof window.initChairPrologueRefined==="function")window.initChairPrologueRefined();
     }finally{
       bootLegacy();
     }
-  };
-  load(`assets/js/chair-prologue-v2.js?v=${version}`,()=>{
-    load(`assets/js/chair-prologue-concept.js?v=${version}`,start,start);
   },bootLegacy);
 })();
