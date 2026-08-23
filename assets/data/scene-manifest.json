@@ -1,5 +1,5 @@
 {
-  "version": "7.4.0",
+  "version": "8.0.0",
   "generated_at": "2026-08-23T00:00:00+08:00",
   "canonical_repository": "https://github.com/jerryzuhow77/Justice-For-Kaikai",
   "counts": {
@@ -7,6 +7,39 @@
     "shadow": 10,
     "side": 10,
     "film": 4
+  },
+  "film_productions": {
+    "contract": "four independent films, five GSAP acts each, HTML captions, manual reduced-motion navigation, no score looping or time stretching",
+    "FM-A": {
+      "title": "土掩埋不住的清朝民間傳說",
+      "duration_seconds": 155,
+      "act_starts": [0, 36, 85, 96, 129],
+      "score": "public/media/film-stamped-in-marble.m4a",
+      "score_duration_seconds": 153.167
+    },
+    "FM-D": {
+      "title": "無法再相見▪︎天涯各自分",
+      "duration_seconds": 144,
+      "act_starts": [0, 24, 52, 82, 116],
+      "score": "public/media/film-late-question.m4a",
+      "score_duration_seconds": 141.433
+    },
+    "FM-B": {
+      "title": "青絲變白髮",
+      "duration_seconds": 73,
+      "act_starts": [0, 14, 36, 49, 65],
+      "score": "public/media/film-one-year-old.m4a",
+      "score_duration_seconds": 68.733,
+      "score_transport_pause": [59, 62]
+    },
+    "FM-C": {
+      "title": "兩個朝代▪︎不同世界▪︎同一扇門",
+      "duration_seconds": 195,
+      "act_starts": [0, 28, 75, 120, 170],
+      "score": "public/media/film-who-opens-door.m4a",
+      "score_duration_seconds": 177.533,
+      "split_world": "50/50 baseline; 56/44 speaker emphasis; never vertically stacked on mobile"
+    }
   },
   "inline_distribution": {
     "opening_and_prologue": ["FM-A", "SP00", "DV00"],
@@ -47,8 +80,8 @@
     "DV07",
     "FM-D",
     "SP08",
-    "FM-B",
     "DV08",
+    "FM-B",
     "SP09",
     "DV09",
     "FM-C"

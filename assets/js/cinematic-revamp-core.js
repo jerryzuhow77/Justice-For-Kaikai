@@ -7,12 +7,17 @@
   const scenes = (window.KAIKAI_SCENES || []).slice();
   const order = (window.KAIKAI_SCENE_ORDER || scenes.map((scene) => scene.id)).slice();
   const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
+  const filmProductions = window.KAIKAI_FILM_PRODUCTIONS || {};
   const hasGSAP = Boolean(window.gsap);
   const FILM_ORDER = ["FM-A", "FM-D", "FM-B", "FM-C"];
   const TYPE_LABELS = { film: "主線電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
-  const ACT_LABELS = { "FM-A": "第一幕", "FM-D": "第二幕", "FM-B": "第三幕", "FM-C": "第四幕" };
+  const ACT_LABELS = { "FM-A": "第一部", "FM-D": "第二部", "FM-B": "第三部", "FM-C": "第四部" };
   const FILM_POSITIONS = { "FM-A": "22% 50%", "FM-D": "36% 50%", "FM-B": "70% 50%", "FM-C": "50% 50%" };
   const SCORE_TRACKS = {
+    "FM-A": { src: "public/media/film-stamped-in-marble.m4a", label: "Stamped in Marble｜土掩埋不住的清朝民間傳說" },
+    "FM-D": { src: "public/media/film-late-question.m4a", label: "來不及的追問｜無法再相見▪︎天涯各自分" },
+    "FM-B": { src: "public/media/film-one-year-old.m4a", label: "他才一歲多｜青絲變白髮" },
+    "FM-C": { src: "public/media/film-who-opens-door.m4a", label: "誰肯先開門｜兩個朝代▪︎不同世界▪︎同一扇門" },
     "00": { src: "public/media/chapter-00.m4a", label: "序問｜石階雨滴" },
     ...Object.fromEntries(Array.from({ length: 6 }, (_, index) => {
       const chapter = String(index + 1).padStart(2, "0");
@@ -157,6 +162,8 @@
       playing: false,
       currentScene: null,
       currentBackdrop: 0,
+      audioPlayPending: false,
+      resumeAfterVisibility: false,
       returnFocus: null,
       returnUrl: null,
       shareTimer: null
@@ -186,6 +193,20 @@
   const thread = $("#cinema-thread");
   const papers = $("#cinema-papers");
   const stageProp = $("#cinema-prop");
+  const filmProduction = $("#film-production");
+  const filmWorldQing = $(".film-world-qing", filmProduction);
+  const filmWorldModern = $(".film-world-modern", filmProduction);
+  const filmCurtain = $(".film-curtain", filmProduction);
+  const filmSeam = $(".film-seam", filmProduction);
+  const filmInfoItems = $$("i", $(".film-info-items", filmProduction));
+  const filmDoorItems = $$("i", $(".film-door-grid", filmProduction));
+  const filmHairItems = $$("i", $(".film-hair", filmProduction));
+  const filmLinePath = $(".film-line path", filmProduction);
+  const filmStamp = $(".film-stamp", filmProduction);
+  const filmKeywordItems = $$("i", $(".film-keywords", filmProduction));
+  const filmFlashItems = $$("i", $(".film-local-flash", filmProduction));
+  const filmSourceTag = $(".film-source-tag", filmProduction);
+  const filmActSlate = $(".film-act-slate", filmProduction);
   const actorFemale = $("#cinema-actor-female");
   const actorMale = $("#cinema-actor-male");
   const actorFemaleImage = $("img", actorFemale);
@@ -464,7 +485,12 @@
     });
   }
 
+  function productionFor(scene) {
+    return scene?.production || filmProductions[scene?.id] || null;
+  }
+
   function createFilmActCard(scene, index) {
+    const production = productionFor(scene);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "film-act-card";
@@ -476,7 +502,7 @@
     const copy = document.createElement("div");
     const small = document.createElement("small"); small.textContent = ACT_LABELS[scene.id];
     const heading = document.createElement("h3"); heading.textContent = scene.title;
-    const paragraph = document.createElement("p"); paragraph.textContent = scene.subtitle;
+    const paragraph = document.createElement("p"); paragraph.textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}｜${production.score.label.split("｜")[0]}` : scene.subtitle;
     copy.append(small, heading, paragraph); button.append(badge, copy);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
     return button;
@@ -496,9 +522,11 @@
     const hint = document.createElement("small"); hint.textContent = "上下展開／收合";
     summary.append(title, hint);
     const lines = document.createElement("div"); lines.className = "library-transcript-lines";
-    scene.dialogue.forEach((line) => {
+    const production = productionFor(scene);
+    const transcriptLines = production?.cues || scene.dialogue;
+    transcriptLines.forEach((line) => {
       const paragraph = document.createElement("p");
-      const speaker = document.createElement("b"); speaker.textContent = line.speaker;
+      const speaker = document.createElement("b"); speaker.textContent = Number.isFinite(line.time) ? `${formatTime(line.time)} · ${line.speaker}` : line.speaker;
       const copy = document.createElement("span"); copy.textContent = line.text;
       paragraph.append(speaker, copy); lines.append(paragraph);
     });
@@ -531,11 +559,12 @@
     const meta = document.createElement("span"); meta.className = "scene-card-meta";
     const small = document.createElement("small"); small.textContent = `${String(position + 1).padStart(2, "0")} / 24 · ${scene.id} · ${TYPE_LABELS[scene.type]}`;
     const heading = document.createElement("h3"); heading.textContent = scene.title;
-    const paragraph = document.createElement("p"); paragraph.textContent = scene.subtitle;
+    const production = productionFor(scene);
+    const paragraph = document.createElement("p"); paragraph.textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}｜${production.score.label.split("｜")[0]}` : scene.subtitle;
     meta.append(small, heading, paragraph); button.append(poster, play, meta);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
     item.append(button);
-    if (scene.type === "shadow" || scene.type === "side") item.append(createLibraryTranscript(scene));
+    item.append(createLibraryTranscript(scene));
     return item;
   }
 
@@ -564,7 +593,7 @@
     meta.append(small, strong, description); button.append(poster, meta);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
     item.append(button);
-    if (scene.type === "shadow" || scene.type === "side") item.append(createLibraryTranscript(scene));
+    item.append(createLibraryTranscript(scene));
     return item;
   }
 
@@ -627,16 +656,47 @@
     }
   }
 
-  function totalSteps(scene) { return Math.max(10, scene.dialogue.length); }
+  function totalSteps(scene) { return productionFor(scene)?.cues.length || Math.max(10, scene.dialogue.length); }
   function actionIndexFor(scene, localStep) { return Math.min(9, Math.floor((localStep / totalSteps(scene)) * 10)); }
   function dialogueIndexFor(scene, localStep) { return Math.min(scene.dialogue.length - 1, Math.floor((localStep / totalSteps(scene)) * scene.dialogue.length)); }
   function stepDuration(scene, localStep) { const line = scene.dialogue[dialogueIndexFor(scene, localStep)]; return clamp(2.9 + String(line?.text || "").length * .025, 3.6, 6.5); }
 
   function createStepMeta(sequence) {
     const result = [];
+    let sceneStart = 0;
     sequence.forEach((scene, sequenceIndex) => {
+      const production = productionFor(scene);
+      if (production) {
+        production.cues.forEach((item, cueIndex) => {
+          const next = production.cues[cueIndex + 1];
+          const actInfo = production.acts[item.act];
+          result.push({
+            scene,
+            sequenceIndex,
+            localStep: cueIndex,
+            actionIndex: item.act,
+            dialogueIndex: cueIndex,
+            duration: Math.max(.1, (next?.time ?? production.duration) - item.time),
+            isSceneStart: cueIndex === 0,
+            isSceneEnd: cueIndex === production.cues.length - 1,
+            isActStart: Math.abs(item.time - actInfo.start) < .001,
+            sceneStart,
+            localStart: item.time,
+            cue: item,
+            line: item
+          });
+        });
+        sceneStart += production.duration;
+        return;
+      }
       const total = totalSteps(scene);
-      for (let localStep = 0; localStep < total; localStep += 1) result.push({ scene, sequenceIndex, localStep, actionIndex: actionIndexFor(scene, localStep), dialogueIndex: dialogueIndexFor(scene, localStep), duration: stepDuration(scene, localStep), isSceneStart: localStep === 0, isSceneEnd: localStep === total - 1 });
+      let localStart = 0;
+      for (let localStep = 0; localStep < total; localStep += 1) {
+        const duration = stepDuration(scene, localStep);
+        result.push({ scene, sequenceIndex, localStep, actionIndex: actionIndexFor(scene, localStep), dialogueIndex: dialogueIndexFor(scene, localStep), duration, isSceneStart: localStep === 0, isSceneEnd: localStep === total - 1, sceneStart, localStart });
+        localStart += duration;
+      }
+      sceneStart += localStart;
     });
     return result;
   }
@@ -656,9 +716,11 @@
 
   function applyScene(scene, immediate = false) {
     const changed = state.player.currentScene?.id !== scene.id;
-    state.player.currentScene = scene; stage.dataset.type = scene.type; stage.dataset.scene = scene.id;
-    $("#cinema-type").textContent = state.player.mode === "reel" ? `四幕連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${scene.id}`;
-    $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = scene.subtitle; $("#cinema-source").textContent = scene.source; stageProp.textContent = scene.prop || scene.motif || "";
+    const production = productionFor(scene);
+    state.player.currentScene = scene; stage.dataset.type = scene.type; stage.dataset.scene = scene.id; stage.dataset.production = String(Boolean(production));
+    if (filmProduction) filmProduction.hidden = !production;
+    $("#cinema-type").textContent = state.player.mode === "reel" ? `四部連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${scene.id}`;
+    $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}` : scene.subtitle; $("#cinema-source").textContent = production?.ethics || scene.source; stageProp.textContent = scene.prop || scene.motif || "";
     if (changed) { setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); }
   }
 
@@ -671,6 +733,8 @@
   }
 
   function scoreForScene(scene) {
+    const production = productionFor(scene);
+    if (production?.score) return production.score;
     if (!scene || (scene.type !== "shadow" && scene.type !== "side")) return null;
     return SCORE_TRACKS[scoreKeyForScene(scene)] || null;
   }
@@ -756,10 +820,61 @@
     }
   }
 
+  function scorePauseDurationBefore(score, localTime) {
+    return (score?.silentWindows || []).reduce((total, windowInfo) => total + (windowInfo.transport === "pause" && localTime >= windowInfo.end ? windowInfo.end - windowInfo.start : 0), 0);
+  }
+
+  function scoreEndOnFilmTime(score) {
+    const transportPauses = (score?.silentWindows || []).reduce((total, windowInfo) => total + (windowInfo.transport === "pause" ? windowInfo.end - windowInfo.start : 0), 0);
+    return (score?.duration || 0) + transportPauses;
+  }
+
+  function audioStateAt(scene, localTime) {
+    const score = scoreForScene(scene);
+    if (!score) return { score: null, audioTime: 0, shouldPlay: false, volume: 0 };
+    const production = productionFor(scene);
+    if (!production) return { score, audioTime: Math.max(0, localTime), shouldPlay: true, volume: .48 };
+    const silentWindow = (score.silentWindows || []).find((windowInfo) => localTime >= windowInfo.start && localTime < windowInfo.end);
+    const audioTime = Math.max(0, silentWindow?.transport === "pause" ? silentWindow.start - scorePauseDurationBefore(score, silentWindow.start) : localTime - scorePauseDurationBefore(score, localTime));
+    const scoreEnd = scoreEndOnFilmTime(score);
+    const cueInfo = state.player.stepMeta[state.player.stepIndex]?.cue;
+    const duckDb = cueInfo?.duckDb ?? score.defaultDuckDb ?? 6;
+    let volume = (score.baseVolume ?? .58) * Math.pow(10, -duckDb / 20);
+    if (score.fadeIn && localTime < score.fadeIn) volume *= clamp(localTime / score.fadeIn, 0, 1);
+    if (score.fadeOutAt != null && localTime > score.fadeOutAt) volume *= clamp((scoreEnd - localTime) / Math.max(.1, scoreEnd - score.fadeOutAt), 0, 1);
+    if (silentWindow) volume = 0;
+    return { score, audioTime: Math.min(audioTime, score.duration), shouldPlay: localTime < scoreEnd && silentWindow?.transport !== "pause", volume: clamp(volume, 0, 1) };
+  }
+
+  function currentSceneLocalTime() {
+    const meta = state.player.stepMeta[state.player.stepIndex];
+    if (!meta) return 0;
+    if (!state.player.timeline) return meta.localStart || 0;
+    return clamp(state.player.timeline.time() - meta.sceneStart, 0, productionFor(meta.scene)?.duration || Number.POSITIVE_INFINITY);
+  }
+
+  function syncSceneAudioToTimeline(forceSeek = false) {
+    if (!cinemaAudio || !state.player.currentScene) return;
+    const audioState = audioStateAt(state.player.currentScene, currentSceneLocalTime());
+    if (!audioState.score || !cinemaAudio.src) return;
+    if (forceSeek || Math.abs(cinemaAudio.currentTime - audioState.audioTime) > .28) {
+      try { cinemaAudio.currentTime = audioState.audioTime; } catch { /* metadata is not ready yet */ }
+    }
+    cinemaAudio.volume = audioState.volume;
+    const shouldPlay = state.player.playing && state.musicEnabled && audioState.shouldPlay;
+    if (!shouldPlay) {
+      cinemaAudio.pause();
+      return;
+    }
+    if (cinemaAudio.paused && !state.player.audioPlayPending) {
+      state.player.audioPlayPending = true;
+      cinemaAudio.play().catch(() => {}).finally(() => { state.player.audioPlayPending = false; });
+    }
+  }
+
   function playSceneAudio() {
     if (!cinemaAudio || !state.musicEnabled || !scoreForScene(state.player.currentScene)) return;
-    cinemaAudio.volume = .48;
-    cinemaAudio.play().catch(() => {});
+    syncSceneAudioToTimeline(true);
   }
 
   function syncSceneAudio(scene) {
@@ -768,7 +883,7 @@
     updateMusicUi(track);
     if (!track) { cinemaAudio.pause(); cinemaAudio.removeAttribute("src"); cinemaAudio.load(); return; }
     const nextSrc = new URL(track.src, window.location.href).href;
-    if (cinemaAudio.src !== nextSrc) { cinemaAudio.src = track.src; cinemaAudio.load(); }
+    if (cinemaAudio.src !== nextSrc) { cinemaAudio.pause(); cinemaAudio.src = track.src; cinemaAudio.loop = false; cinemaAudio.load(); }
     if (state.player.playing) playSceneAudio();
   }
 
@@ -783,6 +898,193 @@
     const base = FILM_DIRECTIONS[scene.id]?.shots[actionIndex] || { scale: 1.08, x: 0, y: 0, light: 0, thread: (actionIndex + 1) / 10, fx: "mist" };
     if (!window.matchMedia("(max-width: 760px)").matches) return base;
     return { ...base, scale: 1 + (base.scale - 1) * .56, x: base.x * .35, y: base.y * .45, light: base.light * .55 };
+  }
+
+  const CHINESE_ACT_NUMBERS = ["一", "二", "三", "四", "五"];
+
+  function productionView(actInfo) {
+    const compact = window.matchMedia("(max-width: 760px)").matches;
+    return compact ? actInfo.view.mobile : actInfo.view.desktop;
+  }
+
+  function productionSplitForCue(item) {
+    if (item?.side === "qing") return "56%";
+    if (item?.side === "modern") return "44%";
+    return "50%";
+  }
+
+  function setProductionState(meta) {
+    const production = productionFor(meta.scene);
+    if (!production || !filmProduction) return;
+    const actInfo = production.acts[meta.actionIndex];
+    filmProduction.dataset.film = meta.scene.id;
+    filmProduction.dataset.effect = actInfo.effect;
+    const slateSmall = $("small", filmActSlate);
+    const slateStrong = $("strong", filmActSlate);
+    if (slateSmall) slateSmall.textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 · ${formatTime(actInfo.start)}–${formatTime(actInfo.end)}`;
+    if (slateStrong) slateStrong.textContent = actInfo.title;
+    if (filmSourceTag) filmSourceTag.textContent = meta.cue?.speaker || production.ethics;
+    if (meta.cue?.keyword) {
+      const keywordIndex = production.cues.filter((item) => item.keyword && item.time <= meta.cue.time).length - 1;
+      const keyword = filmKeywordItems[keywordIndex];
+      if (keyword) keyword.textContent = meta.cue.keyword;
+    }
+  }
+
+  function resetProductionLayers(timeline, at) {
+    const hiddenLayers = [filmCurtain, filmStamp, filmSourceTag, ...filmInfoItems, ...filmDoorItems, ...filmKeywordItems, ...filmFlashItems];
+    timeline.set(hiddenLayers, { autoAlpha: 0, x: 0, y: 0, rotation: 0, scale: 1, clearProps: "clipPath,backgroundColor,filter" }, at);
+    timeline.set(filmHairItems, { autoAlpha: 0, yPercent: 0, rotation: 0, backgroundColor: "#262724" }, at);
+    timeline.set(filmLinePath, { autoAlpha: 0, strokeDasharray: 1000, strokeDashoffset: 1000 }, at);
+    timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 0 }, at);
+    timeline.set(door, { autoAlpha: 0 }, at);
+    timeline.set([$("i", door), $("b", door)], { xPercent: 0 }, at);
+  }
+
+  function addProductionAct(timeline, meta, at) {
+    const production = productionFor(meta.scene);
+    const actInfo = production.acts[meta.actionIndex];
+    const duration = actInfo.end - actInfo.start;
+    const view = productionView(actInfo);
+    const travel = Math.min(2.2, duration * .16);
+    const backgroundDuration = actInfo.effect === "white-hair" ? 9.5 : duration;
+    timeline.call(() => setProductionState(meta), null, at);
+    resetProductionLayers(timeline, at);
+    timeline.set([bgA, bgB], { clearProps: "filter" }, at);
+    timeline.set([bgA, bgB, depthFar, depthMid, depthNear], { backgroundPosition: view.position, backgroundSize: view.size }, at);
+    timeline.fromTo([bgA, bgB], { scale: 1.018 }, { scale: 1.055, duration: backgroundDuration, ease: "none" }, at);
+    timeline.fromTo(depthFar, { xPercent: -1.2, scale: 1.02 }, { xPercent: 1.2, scale: 1.06, duration: backgroundDuration, ease: "none" }, at);
+    timeline.fromTo(depthMid, { xPercent: .8, scale: 1.03 }, { xPercent: -1.1, scale: 1.075, duration: backgroundDuration, ease: "sine.inOut" }, at);
+    timeline.fromTo(depthNear, { xPercent: 1.4, scale: 1.05 }, { xPercent: -1.8, scale: 1.1, duration: backgroundDuration, ease: "sine.inOut" }, at);
+    timeline.fromTo(filmActSlate, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .55, ease: "power2.out" }, at + .08);
+    timeline.to(filmActSlate, { autoAlpha: 0, duration: .65 }, at + Math.min(4.5, duration * .28));
+
+    const lineDraw = (startOffset = .4, drawDuration = Math.min(8, duration * .6), end = 0) => {
+      timeline.set(filmLinePath, { autoAlpha: .82 }, at + startOffset);
+      timeline.to(filmLinePath, { strokeDashoffset: end, duration: drawDuration, ease: "power1.inOut" }, at + startOffset);
+    };
+    const doorLeft = $("i", door);
+    const doorRight = $("b", door);
+
+    switch (actInfo.effect) {
+      case "mud-thread":
+      case "bundle":
+        lineDraw(.5, duration * .78, actInfo.effect === "bundle" ? 230 : 0);
+        timeline.fromTo(mist, { autoAlpha: .08, xPercent: -5 }, { autoAlpha: .38, xPercent: 4, duration, ease: "sine.inOut" }, at);
+        break;
+      case "night-door":
+        timeline.set(door, { autoAlpha: .68 }, at + 1.2);
+        timeline.to(doorLeft, { xPercent: -82, duration: duration * .56, ease: "power1.inOut" }, at + 2);
+        timeline.to(doorRight, { xPercent: 82, duration: duration * .56, ease: "power1.inOut" }, at + 2);
+        timeline.fromTo(filmCurtain, { autoAlpha: 0, scaleY: .82, skewX: -2 }, { autoAlpha: .72, scaleY: 1.06, skewX: 2, duration: duration * .44, ease: "sine.inOut" }, at + duration * .42);
+        break;
+      case "match-cut":
+        timeline.fromTo(filmCurtain, { autoAlpha: .86, clipPath: "inset(0 48% 0 48%)" }, { autoAlpha: .1, clipPath: "inset(0 0% 0 0%)", duration: Math.min(2.2, duration * .3), ease: "power2.inOut" }, at);
+        timeline.to([bgA, bgB], { filter: "saturate(.62) contrast(1.04) brightness(.8)", duration: duration * .72, ease: "sine.inOut" }, at + .4);
+        timeline.set(door, { autoAlpha: .4 }, at + duration * .48);
+        timeline.to(doorLeft, { xPercent: -96, duration: 2.2, ease: "power2.inOut" }, at + duration * .55);
+        timeline.to(doorRight, { xPercent: 96, duration: 2.2, ease: "power2.inOut" }, at + duration * .55);
+        break;
+      case "verdict":
+        lineDraw(1.2, duration * .7, 0);
+        timeline.fromTo(filmStamp, { autoAlpha: 0, y: -18, scale: 1.18, rotation: -7 }, { autoAlpha: .86, y: 0, scale: 1, rotation: -3, duration: .34, ease: "back.out(1.7)" }, at + duration * .28);
+        timeline.to(focusLight, { xPercent: 28, autoAlpha: .34, duration: travel, ease: "sine.inOut" }, at);
+        break;
+      case "safe-flash":
+        filmFlashItems.forEach((flash, index) => {
+          const first = at + 4 + index * 1.28;
+          timeline.fromTo(flash, { autoAlpha: 0 }, { autoAlpha: .16, duration: .08, repeat: 1, yoyo: true, ease: "none" }, first);
+          timeline.fromTo(flash, { autoAlpha: 0 }, { autoAlpha: .13, duration: .08, repeat: 1, yoyo: true, ease: "none" }, first + 5.2);
+        });
+        break;
+      case "phone-door":
+        timeline.set(door, { autoAlpha: .46 }, at + 1);
+        timeline.to([doorLeft, doorRight], { xPercent: (index, target) => target === doorLeft ? -5 : 5, duration: 2.4, ease: "sine.inOut" }, at + duration * .42);
+        timeline.to([doorLeft, doorRight], { xPercent: 0, duration: 1.5, ease: "sine.inOut" }, at + duration * .68);
+        timeline.fromTo(focusLight, { xPercent: -18, autoAlpha: .12 }, { xPercent: 24, autoAlpha: .3, duration, ease: "sine.inOut" }, at);
+        break;
+      case "trust-corridor":
+        timeline.fromTo(filmSourceTag, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .55 }, at + duration * .34);
+        lineDraw(.6, duration * .74, 170);
+        break;
+      case "six-doors":
+        timeline.fromTo(filmDoorItems, { autoAlpha: 0, y: 16, rotationY: -12 }, { autoAlpha: .9, y: 0, rotationY: 0, duration: .7, stagger: 1.2, ease: "power2.out" }, at + .8);
+        lineDraw(1.1, 8.1, 145);
+        timeline.to(filmDoorItems[5], { autoAlpha: .48, filter: "brightness(.72)", duration: .45 }, at + 8.9);
+        break;
+      case "testimony":
+        timeline.fromTo(filmSourceTag, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .5 }, at + .4);
+        timeline.fromTo(focusLight, { xPercent: -24, autoAlpha: .1 }, { xPercent: 14, autoAlpha: .28, duration: 5, ease: "sine.inOut" }, at);
+        lineDraw(3.2, duration * .64, 115);
+        break;
+      case "qing-hair":
+        timeline.fromTo(filmHairItems, { autoAlpha: 0, yPercent: -6, backgroundColor: "#161816" }, { autoAlpha: .74, yPercent: 4, duration: 2.4, stagger: .12, ease: "sine.inOut" }, at + .5);
+        break;
+      case "medical-curtain":
+        timeline.fromTo(filmCurtain, { autoAlpha: .1, scaleX: .72 }, { autoAlpha: .62, scaleX: 1.08, duration: 4.6, ease: "sine.inOut" }, at);
+        timeline.fromTo(rain, { autoAlpha: 0, yPercent: -7 }, { autoAlpha: .19, yPercent: 7, duration, ease: "none" }, at);
+        break;
+      case "dossier":
+        timeline.fromTo(filmCurtain, { autoAlpha: .65, clipPath: "inset(0 0 0 0)" }, { autoAlpha: .08, clipPath: "inset(0 45% 0 45%)", duration: 3.2, ease: "power2.inOut" }, at);
+        timeline.fromTo(papers, { autoAlpha: 0 }, { autoAlpha: .46, duration: 1.4 }, at + 2.2);
+        break;
+      case "white-hair":
+        timeline.fromTo(filmHairItems, { autoAlpha: .78, backgroundColor: "#20211f" }, { autoAlpha: .9, backgroundColor: "#d8d8d2", duration: 5.4, stagger: .28, ease: "none" }, at);
+        timeline.to([atmosphere, mist, rain], { autoAlpha: .06, duration: .25 }, at + 10);
+        timeline.to([atmosphere, mist, rain], { autoAlpha: .2, duration: .4 }, at + 13);
+        timeline.to([bgA, bgB, depthFar, depthMid, depthNear], { scale: "+=.012", duration: 3, ease: "sine.inOut" }, at + 13);
+        break;
+      case "empty-court":
+        timeline.to([atmosphere, focusLight, thread], { autoAlpha: .05, duration: duration * .72, ease: "sine.out" }, at);
+        break;
+      case "split-shadow":
+        timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        lineDraw(1.6, duration * .64, 430);
+        break;
+      case "information":
+        timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.fromTo(filmInfoItems, { autoAlpha: 0, y: 18, rotation: -4 }, { autoAlpha: .76, y: 0, rotation: 0, duration: .65, stagger: 1, ease: "power2.out" }, at + .8);
+        timeline.to(filmInfoItems, { autoAlpha: .32, y: -8, duration: duration * .55, stagger: .18, ease: "sine.inOut" }, at + 7);
+        break;
+      case "silence-clothes":
+        timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.fromTo(filmDoorItems, { autoAlpha: 0, filter: "brightness(.65)" }, { autoAlpha: .32, filter: "brightness(1)", duration: .7, stagger: .7 }, at + .5);
+        timeline.fromTo(filmInfoItems.slice(1, 4), { autoAlpha: .18, rotation: -4 }, { autoAlpha: .45, rotation: 5, duration: duration * .74, stagger: .6, ease: "sine.inOut" }, at + 1.4);
+        break;
+      case "responsibility":
+        timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        lineDraw(1.4, duration * .46, 0);
+        break;
+      case "one-inch":
+        timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.set(door, { autoAlpha: .42 }, at + .4);
+        timeline.to(doorLeft, { xPercent: -4, duration: 4.2, ease: "power1.inOut" }, at + 1.2);
+        timeline.to(doorRight, { xPercent: 4, duration: 4.2, ease: "power1.inOut" }, at + 1.2);
+        timeline.to(filmSeam, { scaleX: 1.18, autoAlpha: 1, duration: 4.2, ease: "power1.inOut" }, at + 1.2);
+        lineDraw(1.2, 6, 0);
+        break;
+      default:
+        timeline.to(focusLight, { xPercent: 14, autoAlpha: .28, duration: travel, ease: "sine.inOut" }, at);
+    }
+  }
+
+  function addProductionCue(timeline, meta, at) {
+    const production = productionFor(meta.scene);
+    if (!production) return;
+    if (meta.isActStart) addProductionAct(timeline, meta, at);
+    timeline.call(() => setProductionState(meta), null, at);
+    if (meta.scene.id === "FM-C") {
+      const split = productionSplitForCue(meta.cue);
+      timeline.to(filmProduction, { "--split": split, duration: 1, ease: "power1.inOut" }, at);
+      timeline.to(meta.cue.side === "qing" ? filmWorldQing : meta.cue.side === "modern" ? filmWorldModern : [filmWorldQing, filmWorldModern], { autoAlpha: 1, duration: .8 }, at);
+    }
+    if (meta.cue?.keyword) {
+      const keywordIndex = production.cues.filter((item) => item.keyword && item.time <= meta.cue.time).length - 1;
+      const keyword = filmKeywordItems[keywordIndex];
+      if (keyword) timeline.fromTo(keyword, { autoAlpha: 0, y: 10, scale: .94 }, { autoAlpha: .92, y: 0, scale: 1, duration: .5, ease: "power2.out" }, at);
+    }
+    if (meta.cue?.visual === "stamp") timeline.fromTo(filmStamp, { autoAlpha: .15, scale: 1.12 }, { autoAlpha: .88, scale: 1, duration: .32, ease: "back.out(1.6)" }, at);
+    if (meta.cue?.visual === "source" || meta.cue?.visual === "testimony") timeline.fromTo(filmSourceTag, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .45 }, at);
   }
 
   function actorOpticalScale(scene, sex, pose, element) {
@@ -828,8 +1130,54 @@
     } else { rain.style.opacity = "0"; mist.style.opacity = "0"; papers.style.opacity = "0"; door.style.opacity = "0"; }
   }
 
+  function applyProductionStatic(meta) {
+    const production = productionFor(meta.scene);
+    if (!production || !filmProduction) return;
+    const actInfo = production.acts[meta.actionIndex];
+    const view = productionView(actInfo);
+    const progress = clamp((meta.localStart - actInfo.start) / Math.max(.1, actInfo.end - actInfo.start), 0, 1);
+    setProductionState(meta);
+    if (hasGSAP) {
+      const { gsap } = window;
+      const clearTargets = [filmCurtain, filmStamp, filmSourceTag, ...filmInfoItems, ...filmDoorItems, ...filmHairItems, ...filmKeywordItems, ...filmFlashItems, filmWorldQing, filmWorldModern, filmSeam];
+      gsap.set(clearTargets, { clearProps: "opacity,visibility,transform,filter,clipPath,backgroundColor" });
+      filmProduction.style.setProperty("--split", productionSplitForCue(meta.cue));
+      gsap.set([bgA, bgB, depthFar, depthMid, depthNear], { backgroundPosition: view.position, backgroundSize: view.size, scale: 1.018 + progress * .037, xPercent: 0, yPercent: 0 });
+      gsap.set(filmActSlate, { autoAlpha: 1, y: 0 });
+      gsap.set(filmLinePath, { clearProps: "opacity,visibility", strokeDasharray: 1000, strokeDashoffset: 1000 - progress * 1000 });
+      if (/mud-thread|bundle|trust-corridor|six-doors|testimony|split-shadow|responsibility|one-inch/.test(actInfo.effect)) gsap.set(filmLinePath, { autoAlpha: .8 });
+      if (meta.scene.id === "FM-C") gsap.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 });
+      if (actInfo.effect === "six-doors" || actInfo.effect === "silence-clothes") gsap.set(filmDoorItems.slice(0, Math.max(1, Math.ceil(progress * 6))), { autoAlpha: .82 });
+      if (actInfo.effect === "information") gsap.set(filmInfoItems.slice(0, Math.max(1, Math.ceil(progress * 5))), { autoAlpha: .62 });
+      if (actInfo.effect === "qing-hair" || actInfo.effect === "white-hair") gsap.set(filmHairItems, { autoAlpha: .82, backgroundColor: actInfo.effect === "white-hair" ? "#d8d8d2" : "#20211f" });
+      if (actInfo.effect === "verdict" && meta.localStart >= 96) gsap.set(filmStamp, { autoAlpha: .86, rotation: -3 });
+      if (meta.cue?.visual === "source" || meta.cue?.visual === "testimony") gsap.set(filmSourceTag, { autoAlpha: 1, y: 0 });
+      if (actInfo.effect === "night-door" || actInfo.effect === "phone-door" || actInfo.effect === "one-inch") {
+        gsap.set(door, { autoAlpha: actInfo.effect === "one-inch" ? .42 : .58 });
+        const amount = actInfo.effect === "one-inch" ? 4 : actInfo.effect === "phone-door" ? 4 : 72;
+        gsap.set($("i", door), { xPercent: -amount });
+        gsap.set($("b", door), { xPercent: amount });
+      }
+      if (meta.cue?.keyword) {
+        const keywordIndex = production.cues.filter((item) => item.keyword && item.time <= meta.cue.time).length - 1;
+        gsap.set(filmKeywordItems.slice(0, keywordIndex + 1), { autoAlpha: .92 });
+      }
+    } else {
+      filmProduction.style.setProperty("--split", productionSplitForCue(meta.cue));
+      [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => {
+        element.style.backgroundPosition = view.position;
+        element.style.backgroundSize = view.size;
+      });
+      filmLinePath.style.strokeDashoffset = String(1000 - progress * 1000);
+    }
+  }
+
   function applyStaticVisuals(meta) {
     resetEffects(true);
+    if (productionFor(meta.scene)) {
+      applyProductionStatic(meta);
+      return;
+    }
     const effect = effectForMeta(meta); const threadScale = meta.scene.type === "film" ? currentFilmShot(meta.scene, meta.actionIndex).thread : .1 + meta.actionIndex * .1;
     thread.style.transform = `scaleX(${threadScale})`;
     if (effect === "rain") rain.style.opacity = ".34"; if (effect === "mist") mist.style.opacity = ".44"; if (effect === "papers") papers.style.opacity = ".72"; if (effect === "door" || effect === "open-door") door.style.opacity = effect === "open-door" ? ".25" : ".55";
@@ -903,7 +1251,9 @@
 
   function addBeatAnimation(timeline, meta, at) {
     const duration = meta.duration;
-    if (meta.scene.type === "film") addFilmBeat(timeline, meta, at, duration); else addActorBeat(timeline, meta, at, duration);
+    if (productionFor(meta.scene)) addProductionCue(timeline, meta, at);
+    else if (meta.scene.type === "film") addFilmBeat(timeline, meta, at, duration);
+    else addActorBeat(timeline, meta, at, duration);
     timeline.fromTo(dialogueBox, { autoAlpha: .52, y: 10 }, { autoAlpha: 1, y: 0, duration: .45, ease: "power2.out", immediateRender: false }, at);
     timeline.fromTo($("#frame-counter"), { scale: .86, autoAlpha: .5 }, { scale: 1, autoAlpha: 1, duration: .34, immediateRender: false }, at);
   }
@@ -911,14 +1261,23 @@
   function renderStep(index, staticVisuals = false) {
     const meta = state.player.stepMeta[index]; if (!meta) return;
     state.player.stepIndex = index; applyScene(meta.scene, staticVisuals); if (meta.scene.type !== "film") setActorSprites(meta.scene, meta.actionIndex);
-    const line = meta.scene.dialogue[meta.dialogueIndex];
-    $("#frame-counter").textContent = `${String(meta.actionIndex + 1).padStart(2, "0")} / 10`;
-    $("#shot-number").textContent = `分鏡 ${String(meta.actionIndex + 1).padStart(2, "0")}`;
-    $("#shot-action").textContent = meta.scene.actions[meta.actionIndex] || "場景推進";
+    const production = productionFor(meta.scene);
+    const line = meta.line || meta.scene.dialogue[meta.dialogueIndex];
+    if (production) {
+      const actInfo = production.acts[meta.actionIndex];
+      setProductionState(meta);
+      $("#frame-counter").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 / 五幕`;
+      $("#shot-number").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 · ${formatTime(meta.localStart)}`;
+      $("#shot-action").textContent = actInfo.action;
+    } else {
+      $("#frame-counter").textContent = `${String(meta.actionIndex + 1).padStart(2, "0")} / 10`;
+      $("#shot-number").textContent = `分鏡 ${String(meta.actionIndex + 1).padStart(2, "0")}`;
+      $("#shot-action").textContent = meta.scene.actions[meta.actionIndex] || "場景推進";
+    }
     const activeSpeaker = line?.speaker || "旁白";
     $("#speaker").textContent = activeSpeaker; $("#dialogue-text").textContent = line?.text || meta.scene.title;
     dialogueBox.dataset.speakerTone = speakerTone(activeSpeaker);
-    $$(".story-beat", $("#storyboard")).forEach((beat, beatIndex) => beat.classList.toggle("is-current", beatIndex === meta.actionIndex)); updateActMarkers(meta.scene.id);
+    $$(".story-beat", $("#storyboard")).forEach((beat, beatIndex) => beat.classList.toggle("is-current", beatIndex === meta.actionIndex)); updateActMarkers(meta.scene.id, meta.actionIndex);
     if (staticVisuals || state.reduced || !hasGSAP) applyStaticVisuals(meta); if (!state.player.timeline) syncFallbackProgress();
   }
 
@@ -926,14 +1285,14 @@
     destroyTimeline(); state.player.stepMeta = createStepMeta(state.player.sequence); state.player.stepTimes = [];
     if (!hasGSAP || state.reduced) { state.player.timeline = null; syncFallbackProgress(); return; }
     const timeline = window.gsap.timeline({ paused: true }); let cursor = 0; stage.classList.add("is-gsap");
-    state.player.stepMeta.forEach((meta, index) => { state.player.stepTimes.push(cursor); timeline.addLabel(`step-${index}`, cursor); if (meta.isSceneStart) timeline.addLabel(`scene-${meta.scene.id}`, cursor); timeline.call(() => renderStep(index, false), null, cursor); addBeatAnimation(timeline, meta, cursor); timeline.to({}, { duration: meta.duration }, cursor); cursor += meta.duration; });
+    state.player.stepMeta.forEach((meta, index) => { state.player.stepTimes.push(cursor); timeline.addLabel(`step-${index}`, cursor); if (meta.isSceneStart) timeline.addLabel(`scene-${meta.scene.id}`, cursor); if (meta.isActStart) timeline.addLabel(`${meta.scene.id}-act${meta.actionIndex + 1}`, cursor); timeline.call(() => renderStep(index, false), null, cursor); addBeatAnimation(timeline, meta, cursor); timeline.to({}, { duration: meta.duration }, cursor); cursor += meta.duration; });
     timeline.eventCallback("onUpdate", syncTimelineProgress); timeline.eventCallback("onComplete", () => { cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); syncTimelineProgress(); });
     state.player.timeline = timeline; syncTimelineProgress();
   }
 
-  function destroyTimeline() { state.player.timeline?.kill(); state.player.timeline = null; state.player.stepTimes = []; stage?.classList.remove("is-gsap"); }
+  function destroyTimeline() { state.player.timeline?.kill(); state.player.timeline = null; state.player.stepTimes = []; cinemaAudio?.pause(); stage?.classList.remove("is-gsap"); }
   function formatTime(seconds) { if (!Number.isFinite(seconds)) return "00:00"; const rounded = Math.max(0, Math.round(seconds)); return `${String(Math.floor(rounded / 60)).padStart(2, "0")}:${String(rounded % 60).padStart(2, "0")}`; }
-  function syncTimelineProgress() { if (!state.player.timeline) return; const total = state.player.timeline.duration() || 1; const value = Math.round((state.player.timeline.time() / total) * 1000); progressInput.value = String(value); progressInput.setAttribute("aria-valuetext", `${Math.round(value / 10)}%`); timelineTime.textContent = `${formatTime(state.player.timeline.time())} / ${formatTime(total)}`; }
+  function syncTimelineProgress() { if (!state.player.timeline) return; const total = state.player.timeline.duration() || 1; const value = Math.round((state.player.timeline.time() / total) * 1000); progressInput.value = String(value); progressInput.setAttribute("aria-valuetext", `${Math.round(value / 10)}%`); timelineTime.textContent = `${formatTime(state.player.timeline.time())} / ${formatTime(total)}`; syncSceneAudioToTimeline(false); }
   function syncFallbackProgress() { const total = state.player.stepMeta.length; const value = total <= 1 ? 0 : Math.round((state.player.stepIndex / (total - 1)) * 1000); progressInput.value = String(value); progressInput.setAttribute("aria-valuetext", `${Math.round(value / 10)}%`); timelineTime.textContent = `${String(state.player.stepIndex + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`; }
   function stepAtTime(time) { let found = 0; state.player.stepTimes.forEach((start, index) => { if (start <= time + .001) found = index; }); return found; }
 
@@ -945,23 +1304,54 @@
 
   function startPlayback() { if (!state.player.stepMeta.length) return; if (state.reduced || !state.player.timeline) { goToStep(state.player.stepIndex + 1); return; } if (state.player.timeline.progress() >= .999) { state.player.timeline.pause(0, true); renderStep(0, false); } scoreLibraryAudio?.pause(); state.player.playing = true; updatePlayButton(); playSceneAudio(); state.player.timeline.play(); }
   function pausePlayback() { state.player.timeline?.pause(); cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); }
-  function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); }
+  function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); syncSceneAudioToTimeline(true); }
   function jumpToScene(id) { const index = state.player.stepMeta.findIndex((meta) => meta.scene.id === id); if (index >= 0) goToStep(index); }
 
   function renderActMarkers() {
     const root = $("#act-markers"); if (!root) return; root.replaceChildren();
+    const singleScene = state.player.sequence[0];
+    const singleProduction = state.player.mode === "single" ? productionFor(singleScene) : null;
+    if (singleProduction) {
+      singleProduction.acts.forEach((actInfo, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.sceneId = singleScene.id;
+        button.dataset.actIndex = String(index);
+        button.textContent = `第${CHINESE_ACT_NUMBERS[index]}幕 · ${actInfo.title}`;
+        button.addEventListener("click", () => {
+          const stepIndex = state.player.stepMeta.findIndex((meta) => meta.scene.id === singleScene.id && meta.actionIndex === index);
+          if (stepIndex >= 0) goToStep(stepIndex);
+        });
+        root.append(button);
+      });
+      return;
+    }
     state.player.sequence.forEach((scene, index) => { const button = document.createElement("button"); button.type = "button"; button.dataset.sceneId = scene.id; button.textContent = state.player.mode === "reel" ? `${ACT_LABELS[scene.id]} · ${scene.title}` : `${String(index + 1).padStart(2, "0")} · ${scene.title}`; button.addEventListener("click", () => jumpToScene(scene.id)); root.append(button); });
   }
-  function updateActMarkers(sceneId) { $$("button", $("#act-markers")).forEach((button) => button.classList.toggle("is-current", button.dataset.sceneId === sceneId)); }
+  function updateActMarkers(sceneId, actIndex = 0) { $$("button", $("#act-markers")).forEach((button) => button.classList.toggle("is-current", button.dataset.sceneId === sceneId && (button.dataset.actIndex == null || Number(button.dataset.actIndex) === actIndex))); }
 
   function renderStoryboard(scene) {
     const root = $("#storyboard"); if (!root) return; root.replaceChildren();
-    for (let actionIndex = 0; actionIndex < 10; actionIndex += 1) {
-      const button = document.createElement("button"); button.type = "button"; button.className = "story-beat"; button.dataset.number = String(actionIndex + 1).padStart(2, "0"); button.title = scene.actions[actionIndex] || `分鏡 ${actionIndex + 1}`; button.setAttribute("aria-label", `跳到分鏡${actionIndex + 1}：${scene.actions[actionIndex] || "場景推進"}`);
-      if (scene.image) { button.style.setProperty("--beat-image", `url('${scene.image}')`); if (scene.type === "film") { const shot = currentFilmShot(scene, actionIndex); button.style.setProperty("--beat-size", `${Math.round(105 + (shot.scale - 1) * 140)}% auto`); button.style.setProperty("--beat-position", `${50 + shot.x * .9}% ${50 + shot.y * .7}%`); } }
+    const production = productionFor(scene);
+    const beatCount = production ? production.acts.length : 10;
+    for (let actionIndex = 0; actionIndex < beatCount; actionIndex += 1) {
+      const actInfo = production?.acts[actionIndex];
+      const action = actInfo?.action || scene.actions[actionIndex] || `分鏡 ${actionIndex + 1}`;
+      const button = document.createElement("button"); button.type = "button"; button.className = "story-beat"; button.dataset.number = production ? `幕${CHINESE_ACT_NUMBERS[actionIndex]}` : String(actionIndex + 1).padStart(2, "0"); button.title = actInfo ? `${actInfo.title}｜${action}` : action; button.setAttribute("aria-label", production ? `跳到第${CHINESE_ACT_NUMBERS[actionIndex]}幕：${actInfo.title}` : `跳到分鏡${actionIndex + 1}：${action}`);
+      if (scene.image) {
+        button.style.setProperty("--beat-image", `url('${scene.image}')`);
+        if (production) {
+          const view = productionView(actInfo);
+          button.style.setProperty("--beat-size", view.size);
+          button.style.setProperty("--beat-position", view.position);
+        } else if (scene.type === "film") {
+          const shot = currentFilmShot(scene, actionIndex); button.style.setProperty("--beat-size", `${Math.round(105 + (shot.scale - 1) * 140)}% auto`); button.style.setProperty("--beat-position", `${50 + shot.x * .9}% ${50 + shot.y * .7}%`);
+        }
+      }
       else button.style.setProperty("--beat-image", "radial-gradient(ellipse at center, #695e43, #17130f 74%)");
       button.addEventListener("click", () => { const index = state.player.stepMeta.findIndex((meta) => meta.scene.id === scene.id && meta.actionIndex === actionIndex); if (index >= 0) goToStep(index); }); root.append(button);
     }
+    root.dataset.beats = String(beatCount);
   }
 
   function syncTranscriptToggle(shouldScroll = false) {
@@ -991,9 +1381,12 @@
       const source = document.createElement("small"); source.textContent = scene.source;
       summary.append(heading, source);
       const lines = document.createElement("div"); lines.className = "transcript-lines";
-      scene.dialogue.forEach((line) => {
+      const production = productionFor(scene);
+      const transcriptLines = production?.cues || scene.dialogue;
+      transcriptLines.forEach((line) => {
         const paragraph = document.createElement("p");
-        const speaker = document.createElement("b"); speaker.textContent = line.id ? `${line.speaker} · ${line.id}` : line.speaker;
+        const timestamp = Number.isFinite(line.time) ? `${formatTime(line.time)} · ` : "";
+        const speaker = document.createElement("b"); speaker.textContent = `${timestamp}${line.id ? `${line.speaker} · ${line.id}` : line.speaker}`;
         const text = document.createElement("span"); text.textContent = line.text;
         paragraph.append(speaker, text); lines.append(paragraph);
       });
@@ -1032,7 +1425,7 @@
 
   async function shareCinema() {
     const current = state.player.currentScene;
-    const shareData = { title: state.player.mode === "reel" ? "四幕連續電影｜剴剴案特別專題" : `${current?.title || "動畫"}｜剴剴案特別專題`, text: state.player.mode === "reel" ? "一部四幕電影長卷，沿同一條線走到清晨。" : `${current?.subtitle || ""}（${TYPE_LABELS[current?.type] || "動畫"}）`, url: sceneShareUrl() };
+    const shareData = { title: state.player.mode === "reel" ? "四部五幕電影｜剴剴案特別專題" : `${current?.title || "動畫"}｜剴剴案特別專題`, text: state.player.mode === "reel" ? "四部各自完成五幕的電影動畫，沿同一條線走到清晨。" : `${current?.subtitle || ""}（${TYPE_LABELS[current?.type] || "動畫"}）`, url: sceneShareUrl() };
     if (navigator.share) { try { await navigator.share(shareData); setShareStatus("分享面板已開啟"); return; } catch (error) { if (error?.name === "AbortError") return; } }
     try { await navigator.clipboard.writeText(shareData.url); setShareStatus("專屬連結已複製"); } catch { setShareStatus("請從網址列複製此場連結"); }
   }
@@ -1097,6 +1490,7 @@
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); state.player.timeline.pause(time, true); renderStep(stepAtTime(time), false); syncTimelineProgress(); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
     dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); resumeAmbient(); });
     musicToggle?.addEventListener("click", toggleMusic);
+    cinemaAudio?.addEventListener("loadedmetadata", () => syncSceneAudioToTimeline(true));
     ambientToggles.forEach((button) => button.addEventListener("click", toggleAmbient));
     ambientAudio?.addEventListener("play", refreshAmbientUi);
     ambientAudio?.addEventListener("pause", refreshAmbientUi);
@@ -1108,14 +1502,21 @@
     document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") goToStep(state.player.stepIndex + 1); if (event.key === "ArrowLeft") goToStep(state.player.stepIndex - 1); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
+        state.player.resumeAfterVisibility = state.player.playing;
         pausePlayback();
         if (ambientAudio && !ambientAudio.paused) {
           state.ambient.resumeAfterVisibility = state.ambient.requested;
           pauseAmbient(false);
         }
-      } else if (state.ambient.resumeAfterVisibility && !dialog?.open && scoreLibraryAudio?.paused !== false) {
-        state.ambient.resumeAfterVisibility = false;
-        playAmbient();
+      } else {
+        if (state.player.resumeAfterVisibility && dialog?.open && !state.reduced) {
+          state.player.resumeAfterVisibility = false;
+          startPlayback();
+        }
+        if (state.ambient.resumeAfterVisibility && !dialog?.open && scoreLibraryAudio?.paused !== false) {
+          state.ambient.resumeAfterVisibility = false;
+          playAmbient();
+        }
       }
     });
   }

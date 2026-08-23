@@ -14,6 +14,7 @@ on:
       - assets/js/cinematic-revamp.js
       - assets/js/cinematic-revamp-core.js
       - assets/data/scenes.js
+      - assets/data/film-productions.js
       - .github/workflows/validate-cinematic-revamp.yml
 
 permissions:
@@ -30,6 +31,7 @@ jobs:
         run: |
           node --check assets/js/cinematic-revamp.js
           node --check assets/js/cinematic-revamp-core.js
+          node --check assets/data/film-productions.js
 
       - name: Validate HTML structure and referenced assets
         shell: bash
@@ -186,18 +188,23 @@ jobs:
             done
           done
 
-          "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
-            --virtual-time-budget=10000 --dump-dom \
-            'http://127.0.0.1:4173/?scene=FM-A' \
-            > visual-regression/player-dom.html 2> visual-regression/player-console.log
+          for scene in FM-A FM-D FM-B FM-C; do
+            "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
+              --virtual-time-budget=10000 --dump-dom \
+              "http://127.0.0.1:4173/?scene=${scene}" \
+              > "visual-regression/player-${scene}-dom.html" \
+              2> "visual-regression/player-${scene}-console.log"
 
-          grep -q 'class="film-act-card"' visual-regression/player-dom.html
-          grep -q 'class="scene-card film"' visual-regression/player-dom.html
-          grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' visual-regression/player-dom.html
-          if grep -Eq 'Uncaught|ReferenceError|TypeError|SyntaxError' visual-regression/player-console.log; then
-            cat visual-regression/player-console.log
-            exit 1
-          fi
+            grep -q 'class="film-act-card"' "visual-regression/player-${scene}-dom.html"
+            grep -q 'class="scene-card film"' "visual-regression/player-${scene}-dom.html"
+            grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' "visual-regression/player-${scene}-dom.html"
+            grep -q "data-film=\"${scene}\"" "visual-regression/player-${scene}-dom.html"
+            grep -q 'data-beats="5"' "visual-regression/player-${scene}-dom.html"
+            if grep -Eq 'Uncaught|ReferenceError|TypeError|SyntaxError' "visual-regression/player-${scene}-console.log"; then
+              cat "visual-regression/player-${scene}-console.log"
+              exit 1
+            fi
+          done
 
           "$BROWSER" --headless --disable-gpu --no-sandbox --hide-scrollbars \
             --virtual-time-budget=10000 --window-size=1440,1200 \

@@ -4,9 +4,11 @@ import vm from "node:vm";
 
 const root = path.resolve(import.meta.dirname, "..");
 const registry = fs.readFileSync(path.join(root, "assets/data/scenes.js"), "utf8");
+const filmRegistry = fs.readFileSync(path.join(root, "assets/data/film-productions.js"), "utf8");
 const sandbox = { window: {} };
 vm.createContext(sandbox);
 vm.runInContext(registry, sandbox);
+vm.runInContext(filmRegistry, sandbox);
 
 const scenes = sandbox.window.KAIKAI_SCENES;
 const order = sandbox.window.KAIKAI_SCENE_ORDER;
@@ -29,33 +31,32 @@ for (const scene of scenes) {
   if (scene.image && !fs.existsSync(path.join(root, scene.image))) errors.push(`${scene.id}缺圖：${scene.image}`);
 }
 
-for (const required of ["index.html", "story.html", "story-zh-hans.html", "story-en.html", "story-ja.html", "assets/css/styles.css", "assets/js/app.js", "assets/data/scene-manifest.json", "assets/vendor/gsap/gsap.min.js", "assets/vendor/gsap/ScrollTrigger.min.js", "docs/V6.2-mother-script.md", "docs/V7.1-GSAP-production-notes.md"]) {
+for (const required of ["index.html", "story.html", "story-zh-hans.html", "story-en.html", "story-ja.html", "assets/css/cinematic-revamp-core.css", "assets/js/cinematic-revamp-core.js", "assets/data/film-productions.js", "assets/data/scene-manifest.json", "assets/vendor/gsap/gsap.min.js", "assets/vendor/gsap/ScrollTrigger.min.js", "docs/V6.2-mother-script.md", "docs/V7.1-GSAP-production-notes.md"]) {
   if (!fs.existsSync(path.join(root, required))) errors.push(`缺必要檔：${required}`);
 }
 
-const app = fs.readFileSync(path.join(root, "assets/js/app.js"), "utf8");
+const app = fs.readFileSync(path.join(root, "assets/js/cinematic-revamp-core.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const story = fs.readFileSync(path.join(root, "story.html"), "utf8");
-const css = fs.readFileSync(path.join(root, "assets/css/styles.css"), "utf8");
-for (const token of ["gsap.timeline", "gsap.matchMedia", "ScrollTrigger.batch", "timeline-progress", "stepTimes", "kill()", "applyStaticVisuals"]) {
+const css = fs.readFileSync(path.join(root, "assets/css/cinematic-revamp-core.css"), "utf8");
+for (const token of ["gsap.timeline", "gsap.matchMedia", "ScrollTrigger.batch", "stepTimes", "kill()", "applyStaticVisuals", "addProductionAct", "syncSceneAudioToTimeline"]) {
   if (!app.includes(token) && !html.includes(token)) errors.push(`GSAP實作缺少：${token}`);
 }
-if (html.indexOf("gsap.min.js") > html.indexOf("app.js")) errors.push("GSAP載入順序晚於app.js");
-if (!html.includes("stage-atmosphere") || !html.includes("stage-focus-light") || !html.includes("stage-red-thread")) errors.push("電影化舞臺圖層不完整");
-if (!html.includes('id="stage-visual"')) errors.push("手機版舞臺與對話區尚未分層");
+if (html.indexOf("gsap.min.js") > html.indexOf("cinematic-revamp.js")) errors.push("GSAP載入順序晚於cinematic-revamp.js");
+if (!html.includes('id="cinema-atmosphere"') || !html.includes('id="cinema-focus"') || !html.includes('id="film-production"')) errors.push("電影化舞臺圖層不完整");
+if (!html.includes('class="cinema-visual"')) errors.push("手機版舞臺與對話區尚未分層");
 if (!html.includes('id="nav-toggle"') || !html.includes('id="reading-progress-bar"')) errors.push("手機導覽或閱讀進度尚未接入");
-if (!html.includes('id="toggle-all-scenes"') || !app.includes("FEATURED_SCENE_IDS")) errors.push("六場精選與24場總覽切換尚未接入");
-if (!html.includes('class="gate-stage"') || !html.includes('class="hero-brief"') || !html.includes('id="reading-map"')) errors.push("參考專題式序幕、案件快覽或閱讀地圖尚未接入");
-if (!html.includes('class="full-copy-intro"') || !css.includes(".story-chapter-heading") || !app.includes("setupCopyNavigation")) errors.push("正文層級、章節標記或導覽狀態尚未加強");
+if (!html.includes('class="entry-gate"') || !html.includes('class="hero-brief"') || !html.includes('id="reading-map"')) errors.push("參考專題式序幕、案件快覽或閱讀地圖尚未接入");
+if (!html.includes('class="full-copy"') || !css.includes(".inline-story h2") || !app.includes("setupCopyNavigation")) errors.push("正文層級、章節標記或導覽狀態尚未加強");
 if ((html.match(/<\/main>/g) || []).length !== 1) errors.push("首頁主要內容結束標籤數量不正確");
 if (html.includes('id="sound-toggle"') || app.includes("待掛曲")) errors.push("公開頁面仍顯示未完成的音樂控制");
 if (!html.includes('id="source-guide"') || !story.includes('id="source-index"')) errors.push("來源分層或完整來源索引尚未公開");
-if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(420px, 112vw, 720px)") || !css.includes('.stage[data-type="side"] .actor img { object-fit: cover')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
-if (!app.includes("mobileTwoWorldShots") || !app.includes('scene.type === "side" ? .34 : .42')) errors.push("手機電影構圖或人物移動比例尚未接入");
+if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(410px, 112vw, 690px)") || !css.includes('.cinema-stage[data-type="side"] .cinema-actor img')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
+if (!app.includes("productionView") || !css.includes('.film-production[data-film="FM-C"]')) errors.push("手機電影構圖或雙世界分割尚未接入");
 if (app.includes(".stats-band") || app.includes('trigger: ".stats-band"')) errors.push("播放器仍引用不存在的stats-band動畫目標");
-if (!html.includes('id="stage-play"') || !html.includes('id="share-scene"') || !app.includes("shareScene")) errors.push("播放器中央播放鍵或單場分享尚未接入");
-if (!html.includes('class="player-control-dock"') || !css.includes(".player-control-dock { position: fixed")) errors.push("播放器控制列尚未固定於可視範圍");
-if (!html.includes('href="story.html">省流量文字版') || !html.includes('class="text-mode-link"')) errors.push("首頁尚未提供明確的省流量文字入口");
+if (!html.includes('id="cinema-play-overlay"') || !html.includes('id="share-cinema"') || !app.includes("shareCinema")) errors.push("播放器中央播放鍵或單場分享尚未接入");
+if (!html.includes('class="cinema-control-dock"') || !css.includes(".cinema-control-dock { position: fixed")) errors.push("播放器控制列尚未固定於可視範圍");
+if (!html.includes('href="story.html">省流量文字版')) errors.push("首頁尚未提供明確的省流量文字入口");
 if (!html.includes('href="tel:113"') || !html.includes('href="tel:110"') || !html.includes('href="tel:119"')) errors.push("臺灣求助卡尚未提供直撥連結");
 if (!html.includes('type="application/ld+json"') || !html.includes('name="twitter:title"')) errors.push("首頁JSON-LD或Twitter分享資訊不完整");
 if (story.includes("PRODUCTION SPEC") || story.includes("本區只放讀者會看到的文字")) errors.push("繁中公開文字版仍顯示內部製作備註");
@@ -87,16 +88,13 @@ if (!html.includes('id="full-copy"') || !html.includes('id="inline-story-content
 if (!html.includes("fm-c-two-worlds-v2.webp") || !registry.includes("淺藍與深藍條紋上衣")) errors.push("剴剴服裝未鎖定淺藍／深藍條紋");
 if (!app.includes("actorPosePlan") || !app.includes("setActorSprites") || !app.includes("SIDE_POSE_ROOT")) errors.push("多姿勢角色切換尚未接入播放器");
 
-const placementBlock = app.match(/const INLINE_SCENE_PLACEMENTS = \[([\s\S]*?)\n  \];/)?.[1] || "";
-for (const anchor of [...placementBlock.matchAll(/anchor: "([^"]+)"/g)].map((match) => match[1])) {
-  if (!story.includes(`id="${anchor}"`)) errors.push(`隨文動畫找不到文案錨點：${anchor}`);
-}
+const placementBlock = app.match(/const INLINE_PLACEMENTS = \[([\s\S]*?)\n  \];/)?.[1] || "";
 for (const id of order) {
   const occurrences = (placementBlock.match(new RegExp(`"${id}"`, "g")) || []).length;
   if (occurrences !== 1) errors.push(`隨文動畫配置${id}應出現1次，實際${occurrences}次`);
 }
-if (!app.includes("insertInlineScenes") || !app.includes("decorateInlineCopy") || !app.includes("setupInlineStoryMotion")) errors.push("隨文動畫、正文圖章或GSAP進場尚未接入");
-for (const colour of ["--xuanqing", "--dailan", "--tianshuibi", "--xieqing", "--yuebai", "--zhusha", "--yanzhi", "--zheshi", "--songhua", "--ehuang", "--wujin", "--xuanzhi"]) {
+if (!app.includes("insertInlineScenes") || !app.includes("enhanceStoryTypography") || !app.includes("animateNewContent")) errors.push("隨文動畫、正文圖章或GSAP進場尚未接入");
+for (const colour of ["--xuanqing", "--dailan", "--tianshui", "--xieqing", "--yuebai", "--zhusha", "--yanzhi", "--zheshi", "--songhua", "--ehuang", "--wujin", "--xuanzhi"]) {
   if (!css.includes(colour)) errors.push(`缺少中國傳統色變數：${colour}`);
 }
 for (let index = 1; index <= 12; index += 1) {

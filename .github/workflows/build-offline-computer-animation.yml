@@ -53,6 +53,7 @@ jobs:
           python3 -m py_compile run_animation.py
           node --check assets/js/cinematic-revamp.js
           node --check assets/js/cinematic-revamp-core.js
+          node --check assets/data/film-productions.js
           test -f index.html
           test -f story.html
           test -f desktop-animation.html
@@ -87,9 +88,10 @@ jobs:
 
           cat > "$PACKAGE_ROOT/VERSION.txt" <<EOF
           Justice for Kaikai computer animation
-          Build date: 2026-08-22
+          Build date: 2026-08-23
           Commit: ${GITHUB_SHA}
-          Four-act order: FM-A -> FM-D -> FM-B -> FM-C
+          Four-film order: FM-A -> FM-D -> FM-B -> FM-C
+          Each film: five GSAP acts with a dedicated, non-looping score
           Direct player: http://127.0.0.1:8787/?reel=1
           EOF
 
@@ -120,6 +122,7 @@ jobs:
           curl -fsS 'http://127.0.0.1:8787/assets/js/cinematic-revamp-core.js' >/dev/null
           curl -fsS 'http://127.0.0.1:8787/assets/css/cinematic-revamp-core.css' >/dev/null
           curl -fsS 'http://127.0.0.1:8787/assets/data/scenes.js' >/dev/null
+          curl -fsS 'http://127.0.0.1:8787/assets/data/film-productions.js' >/dev/null
           curl -fsS 'http://127.0.0.1:8787/story.html' >/dev/null
           curl -fsS 'http://127.0.0.1:8787/public/media/poses/female-01.webp' >/dev/null
           curl -fsS 'http://127.0.0.1:8787/assets/img/films/fm-c-two-worlds-v2.webp' >/dev/null
@@ -127,7 +130,7 @@ jobs:
       - name: Upload offline computer-animation package
         uses: actions/upload-artifact@v4
         with:
-          name: Justice-For-Kaikai-Computer-Animation-20260822
+          name: Justice-For-Kaikai-Computer-Animation-20260823
           path: release/Justice-For-Kaikai-Computer-Animation
           if-no-files-found: error
           include-hidden-files: true
