@@ -899,3 +899,14 @@ body.is-reduced .continue-mark { display: none; }
   .story-help-links { display: grid; grid-template-columns: repeat(3, 1fr); }
   .story-help-links a { justify-content: center; }
 }
+
+
+/* CHAPTER_TWO_CHOSEN_LIFE_V4 */
+.story-page .chapter-two-story-heading{margin-top:4rem;padding:2rem 2rem .8rem;border:1px solid rgba(96,79,67,.2);border-bottom:0;border-radius:1.25rem 1.25rem 0 0;background:linear-gradient(150deg,#eef2ed,#f4ece6);color:#263733}
+.story-page .chapter-two-story-heading::before{content:"NEXT CHAPTER · 02";display:block;margin-bottom:.8rem;color:#8b6759;font-size:.72rem;letter-spacing:.18em}
+.story-page .chapter-two-story-preview{margin:0 0 3rem;padding:1rem 2rem 2.5rem;border:1px solid rgba(96,79,67,.2);border-top:0;border-radius:0 0 1.25rem 1.25rem;background:linear-gradient(150deg,#eef2ed,#f4ece6);color:#263733}
+.story-page .chapter-two-story-kicker{color:#8b6759;font-family:serif;font-size:1.5rem;letter-spacing:.08em}
+.story-page .chapter-two-story-question{font-family:serif;font-size:clamp(1.55rem,4vw,2.35rem);line-height:1.45}
+.story-page .chapter-two-story-thesis{margin:2rem 0;padding:1.25rem 1.5rem;border-left:3px solid #a97b68;background:rgba(255,255,255,.5)}
+.story-page .chapter-two-story-thesis strong{font-size:1.25em}
+@media(max-width:640px){.story-page .chapter-two-story-heading{padding:1.5rem 1.1rem .7rem}.story-page .chapter-two-story-preview{padding:.8rem 1.1rem 2rem}}
