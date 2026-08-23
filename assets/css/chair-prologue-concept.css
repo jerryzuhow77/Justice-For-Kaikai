@@ -1,0 +1,284 @@
+/* Chair Maiden concept-art layer — deliberately separate from the article UI. */
+.chair-concept-prologue{
+  --chair-concept-image:url("../img/prologue/chair-maiden-concept.webp");
+  isolation:isolate;
+  background:#050807!important;
+  color:#eee7dc;
+}
+.chair-concept-prologue .chair-scene-plane,
+.chair-concept-prologue .chair-concept-plate,
+.chair-concept-prologue .chair-prologue-paper,
+.chair-concept-prologue .chair-prologue-bamboo,
+.chair-concept-prologue .chair-fog,
+.chair-concept-prologue .chair-dust,
+.chair-concept-prologue .chair-women,
+.chair-concept-prologue .chair-person-stage,
+.chair-concept-prologue .chair-woman,
+.chair-concept-prologue .chair-seat-stage,
+.chair-concept-prologue .chair-seat,
+.chair-concept-prologue .chair-lamp{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+.chair-concept-prologue .chair-scene-plane{z-index:1;inset:-2.5%;width:105%;height:105%;overflow:hidden;transform-origin:50% 55%;}
+.chair-concept-prologue .chair-concept-plate,
+.chair-concept-prologue .chair-woman,
+.chair-concept-prologue .chair-seat{
+  background-image:var(--chair-concept-image)!important;
+  background-repeat:no-repeat!important;
+  background-size:cover!important;
+  background-position:center 56%!important;
+}
+.chair-concept-prologue .chair-concept-plate{
+  z-index:0;
+  opacity:.93;
+  filter:saturate(.72) contrast(1.08) brightness(.94) sepia(.06);
+  transform:scale(1.035);
+}
+.chair-concept-prologue::before{
+  content:"";
+  position:absolute;
+  z-index:6;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 64%,transparent 0 13%,rgba(3,6,5,.08) 29%,rgba(1,3,2,.66) 76%,rgba(0,0,0,.93) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.28),transparent 22%,transparent 72%,rgba(0,0,0,.7));
+  box-shadow:inset 0 0 clamp(80px,14vw,240px) rgba(0,0,0,.95);
+}
+.chair-concept-prologue::after{
+  content:"";
+  position:absolute;
+  z-index:10;
+  inset:-45%;
+  opacity:.15;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.48'/%3E%3C/svg%3E");
+  animation:chair-grain .22s steps(2,end) infinite;
+  mix-blend-mode:soft-light;
+}
+.chair-concept-prologue .chair-prologue-paper{
+  z-index:4!important;
+  opacity:.1!important;
+  background-image:repeating-linear-gradient(92deg,transparent 0 6px,rgba(240,225,197,.09) 7px 8px)!important;
+  mix-blend-mode:screen;
+}
+.chair-concept-prologue .chair-prologue-bamboo{
+  z-index:4!important;
+  inset:-8%!important;
+  opacity:.24!important;
+  background:
+    linear-gradient(78deg,transparent 13%,rgba(0,0,0,.86) 13.35% 14.05%,transparent 14.45%),
+    linear-gradient(103deg,transparent 82%,rgba(0,0,0,.8) 82.35% 83%,transparent 83.45%)!important;
+  transform-origin:50% 100%;
+}
+.chair-concept-prologue .chair-fog{z-index:2;filter:blur(26px);mix-blend-mode:screen;opacity:.16;}
+.chair-concept-prologue .fog-a{background:radial-gradient(ellipse at 42% 62%,rgba(186,177,153,.28),transparent 50%);}
+.chair-concept-prologue .fog-b{background:radial-gradient(ellipse at 67% 48%,rgba(128,141,132,.2),transparent 48%);}
+.chair-concept-prologue .chair-dust{
+  z-index:5;
+  opacity:.18;
+  background-image:
+    radial-gradient(circle,rgba(236,220,191,.8) 0 1px,transparent 1.4px),
+    radial-gradient(circle,rgba(236,220,191,.45) 0 .7px,transparent 1.2px);
+  background-size:97px 83px,143px 117px;
+  background-position:13px 5px,41px 29px;
+  mask-image:linear-gradient(180deg,transparent 3%,#000 25%,#000 78%,transparent 96%);
+}
+.chair-concept-prologue .chair-lamp{
+  z-index:2!important;
+  left:50%!important;
+  top:auto!important;
+  bottom:3%!important;
+  width:56vw!important;
+  height:46vh!important;
+  transform:translateX(-50%)!important;
+  background:radial-gradient(ellipse,rgba(218,164,93,.23),rgba(136,92,48,.08) 34%,transparent 68%)!important;
+  filter:blur(18px)!important;
+  transform-origin:50% 72%;
+}
+.chair-concept-prologue .chair-women{z-index:3!important;}
+.chair-concept-prologue .chair-person-stage{z-index:3;transform-origin:50% 80%;will-change:transform;}
+.chair-concept-prologue .chair-woman{
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  border-radius:0!important;
+  opacity:.82;
+  filter:saturate(.72) contrast(1.09) brightness(1.07) drop-shadow(0 28px 28px rgba(0,0,0,.8))!important;
+  will-change:transform,opacity,filter;
+}
+.chair-concept-prologue .chair-woman::before{display:none!important;}
+.chair-concept-prologue .woman-left{
+  transform:none!important;
+  -webkit-mask-image:radial-gradient(ellipse at 18% 59%,#000 0 14%,rgba(0,0,0,.94) 23%,transparent 36%);
+  mask-image:radial-gradient(ellipse at 18% 59%,#000 0 14%,rgba(0,0,0,.94) 23%,transparent 36%);
+}
+.chair-concept-prologue .woman-mid{
+  transform:none!important;
+  -webkit-mask-image:radial-gradient(ellipse at 31% 57%,#000 0 10%,rgba(0,0,0,.9) 18%,transparent 30%);
+  mask-image:radial-gradient(ellipse at 31% 57%,#000 0 10%,rgba(0,0,0,.9) 18%,transparent 30%);
+}
+.chair-concept-prologue .woman-right{
+  transform:none!important;
+  -webkit-mask-image:radial-gradient(ellipse at 80% 57%,#000 0 19%,rgba(0,0,0,.92) 28%,transparent 42%);
+  mask-image:radial-gradient(ellipse at 80% 57%,#000 0 19%,rgba(0,0,0,.92) 28%,transparent 42%);
+}
+.chair-concept-prologue .chair-seat-stage{z-index:4;transform-origin:50% 79%;will-change:transform;}
+.chair-concept-prologue .chair-seat{
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  transform:none;
+  transform-origin:50% 79%!important;
+  border:0!important;
+  opacity:.98;
+  filter:saturate(.75) contrast(1.12) brightness(1.15) drop-shadow(0 26px 22px rgba(0,0,0,.74))!important;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 68%,#000 0 10%,rgba(0,0,0,.94) 16%,transparent 26%);
+  mask-image:radial-gradient(ellipse at 50% 68%,#000 0 10%,rgba(0,0,0,.94) 16%,transparent 26%);
+  will-change:transform,opacity,filter;
+}
+.chair-concept-prologue .chair-seat i,
+.chair-concept-prologue .chair-seat b,
+.chair-concept-prologue .chair-seat span{display:none!important;}
+.chair-concept-prologue .chair-prologue-label{
+  position:absolute;
+  z-index:12;
+  top:max(1.25rem,env(safe-area-inset-top));
+  left:max(1.25rem,env(safe-area-inset-left));
+  display:grid;
+  gap:.25rem;
+  color:rgba(239,230,216,.74);
+  font:500 clamp(.78rem,1.2vw,.94rem)/1.3 var(--serif);
+  letter-spacing:.24em;
+  text-shadow:0 3px 18px #000;
+}
+.chair-concept-prologue .chair-prologue-label small{color:#b97a70;font:700 .58rem/1 var(--sans);letter-spacing:.22em;}
+.chair-concept-prologue .chair-prologue-copy{
+  position:absolute!important;
+  z-index:12!important;
+  inset:0!important;
+  width:100%!important;
+  transform:none!important;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 4px 24px #000,0 1px 2px #000;
+}
+.chair-concept-prologue .chair-line-group{
+  position:absolute;
+  top:8.5%;
+  left:50%;
+  width:min(88vw,760px);
+  transform:translateX(-50%);
+}
+.chair-concept-prologue .chair-line{
+  margin:.22rem 0!important;
+  color:#f0e8dc;
+  font:500 clamp(1.12rem,2.35vw,1.95rem)/1.7 var(--serif)!important;
+  letter-spacing:.1em!important;
+  opacity:0;
+}
+.chair-concept-prologue .chair-sigh{margin-top:.48rem!important;color:#d68a7f!important;}
+.chair-concept-prologue .chair-bridge{
+  position:absolute;
+  left:50%;
+  bottom:7.2%;
+  width:min(88vw,720px);
+  margin:0!important;
+  transform:translateX(-50%);
+  display:grid!important;
+  gap:.5rem!important;
+  opacity:0;
+}
+.chair-concept-prologue .chair-bridge span{font-size:clamp(.78rem,1.35vw,.98rem)!important;color:rgba(239,230,216,.64)!important;letter-spacing:.13em!important;}
+.chair-concept-prologue .chair-bridge strong{font:500 clamp(1rem,1.8vw,1.28rem)/1.55 var(--serif)!important;color:#d99587!important;letter-spacing:.08em;background:none!important;}
+.chair-concept-prologue .chair-skip{
+  z-index:15!important;
+  right:max(1rem,env(safe-area-inset-right))!important;
+  top:max(1rem,env(safe-area-inset-top))!important;
+  bottom:auto!important;
+  min-height:2.6rem;
+  padding:.68rem 1rem!important;
+  border-color:rgba(239,230,216,.28)!important;
+  background:rgba(5,8,7,.5)!important;
+  color:#ded7cb!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.22);
+  transition:border-color .25s ease,background .25s ease,transform .25s ease;
+}
+.chair-concept-prologue .chair-skip:hover{transform:translateY(-1px);border-color:rgba(217,149,135,.62)!important;background:rgba(20,23,20,.78)!important;}
+.chair-concept-prologue .chair-progress{
+  position:absolute;
+  z-index:14;
+  left:50%;
+  bottom:3.1%;
+  width:min(42vw,420px);
+  height:1px;
+  transform:translateX(-50%);
+  overflow:hidden;
+  background:rgba(239,230,216,.12);
+}
+.chair-concept-prologue .chair-progress i{display:block;width:100%;height:100%;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,rgba(184,118,107,.2),#c9877d,rgba(235,216,188,.72));}
+@keyframes chair-grain{0%{transform:translate3d(-2%,-1%,0)}25%{transform:translate3d(1%,2%,0)}50%{transform:translate3d(2%,-2%,0)}75%{transform:translate3d(-1%,1%,0)}100%{transform:translate3d(0,0,0)}}
+
+@media(max-width:760px){
+  .chair-concept-prologue .chair-scene-plane{inset:-1.5%;width:103%;height:103%;}
+  .chair-concept-prologue .chair-concept-plate,
+  .chair-concept-prologue .chair-seat{background-position:center 55%!important;}
+  .chair-concept-prologue .chair-line-group{top:7.6%;width:90vw;}
+  .chair-concept-prologue .chair-line{font-size:clamp(1rem,5.1vw,1.32rem)!important;line-height:1.62!important;letter-spacing:.06em!important;}
+  .chair-concept-prologue .chair-bridge{bottom:8.2%;width:90vw;gap:.38rem!important;}
+  .chair-concept-prologue .chair-bridge span{font-size:.72rem!important;}
+  .chair-concept-prologue .chair-bridge strong{font-size:.93rem!important;}
+  .chair-concept-prologue .chair-progress{bottom:4.7%;width:42vw;}
+  .chair-concept-prologue .chair-prologue-label{font-size:.7rem;letter-spacing:.18em;}
+  .chair-concept-prologue .chair-skip{top:auto!important;bottom:max(.8rem,env(safe-area-inset-bottom))!important;min-height:2.4rem;padding:.58rem .82rem!important;}
+  .chair-concept-prologue .stage-mid{display:none;}
+  .chair-concept-prologue .chair-person-stage{inset:auto;width:34vw;height:58svh;bottom:8%;}
+  .chair-concept-prologue .stage-left{left:-8vw;}
+  .chair-concept-prologue .stage-right{right:-8vw;}
+  .chair-concept-prologue .chair-woman{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    background:linear-gradient(180deg,rgba(24,30,28,.96),rgba(5,8,7,.98))!important;
+    border-radius:48% 48% 18% 18%/15% 15% 7% 7%!important;
+    -webkit-mask-image:none!important;
+    mask-image:none!important;
+    opacity:.72;
+  }
+  .chair-concept-prologue .chair-woman::before{
+    content:"";
+    display:block!important;
+    position:absolute;
+    left:31%;
+    top:-8%;
+    width:38%;
+    aspect-ratio:1;
+    border-radius:50%;
+    background:#111715;
+    box-shadow:0 -10px 0 -5px #070a09;
+  }
+  .chair-concept-prologue .stage-left .chair-woman{transform:rotate(2deg)!important;}
+  .chair-concept-prologue .stage-right .chair-woman{transform:rotate(-2deg)!important;}
+  .chair-concept-prologue .chair-lamp{width:86vw!important;height:38vh!important;}
+}
+@media(max-width:430px){
+  .chair-concept-prologue .chair-prologue-label small{display:none;}
+  .chair-concept-prologue .chair-line-group{top:6.6%;}
+  .chair-concept-prologue .chair-line{font-size:clamp(.96rem,5.2vw,1.16rem)!important;}
+  .chair-concept-prologue .chair-bridge{bottom:9.2%;}
+  .chair-concept-prologue .chair-skip{font-size:.7rem!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .chair-concept-prologue::after{animation:none!important;}
+}
