@@ -76,6 +76,7 @@ test("applies optical one-to-one actor calibration and dialogue hierarchy", asyn
 });
 
 test("synchronizes four act names and repairs single film cards and the dark first cover", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
   const registry = await readFile(new URL("assets/data/scenes.js", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
@@ -83,6 +84,7 @@ test("synchronizes four act names and repairs single film cards and the dark fir
     assert.match(registry, new RegExp(title));
   }
   assert.match(app, /grid\.classList\.toggle\("is-single", validScenes\.length === 1\)/);
+  assert.match(html, /assets\/data\/scenes\.js\?v=20260823-scene2/);
   assert.match(css, /\.copy-scene-grid\.is-single/);
   assert.match(css, /data-scene-id="FM-A"/);
 });
