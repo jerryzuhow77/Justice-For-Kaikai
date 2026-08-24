@@ -1,15 +1,16 @@
 /* Chapter 01 supplied main visuals — 2026-08-24
-   The three user-provided artworks replace the generic film stills in the
-   opening gate and hero while retaining the existing GSAP motion layers. */
+   User-directed artwork placement for the opening, mobile hero and film shelf
+   while retaining the existing GSAP motion layers. */
 
 :root{
   --kaikai-main-hero:url("../img/hero/kaikai-main-hero.webp");
   --kaikai-gate-corridor:url("../img/hero/kaikai-gate-corridor.webp");
   --kaikai-main-portrait:url("../img/hero/kaikai-main-portrait.webp");
+  --kaikai-two-worlds-original:url("../img/films/fm-c-two-worlds-v2.webp");
 }
 
-/* Entry: a wide corridor outside the panel and the vertical chair image
-   inside the film frame. Existing GSAP transforms continue to animate both. */
+/* Entry: the wide corridor remains outside the panel, while Kaikai and the
+   Chair Maiden occupy the vertical film frame. */
 .gate-backdrop{
   opacity:.74;
   background:
@@ -24,9 +25,9 @@
 }
 .gate-film-image{
   background:
-    linear-gradient(180deg,rgba(2,7,6,.02) 18%,rgba(2,7,6,.18) 52%,rgba(2,7,6,.86) 100%),
-    var(--kaikai-main-portrait) 50% 52%/cover no-repeat!important;
-  filter:saturate(.84) contrast(1.03) brightness(.94)!important;
+    linear-gradient(180deg,rgba(2,7,6,.02) 18%,rgba(2,7,6,.14) 54%,rgba(2,7,6,.84) 100%),
+    var(--kaikai-two-worlds-original) 50% 50%/cover no-repeat!important;
+  filter:saturate(.86) contrast(1.04) brightness(.96)!important;
 }
 .gate-film-frame::after{
   content:"";
@@ -71,11 +72,17 @@
 
 /* Carry the doorway motif into the four-film shelf without adding a second,
    disconnected gallery section. */
+/* The supplied vertical chair / hospital doorway artwork becomes the
+   large visual inside the four-film shelf, away from the opening and hero. */
 .reel-stage-image{
-  background-image:var(--kaikai-gate-corridor)!important;
-  background-position:50% 50%!important;
-  background-size:cover!important;
-  filter:saturate(.76) contrast(1.04) brightness(.82)!important;
+  background-image:
+    linear-gradient(90deg,rgba(4,10,9,.9),rgba(4,10,9,.08) 34%,rgba(4,10,9,.08) 66%,rgba(4,10,9,.9)),
+    var(--kaikai-main-portrait)!important;
+  background-position:50% 50%,50% 50%!important;
+  background-size:cover,auto 100%!important;
+  background-repeat:no-repeat!important;
+  background-color:#06100e!important;
+  filter:saturate(.8) contrast(1.04) brightness(.86)!important;
 }
 .montage-d{
   --montage-image:var(--kaikai-main-hero)!important;
@@ -83,10 +90,12 @@
 
 @media(max-width:760px){
   .gate-backdrop{
+    opacity:.78;
     background:
-      linear-gradient(180deg,rgba(3,8,7,.32),rgba(3,8,7,.6) 46%,rgba(3,8,7,.96) 100%),
-      var(--kaikai-main-portrait) 50% 42%/cover no-repeat!important;
-    filter:saturate(.82) contrast(1.04) brightness(.86)!important;
+      linear-gradient(180deg,rgba(3,8,7,.28),rgba(3,8,7,.54) 48%,rgba(3,8,7,.9) 100%),
+      var(--kaikai-two-worlds-original) 50% 42%/auto 82% no-repeat!important;
+    background-color:#06100e!important;
+    filter:saturate(.8) contrast(1.04) brightness(.88)!important;
   }
   .entry-gate .gate-panel{
     background:linear-gradient(180deg,rgba(5,12,11,.58),rgba(5,12,11,.72) 54%,rgba(5,12,11,.94))!important;
@@ -97,21 +106,21 @@
   }
 
   .hero-layer{
-    background-image:var(--kaikai-main-portrait)!important;
+    background-image:var(--kaikai-two-worlds-original)!important;
   }
   .hero-layer-far{
-    background-position:50% 36%!important;
-    background-size:cover!important;
-    filter:saturate(.82) contrast(1.04) brightness(.84)!important;
+    background-position:50% 42%!important;
+    background-size:auto 88%!important;
+    filter:saturate(.82) contrast(1.04) brightness(.86)!important;
   }
   .hero-layer-mid{
-    background-position:50% 38%!important;
-    background-size:112% auto!important;
+    background-position:50% 44%!important;
+    background-size:auto 94%!important;
     opacity:.16!important;
   }
   .hero-layer-near{
-    background-position:50% 56%!important;
-    background-size:124% auto!important;
+    background-position:50% 52%!important;
+    background-size:auto 102%!important;
     opacity:.12!important;
   }
   .hero-vignette{
@@ -133,13 +142,9 @@
 }
 
 
-/* TWO-WORLDS-FILM-VISUAL-20260824
-   Keep the Kaikai / red-dressed Chair Maiden artwork exclusive to Film C:
+/* TWO-WORLDS-SHARED-VISUAL-20260824
+   The Kaikai / red-dressed Chair Maiden artwork also stays with Film C:
    its card, player backdrop and expanded story description. */
-:root{
-  --kaikai-two-worlds-original:url("../img/films/fm-c-two-worlds-v2.webp");
-}
-
 .film-act-card>div{
   display:grid;
   gap:.3rem;
