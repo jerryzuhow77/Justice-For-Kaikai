@@ -132,22 +132,26 @@
   }
 
   .hero-layer{
-    background-image:var(--kaikai-two-worlds-original)!important;
+    background-image:var(--kaikai-entry-mobile)!important;
   }
   .hero-layer-far{
-    background-position:50% 42%!important;
-    background-size:auto 88%!important;
-    filter:saturate(.82) contrast(1.04) brightness(.86)!important;
+    background-position:50% 24%!important;
+    background-size:140% auto!important;
+    background-repeat:no-repeat!important;
+    background-color:#06100e!important;
+    filter:saturate(.88) contrast(1.03) brightness(.92)!important;
   }
   .hero-layer-mid{
-    background-position:50% 44%!important;
-    background-size:auto 94%!important;
-    opacity:.16!important;
+    background-position:50% 26%!important;
+    background-size:147% auto!important;
+    background-repeat:no-repeat!important;
+    opacity:.1!important;
   }
   .hero-layer-near{
-    background-position:50% 52%!important;
-    background-size:auto 102%!important;
-    opacity:.12!important;
+    background-position:50% 29%!important;
+    background-size:156% auto!important;
+    background-repeat:no-repeat!important;
+    opacity:.07!important;
   }
   .hero-vignette{
     background:
