@@ -59,3 +59,26 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /\.film-production\[data-film="FM-C"\]/);
   assert.match(css, /body\.is-reduced \.film-local-flash/);
 });
+
+test("FM-C fourth act cuts five concept plates across its GSAP clock", async () => {
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
+  const shots = [
+    "shot-01-object.webp",
+    "shot-02-theatre.webp",
+    "shot-03-corridor.webp",
+    "shot-04-doors.webp",
+    "shot-05-shadows.webp",
+  ];
+
+  for (const shot of shots) {
+    await access(new URL(`assets/img/films/fm-c-act4/${shot}`, root));
+    assert.match(app, new RegExp(shot.replaceAll(".", "\\.")));
+  }
+  assert.match(app, /const FM_C_ACT4_CUTS = \[0, \.16, \.35, \.59, \.81, 1\]/);
+  assert.match(app, /function addFmCAct4Sequence/);
+  assert.match(app, /actInfo\.effect === "responsibility"/);
+  assert.match(css, /\.fm-c-act4-sequence/);
+  assert.match(css, /data-act="4"\] \.film-separated-palms\{display:none\}/);
+  assert.match(css, /body\.is-reduced \.fm-c-act4-frame img/);
+});

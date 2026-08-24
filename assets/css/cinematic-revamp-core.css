@@ -888,6 +888,15 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .film-production[data-film="FM-C"][data-act="5"]::before { opacity:.92; background:radial-gradient(ellipse at 50% 47%,rgba(255,226,158,.64),transparent 25%),linear-gradient(90deg,rgba(130,77,44,.2),rgba(115,174,180,.23)); }
 .film-production[data-film="FM-C"][data-act="5"]::after { opacity:.7; background:linear-gradient(90deg,rgba(28,20,14,.52) 0 43%,transparent 43.5% 49.4%,rgba(255,239,190,.6) 49.7% 50.3%,transparent 50.6% 56.5%,rgba(22,34,34,.46) 57%); }
 
+/* 第四部／第四幕：五張概念圖依序剪接成「把責任交給活著的人」。 */
+.fm-c-act4-sequence{position:absolute;z-index:0;inset:0;overflow:hidden;opacity:0;visibility:hidden;background:#090d0c;isolation:isolate}
+.film-production[data-film="FM-C"][data-act="4"] .fm-c-act4-sequence{visibility:visible}
+.fm-c-act4-frame{position:absolute;inset:-1.5%;margin:0;overflow:hidden;opacity:0;will-change:opacity,filter}
+.fm-c-act4-frame::before{content:"";position:absolute;z-index:-1;inset:-8%;opacity:0;background:var(--act4-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.72) brightness(.52);transform:scale(1.08)}
+.fm-c-act4-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,6,.12),transparent 52%,rgba(2,6,6,.56)),radial-gradient(ellipse at center,transparent 45%,rgba(2,6,6,.4) 100%);pointer-events:none}
+.fm-c-act4-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.82) contrast(1.04) brightness(.9);will-change:transform;backface-visibility:hidden}
+.film-production[data-film="FM-C"][data-act="4"] .film-separated-palms{display:none}
+
 /* 第四部核心構圖：椅仔姑與剴剴隔著時空裂縫相對合掌。 */
 .film-separated-palms{position:absolute;z-index:7;inset:7% 8% 17%;display:flex;align-items:center;justify-content:center;opacity:0;filter:drop-shadow(0 20px 25px rgba(0,0,0,.4))}
 .film-separated-palms>em{position:absolute;z-index:4;left:50%;top:-6%;bottom:-8%;width:clamp(8px,1.25vw,18px);transform:translateX(-50%);background:linear-gradient(90deg,transparent,rgba(241,220,168,.28) 25%,rgba(255,246,217,.95) 50%,rgba(160,218,226,.3) 76%,transparent);clip-path:polygon(42% 0,68% 10%,38% 23%,66% 37%,36% 53%,61% 67%,40% 82%,57% 100%,32% 100%,45% 82%,24% 67%,48% 53%,22% 37%,49% 23%,30% 10%);filter:drop-shadow(0 0 9px rgba(241,220,168,.72))}
@@ -913,10 +922,16 @@ body.is-reduced .film-production[data-film="FM-C"] .film-separated-palms,body.is
   .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.88) brightness(1.08); }
   .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.92) contrast(.98) brightness(1.2); }
   .cinema-stage[data-type="shadow"] .cinema-actor img,.cinema-stage[data-type="side"] .cinema-actor img{filter:saturate(.78) brightness(1.08) contrast(1.02)}
+  .fm-c-act4-frame{inset:0;background:#080c0c}
+  .fm-c-act4-frame::before{z-index:0;opacity:1}
+  .fm-c-act4-frame img{position:relative;z-index:1;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.36)) saturate(.84) contrast(1.03) brightness(.92)}
+  .fm-c-act4-frame::after{z-index:1}
   .film-separated-palms{inset:10% 0 24%}
   .palms-child{width:38%;height:60%}.palms-qing{left:4%}.palms-modern{right:4%}
   .palms-child b{top:38%;width:46%}.palms-qing b{right:-20%}.palms-modern b{left:-20%}
 }
+
+body.is-reduced .fm-c-act4-frame img{transform:none!important}
 
 @media (max-width: 430px) {
   .brand small { display: none; }

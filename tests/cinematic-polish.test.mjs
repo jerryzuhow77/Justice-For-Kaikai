@@ -127,9 +127,9 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
   assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
-  assert.match(loader, /const version="20260824-prologue-text-1"/);
+  assert.match(loader, /const version="20260824-prologue-text-2"/);
   assert.match(html, /cinematic-revamp\.css\?v=20260824-prologue-text-1/);
-  assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-text-1/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-text-2/);
 });
 
 test("keeps every prologue line readable without depending on GSAP", async () => {
