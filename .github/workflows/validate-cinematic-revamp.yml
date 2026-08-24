@@ -11,10 +11,13 @@ on:
       - index.html
       - assets/css/cinematic-revamp.css
       - assets/css/cinematic-revamp-core.css
+      - assets/css/chair-prologue-*.css
       - assets/js/cinematic-revamp.js
       - assets/js/cinematic-revamp-core.js
+      - assets/js/chair-prologue-*.js
       - assets/data/scenes.js
       - assets/data/film-productions.js
+      - tests/cinematic-polish.test.mjs
       - .github/workflows/validate-cinematic-revamp.yml
 
 permissions:
@@ -31,7 +34,11 @@ jobs:
         run: |
           node --check assets/js/cinematic-revamp.js
           node --check assets/js/cinematic-revamp-core.js
+          node --check assets/js/chair-prologue-refined.js
           node --check assets/data/film-productions.js
+
+      - name: Run cinematic polish regression tests
+        run: node --test tests/cinematic-polish.test.mjs
 
       - name: Validate HTML structure and referenced assets
         shell: bash

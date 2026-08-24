@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260824-remove-scene-library-2";
+  const version="20260824-prologue-skip-1";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
