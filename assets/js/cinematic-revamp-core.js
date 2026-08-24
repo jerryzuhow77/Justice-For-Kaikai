@@ -4,6 +4,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const assetUrl = (value) => new URL(value, document.baseURI).href;
   const scenes = (window.KAIKAI_SCENES || []).slice();
   const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
   const filmProductions = window.KAIKAI_FILM_PRODUCTIONS || {};
@@ -500,7 +501,7 @@
     button.type = "button";
     button.className = "film-act-card";
     button.dataset.sceneId = scene.id;
-    button.style.setProperty("--film-image", `url('${scene.image}')`);
+    button.style.setProperty("--film-image", `url('${assetUrl(scene.image)}')`);
     button.style.setProperty("--film-position", FILM_POSITIONS[scene.id] || "center");
     button.setAttribute("aria-label", `播放${ACT_LABELS[scene.id]}：${scene.title}`);
     const badge = document.createElement("span"); badge.textContent = `ACT ${String(index + 1).padStart(2, "0")}`;
@@ -549,7 +550,7 @@
     item.dataset.sceneId = scene.id;
     const button = document.createElement("button"); button.type = "button"; button.className = `copy-scene-card ${scene.type}`; button.setAttribute("aria-label", `播放隨文${TYPE_LABELS[scene.type]}：${scene.title}`);
     const poster = document.createElement("span"); poster.className = "copy-scene-poster";
-    if (scene.image) poster.style.setProperty("--poster", `url('${scene.image}')`);
+    if (scene.image) poster.style.setProperty("--poster", `url('${assetUrl(scene.image)}')`);
     if (scene.type !== "film") {
       ["female", "male"].forEach((sex) => { const pose = actorPosePlan(scene, sex)[4]; const image = document.createElement("img"); image.className = `copy-scene-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, pose); configurePreviewActor(image, scene, sex, pose); poster.append(image); });
     }
@@ -1326,7 +1327,7 @@
       const action = actInfo?.action || scene.actions[actionIndex] || `分鏡 ${actionIndex + 1}`;
       const button = document.createElement("button"); button.type = "button"; button.className = "story-beat"; button.dataset.number = production ? `幕${CHINESE_ACT_NUMBERS[actionIndex]}` : String(actionIndex + 1).padStart(2, "0"); button.title = actInfo ? `${actInfo.title}｜${action}` : action; button.setAttribute("aria-label", production ? `跳到第${CHINESE_ACT_NUMBERS[actionIndex]}幕：${actInfo.title}` : `跳到分鏡${actionIndex + 1}：${action}`);
       if (scene.image) {
-        button.style.setProperty("--beat-image", `url('${scene.image}')`);
+        button.style.setProperty("--beat-image", `url('${assetUrl(scene.image)}')`);
         if (production) {
           const view = productionView(actInfo);
           button.style.setProperty("--beat-size", view.size);

@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260824-prologue-text-1";
+  const version="20260824-prologue-text-2";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
