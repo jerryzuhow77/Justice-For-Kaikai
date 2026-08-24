@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260824-chair-mobile-v2";
+  const version="20260824-chair-mobile-v2b";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
@@ -25,7 +25,7 @@
     let settled=false;
     const finish=()=>{if(settled)return;settled=true;resolve();};
     link.rel="stylesheet";
-    link.href=`assets/css/chair-prologue-mobile-v2.css?v=${version}`;
+    link.href=`assets/css/chair-prologue-mobile-v2-runtime.css?v=${version}`;
     link.dataset.chairMobileV2="1";
     link.onload=finish;
     link.onerror=finish;
