@@ -61,8 +61,11 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
 });
 
 test("FM-C fourth act cuts five concept plates across its GSAP clock", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
+  const legacy = await readFile(new URL("assets/js/cinematic-revamp-legacy.js", root), "utf8");
+  const refinedPrologue = await readFile(new URL("assets/js/chair-prologue-refined.js", root), "utf8");
   const shots = [
     "shot-01-object.webp",
     "shot-02-theatre.webp",
@@ -78,7 +81,15 @@ test("FM-C fourth act cuts five concept plates across its GSAP clock", async () 
   assert.match(app, /const FM_C_ACT4_CUTS = \[0, \.16, \.35, \.59, \.81, 1\]/);
   assert.match(app, /function addFmCAct4Sequence/);
   assert.match(app, /actInfo\.effect === "responsibility"/);
+  assert.match(app, /params\.get\("act"\)/);
+  assert.match(app, /新版五鏡頭/);
+  assert.match(app, /url\.searchParams\.set\("act", String\(actIndex \+ 1\)\)/);
+  assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
+  assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
+  assert.match(html, /rev=20260824-fmc-act4-direct-2/);
   assert.match(css, /\.fm-c-act4-sequence/);
+  assert.match(css, /\.fm-c-act4-sequence\{position:absolute;z-index:3/);
+  assert.match(css, /button\[data-recut="true"\]/);
   assert.match(css, /data-act="4"\] \.film-separated-palms\{display:none\}/);
   assert.match(css, /body\.is-reduced \.fm-c-act4-frame img/);
 });
