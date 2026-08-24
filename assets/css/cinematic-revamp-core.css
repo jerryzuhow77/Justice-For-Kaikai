@@ -858,6 +858,11 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .cinema-stage[data-production="true"] .cinema-bg { filter: saturate(.88) contrast(1.01) brightness(1.16); }
 .cinema-stage[data-production="true"] .cinema-depth { opacity: .3; filter: saturate(.92) brightness(1.18); }
 .cinema-stage[data-production="true"] .cinema-atmosphere { opacity: .25; mix-blend-mode: screen; }
+.cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.94) contrast(.98) brightness(1.3); }
+.cinema-stage[data-production="true"] .cinema-depth { opacity:.34; filter:saturate(.96) brightness(1.28); }
+.cinema-stage[data-type="shadow"] .cinema-actor img { filter:saturate(.8) brightness(.94) contrast(1.08) sepia(.08); }
+.cinema-stage[data-type="side"] .cinema-actor img { filter:saturate(.7) brightness(1.04) contrast(1.02); }
+.cinema-focus { mix-blend-mode:screen; opacity:.3; }
 .cinema-visual::after { background: linear-gradient(180deg, rgba(4,9,8,.02), transparent 56%, rgba(4,9,8,.46)); }
 .story-beat { filter: saturate(.72) brightness(.82); }
 .story-beat.is-current { filter: saturate(.96) brightness(1.08); }
@@ -883,10 +888,33 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .film-production[data-film="FM-C"][data-act="5"]::before { opacity:.92; background:radial-gradient(ellipse at 50% 47%,rgba(255,226,158,.64),transparent 25%),linear-gradient(90deg,rgba(130,77,44,.2),rgba(115,174,180,.23)); }
 .film-production[data-film="FM-C"][data-act="5"]::after { opacity:.7; background:linear-gradient(90deg,rgba(28,20,14,.52) 0 43%,transparent 43.5% 49.4%,rgba(255,239,190,.6) 49.7% 50.3%,transparent 50.6% 56.5%,rgba(22,34,34,.46) 57%); }
 
+/* 第四部核心構圖：椅仔姑與剴剴隔著時空裂縫相對合掌。 */
+.film-separated-palms{position:absolute;z-index:7;inset:7% 8% 17%;display:flex;align-items:center;justify-content:center;opacity:0;filter:drop-shadow(0 20px 25px rgba(0,0,0,.4))}
+.film-separated-palms>em{position:absolute;z-index:4;left:50%;top:-6%;bottom:-8%;width:clamp(8px,1.25vw,18px);transform:translateX(-50%);background:linear-gradient(90deg,transparent,rgba(241,220,168,.28) 25%,rgba(255,246,217,.95) 50%,rgba(160,218,226,.3) 76%,transparent);clip-path:polygon(42% 0,68% 10%,38% 23%,66% 37%,36% 53%,61% 67%,40% 82%,57% 100%,32% 100%,45% 82%,24% 67%,48% 53%,22% 37%,49% 23%,30% 10%);filter:drop-shadow(0 0 9px rgba(241,220,168,.72))}
+.palms-child{position:absolute;bottom:0;width:min(27%,250px);height:68%;font-style:normal}
+.palms-child::before{content:"";position:absolute;left:50%;top:0;width:35%;aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:linear-gradient(145deg,#6f4631,#2d211c);box-shadow:0 -6px 0 -2px rgba(28,20,16,.8),0 0 0 5px rgba(234,192,127,.12)}
+.palms-child::after{content:"";position:absolute;left:19%;right:19%;top:25%;bottom:0;border-radius:46% 46% 15% 15%/20% 20% 7% 7%;background:linear-gradient(105deg,#6c3f2e,#ad7046 48%,#563329);box-shadow:inset 0 0 0 1px rgba(244,216,169,.18)}
+.palms-modern::before{background:linear-gradient(145deg,#6e513d,#342b27)}
+.palms-modern::after{background:repeating-linear-gradient(0deg,#6e9fb0 0 11px,#d7e4e4 11px 20px,#426f82 20px 31px);box-shadow:inset 0 0 0 1px rgba(222,241,242,.28)}
+.palms-qing{left:17%}.palms-modern{right:17%}
+.palms-child b{position:absolute;z-index:3;top:35%;width:54%;height:14%;border-radius:999px;background:linear-gradient(90deg,#916449,#c99b71);transform-origin:85% 50%}
+.palms-qing b{right:-28%;transform:rotate(-5deg)}.palms-modern b{left:-28%;transform:rotate(5deg) scaleX(-1)}
+.palms-child b::after{content:"";position:absolute;top:50%;right:-13%;width:26%;aspect-ratio:.62;border-radius:60% 60% 44% 44%;background:#d1a27b;transform:translateY(-50%)}
+.palms-modern b::after{right:auto;left:-13%}
+.palms-child span{position:absolute;z-index:5;left:50%;bottom:-1.8rem;padding:.22rem .5rem;color:#f5ead7;border:1px solid rgba(242,220,174,.34);border-radius:999px;background:rgba(11,20,19,.76);font:700 clamp(.55rem,.9vw,.72rem)/1 var(--sans);letter-spacing:.08em;white-space:nowrap;transform:translateX(-50%)}
+.film-production[data-film="FM-C"] .film-separated-palms{visibility:visible}
+.film-production:not([data-film="FM-C"]) .film-separated-palms{display:none}
+body.is-reduced .film-production[data-film="FM-C"] .film-separated-palms,body.is-reduced .film-production[data-film="FM-C"] .film-separated-palms>em{opacity:1}
+
 @media (max-width:760px) {
   .gate-backdrop { filter:saturate(.8) brightness(.98); }
   .hero-vignette { background:linear-gradient(180deg,rgba(5,11,10,.1),rgba(5,11,10,.62) 72%,rgba(5,11,10,.82)); }
   .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.88) brightness(1.08); }
+  .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.92) contrast(.98) brightness(1.2); }
+  .cinema-stage[data-type="shadow"] .cinema-actor img,.cinema-stage[data-type="side"] .cinema-actor img{filter:saturate(.78) brightness(1.08) contrast(1.02)}
+  .film-separated-palms{inset:10% 0 24%}
+  .palms-child{width:38%;height:60%}.palms-qing{left:4%}.palms-modern{right:4%}
+  .palms-child b{top:38%;width:46%}.palms-qing b{right:-20%}.palms-modern b{left:-20%}
 }
 
 @media (max-width: 430px) {
