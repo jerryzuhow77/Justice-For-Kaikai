@@ -518,12 +518,14 @@
     const details = document.createElement("details");
     details.className = "library-transcript";
     const summary = document.createElement("summary");
-    const title = document.createElement("span"); title.textContent = `${TYPE_LABELS[scene.type]}逐字稿`;
-    const hint = document.createElement("small"); hint.textContent = "上下展開／收合";
-    summary.append(title, hint);
     const lines = document.createElement("div"); lines.className = "library-transcript-lines";
     const production = productionFor(scene);
     const transcriptLines = production?.cues || scene.dialogue;
+    const title = document.createElement("span"); title.textContent = `完整${TYPE_LABELS[scene.type]}逐字稿`;
+    const hint = document.createElement("small"); hint.textContent = `${transcriptLines.length}段對話／場景說明 · 點擊展開或收合`;
+    summary.append(title, hint);
+    summary.setAttribute("aria-label", `${scene.title}完整逐字稿，共${transcriptLines.length}段，點擊展開或收合`);
+    details.dataset.lineCount = String(transcriptLines.length);
     transcriptLines.forEach((line) => {
       const paragraph = document.createElement("p");
       const speaker = document.createElement("b"); speaker.textContent = Number.isFinite(line.time) ? `${formatTime(line.time)} · ${line.speaker}` : line.speaker;
