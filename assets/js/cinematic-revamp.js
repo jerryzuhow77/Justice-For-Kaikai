@@ -1,6 +1,7 @@
 (function(){
   "use strict";
   const version="20260824-prologue-text-2";
+  const coreVersion="20260824-fmc-act4-sequence-1";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
@@ -34,7 +35,7 @@
   });
 
   const bootDesignPolish=()=>load(`assets/js/chapter1-design-polish.js?v=${version}`,null,()=>{});
-  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${version}`,()=>bootDesignPolish(),()=>bootDesignPolish());
+  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${coreVersion}`,()=>bootDesignPolish(),()=>bootDesignPolish());
   let started=false;
 
   const start=()=>{
