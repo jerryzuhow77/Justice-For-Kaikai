@@ -37,13 +37,14 @@
   <link rel="preload" as="image" href="assets/img/films/fm-a-buried-name.webp">
   <link rel="preload" as="image" href="assets/img/films/fm-c-two-worlds-v2.webp" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260824-prologue-text-1&amp;rev=20260824-fmc-act4-direct-2&amp;home=20260824-official-home-1&amp;audio=20260824-prologue-audio-1">
-  <link rel="stylesheet" href="assets/css/official-home-v2.css?v=20260824-evidence-home-1">
+  <link rel="stylesheet" href="assets/css/official-home-v2.css?v=20260824-editorial-home-2">
   <script defer src="assets/vendor/gsap/gsap.min.js"></script>
   <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
   <script defer src="assets/data/scenes.js?v=20260824-two-worlds-1"></script>
   <script defer src="assets/data/film-productions.js?v=20260824-web-closeout-1"></script>
+  <script defer src="assets/data/editorial-home-data.js?v=20260824-editorial-home-2"></script>
   <script defer src="assets/js/cinematic-revamp.js?v=20260824-prologue-text-2&amp;rev=20260824-fmc-act4-direct-2&amp;home=20260824-official-home-2&amp;audio=20260824-prologue-audio-1"></script>
-  <script defer src="assets/js/official-home-v2.js?v=20260824-evidence-home-1"></script>
+  <script defer src="assets/js/official-home-v2.js?v=20260824-editorial-home-2"></script>
   <title>JUSTICE FOR KAIKAI｜為剴剴，也為下一個孩子</title>
   <script type="application/ld+json">
   {
@@ -114,7 +115,7 @@
   <header class="site-header" id="site-header" inert>
     <a class="brand" href="#top" aria-label="返回頁首"><span class="brand-seal" aria-hidden="true">開</span><span><b>剴剴案特別專題</b><small>四部五幕電影 · 二十場隨文劇場</small></span></a>
     <nav class="main-nav" id="main-nav" aria-label="主要導覽">
-      <a href="#case-progress">案件進度</a><a href="#reading-map">閱讀地圖</a><a href="#full-copy">八篇正文</a><a href="#responsibility-map">責任之門</a><a href="#film-reel">四部電影</a><a href="#source-guide">來源界線</a><a href="#action">守護行動</a>
+      <a href="#case-progress">案件進度</a><a href="#reading-map">閱讀地圖</a><a href="#full-copy">八篇正文</a><a href="#film-reel">四部動畫</a><a href="#source-guide">來源界線</a><a href="#glossary">名詞表</a><a href="#action">守護行動</a>
       <span class="locale-links" aria-label="文字版語言"><a href="story.html" lang="zh-Hant" aria-label="繁體中文文字版">繁</a><a href="story-zh-hans.html" lang="zh-Hans" aria-label="簡體中文文字版">简</a><a href="story-en.html" lang="en" aria-label="English text version">EN</a><a href="story-ja.html" lang="ja" aria-label="日本語テキスト版">日</a></span>
     </nav>
     <div class="header-tools"><button class="header-button ambient-toggle" id="ambient-toggle" type="button" data-ambient-toggle aria-pressed="false" aria-label="播放全站背景音樂"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span><span class="sound-label">背景音樂</span></button><button class="header-button" id="motion-toggle" type="button" aria-pressed="false">動態</button><button class="header-button nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">選單</button></div>
@@ -132,7 +133,7 @@
           <p class="hero-deck">椅仔姑的傳說停在竹椅前，剴剴的故事停在制度門外。相隔百年，孩子等待的不是神蹟，而是活著的大人更早看見、更早查證、更早伸手。</p>
           <p class="hero-mission">這座官網以剴剴案為起點，持續記錄孩子的生命、司法進度、制度責任與守護行動。願下一個孩子，在傷害發生以前，就有人把門打開。</p>
           <div class="hero-actions"><button class="button button-primary" id="hero-play-reel" type="button">觀看四部主線動畫</button><a class="button button-ghost" href="#full-copy">閱讀第一章</a><a class="button button-text" href="#action">守護行動</a></div>
-          <p class="update-chip">案件資料與司法狀態核對至 2026年8月16日</p>
+          <p class="update-chip"><time datetime="2026-08-16" data-status-checked>司法狀態核對至 2026年8月16日</time></p>
         </div>
         <aside class="hero-brief" aria-label="官網快覽"><p>JUSTICE FOR KAIKAI · 官網快覽</p><dl><div><dt>核心專題</dt><dd>剴剴案</dd></div><div><dt>正文架構</dt><dd>8篇</dd></div><div><dt>主線動畫</dt><dd>4部 × 5幕</dd></div><div><dt>隨文劇場</dt><dd>20場</dd></div></dl><a href="#reading-map">開啟閱讀地圖 <span aria-hidden="true">↓</span></a></aside>
       </div>
@@ -149,7 +150,7 @@
         </div>
         <div class="section-intro">
           <p>施虐主案、社工司法程序與制度改革，不是同一件事，也不應用其中一軌替另一軌下結論。</p>
-          <div class="case-check"><span>司法狀態核對至 2026年8月16日</span><a href="#version-history">查看修訂紀錄 <span aria-hidden="true">↓</span></a></div>
+          <div class="case-check"><time datetime="2026-08-16" data-status-checked>司法狀態核對至 2026年8月16日</time><a href="#version-history">查看修訂紀錄 <span aria-hidden="true">↓</span></a></div>
         </div>
       </header>
 
@@ -178,7 +179,7 @@
         <div><p class="kicker">115 DAYS · 五個關鍵節點</p><h3>每一次留下紀錄，<br>都應帶著查證界線閱讀。</h3></div>
         <p>以下節點整理既有網站材料；它們不是五個孤立畫面，也不把事後結果倒寫成當時每個人的主觀認知。</p>
       </div>
-      <ol class="case-timeline">
+      <ol class="case-timeline" id="case-timeline" data-source="assets/data/editorial-home-data.js">
         <li><time datetime="2023-09-01">09.01</time><span class="timeline-marker" aria-hidden="true"></span><div><small>第 1 日</small><h4>開始全日托照顧</h4><p>孩子交由合作的全日托照顧者照顧。</p><em>界線｜全日托不自動等同法定寄養或家外安置。</em></div></li>
         <li><time datetime="2023-09-25">09.25</time><span class="timeline-marker" aria-hidden="true"></span><div><small>第 25 日</small><h4>第一次訪視</h4><p>紀錄額頭瘀青；當時說法為遊玩碰撞。</p><em>界線｜紀錄、當時說法與法院事後判斷分欄。</em></div></li>
         <li><time datetime="2023-10-23">10.23</time><span class="timeline-marker" aria-hidden="true"></span><div><small>第 53 日</small><h4>第二次訪視</h4><p>紀錄較安靜、沒有精神；當時說法為剛睡醒。</p><em>界線｜不替當時人員補寫主觀明知。</em></div></li>
@@ -240,6 +241,7 @@
         <p class="section-intro">版面更新日不等於案件狀態核對日。兩種日期分開標示，避免讓視覺改版被誤讀為司法資訊更新。</p>
       </header>
       <ol class="version-list">
+        <li><time datetime="2026-08-24" data-site-updated>2026.08.24</time><span class="version-type">閱讀</span><div><h3>首頁閱讀路徑第二輪收斂</h3><p>首頁順序調整為案件進度、閱讀地圖、八篇正文、四張動畫卡與來源；新增資料驅動時間軸、固定來源標籤、素材欄位、名詞表及第二章三聯證據製作門檻。配樂預設收合，場景與美術移至頁尾收合。</p><details class="version-sources"><summary>本次新增／核對來源（2）</summary><ul><li><a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0050001" target="_blank" rel="noopener noreferrer">《兒童及少年福利與權益保障法》</a></li><li><a href="https://www.judicial.gov.tw/tw/cp-209-210-b0504-1.html" target="_blank" rel="noopener noreferrer">司法院民、刑事訴訟審判系統說明</a></li></ul></details></div></li>
         <li><time datetime="2026-08-24">2026.08.24</time><span class="version-type">結構</span><div><h3>官網首頁資訊架構更新</h3><p>新增司法進度三軌、115日五個節點、八篇資料卡、六扇制度之門、章末空鏡與製作倫理卡；案件認定內容未因版面更新而改寫。</p><a href="#case-progress">查看新增內容 <span aria-hidden="true">↑</span></a></div></li>
         <li><time datetime="2026-08-24">2026.08.24</time><span class="version-type">視覺</span><div><h3>官網主視覺與入口調整</h3><p>剴剴與紅衣椅仔姑圖用於進場直式畫框、手機版首頁與官網主視覺；原直式門廊圖移至四部電影區。</p><a href="#top">返回主視覺 <span aria-hidden="true">↑</span></a></div></li>
         <li><time datetime="2026-08-16">2026.08.16</time><span class="version-type">資料</span><div><h3>第一章資料與司法狀態核對</h3><p>核對直接施虐案終局報導、社工案一審及上訴進度、官方法規與兒少統計；不同來源層級分開標示。</p><a href="story.html#source-index">查看全部來源 <span aria-hidden="true">→</span></a></div></li>
@@ -247,7 +249,7 @@
     </section>
 
     <section class="film-reel section-shell" id="film-reel" aria-labelledby="film-reel-title">
-      <header class="section-heading film-heading"><div><p class="kicker">FOUR FILMS · FIVE ACTS EACH</p><h2 id="film-reel-title">四部動畫，各自走完五幕；<br>最後沿同一條線走到清晨。</h2></div><div class="section-intro"><p>土、繡線、布包、青絲與門縫彼此承接。每部電影均依獨立腳本、固定片長與專屬配樂重製，也能在同一播放器裡連續觀看。</p><button class="button button-primary" id="play-full-reel" type="button">播放四部連續版</button></div></header>
+      <header class="section-heading film-heading"><div><p class="kicker">FOUR FILMS · 四部動畫總覽</p><h2 id="film-reel-title">先看四張卡，<br>完整動畫回到對應章節。</h2></div><div class="section-intro"><p>首頁只保留四部主線動畫入口；五幕完整版仍放在各篇正文旁，避免同一內容重複佔據閱讀路徑。</p></div></header>
       <div class="reel-stage" id="reel-stage" aria-hidden="true"><div class="reel-stage-image"></div><div class="reel-stage-shadow"></div><div class="reel-stage-thread"></div><div class="reel-stage-copy"><span>FILM A · D · B · C</span><strong>門沒有更早打開以前</strong><small>每一部都以五幕回到活著的大人</small></div></div>
       <div class="film-act-grid" id="film-act-grid" aria-live="polite"></div>
     </section>
@@ -287,9 +289,67 @@
 
     <section class="source-guide" id="source-guide" aria-labelledby="source-guide-title"><div class="source-guide-inner section-shell"><header class="section-heading"><div><p class="kicker">SOURCE BEFORE STORY</p><h2 id="source-guide-title">文學保留感受，<br>證據決定能說到哪裡。</h2></div><div class="section-intro"><p>每段文字與動畫都標示材料屬性；不同來源不互相冒充，也不以戲劇效果預先替司法下結論。</p><a href="story.html#source-index">查看完整查證索引 <span aria-hidden="true">→</span></a></div></header><div class="source-grid"><article><span>01</span><b>法院／官方</b><p>裁判、新聞稿、法規與統計資料。</p></article><article><span>02</span><b>具名報導／公開說法</b><p>保留報導範圍、語境與引述界線。</p></article><article><span>03</span><b>庭審筆記／匿名來函</b><p>可記錄經驗，不等同法院逐字稿。</p></article><article><span>04</span><b>文學／藝術重構</b><p>非真實錄音，也非案件人物原話。</p></article></div></div></section>
 
+    <section class="materials-guide section-shell" id="materials-guide" aria-labelledby="materials-guide-title">
+      <header class="section-heading">
+        <div><p class="kicker">MATERIAL REGISTER · 素材與欄位</p><h2 id="materials-guide-title">先把資料放進正確欄位，<br>再決定能不能進入敘事。</h2></div>
+        <p class="section-intro">以下是網站可長期維護的素材規格。示意圖不含個資，也不被當作本案原始證據。</p>
+      </header>
+      <ul class="source-label-key" id="source-label-key" aria-label="五種固定來源標籤">
+        <li data-source="court"><strong>法院／官方</strong><span>裁判、新聞稿、法規、公報與統計</span></li>
+        <li data-source="report"><strong>具名報導</strong><span>保留媒體、日期與引述範圍</span></li>
+        <li data-source="notes"><strong>庭審筆記</strong><span>不是法院逐字筆錄</span></li>
+        <li data-source="letter"><strong>來函</strong><span>標示匿名與核實限制</span></li>
+        <li data-source="reconstruction"><strong>藝術重構</strong><span>不作證、不冒充病歷或錄音</span></li>
+      </ul>
+      <div class="materials-accordion">
+        <details>
+          <summary><span>01</span><div><strong>115 日資料表與日期章</strong><small>節點、邊界與更新日期由資料檔生成</small></div></summary>
+          <div class="material-body material-data-body">
+            <div class="date-stamp-sample" aria-label="去識別化日期章示意"><b>核對日期</b><time datetime="2026-08-24" data-site-updated>2026.08.24</time><small>版本與司法核對日分開</small></div>
+            <div><p>首頁五個節點由同一份編輯資料檔產生，避免日期、文字與修訂紀錄各自漂移。</p><p class="material-links"><a href="assets/data/timeline-115-days.csv" download>下載 115 日時間軸 CSV</a><a href="assets/data/editorial-home-data.js">查看網頁資料檔</a></p></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>02</span><div><strong>通訊紀錄示意</strong><small>保留時間、角色、可核對內容與原始位置</small></div></summary>
+          <div class="material-body">
+            <div class="message-record" aria-label="去識別化通訊紀錄欄位示意"><header><time datetime="2023-12">2023.12.XX · 時間隱去</time><span>示意／非案件原文</span></header><dl><div><dt>角色</dt><dd>照顧端／聯繫端</dd></div><div><dt>可核對內容</dt><dd>只記錄原始材料直接支持的事項</dd></div><div><dt>原始位置</dt><dd>檔名、頁碼或訊息序號</dd></div><div><dt>核實狀態</dt><dd>待交叉來源／已核對／說法互異</dd></div></dl></div>
+            <p>姓名、頭像、電話、帳號與無關對話不進入公開頁面；截圖若無法確認來源，不轉寫成確定事實。</p>
+          </div>
+        </details>
+        <details>
+          <summary><span>03</span><div><strong>法院座位閱讀示意</strong><small>協助讀者分辨發言角色，不重建本案法庭</small></div></summary>
+          <div class="material-body court-material">
+            <div class="court-plan" role="img" aria-label="一般刑事法庭閱讀定位示意，前方為審判席，中段為檢察與辯護席，中央為陳述位置，後方為旁聽區"><span class="court-bench">審判席</span><span class="court-prosecution">檢察方</span><span class="court-center">證人／陳述位置</span><span class="court-defense">被告與辯護方</span><span class="court-gallery">旁聽區</span></div>
+            <p><strong>非本案正式席位圖。</strong>實際席位會依案件程序、法庭空間、被害人保護與法院指示調整；本站只用它幫助讀者辨認誰在說話。</p>
+          </div>
+        </details>
+        <details>
+          <summary><span>04</span><div><strong>八篇題簽與環境聲清單</strong><small>題句回到章首，聲音只做非案件聲景</small></div></summary>
+          <div class="material-body material-sound-body">
+            <div><p>八組古典句、閩南語題句與白話解說，已各自放在對應篇章開頭，不另設重複專區。</p><a href="story.html#八篇正文">查看八篇題簽與白話解說 →</a></div>
+            <div class="sound-register"><b>可製作</b><span>翻頁</span><span>鍵盤</span><span>推床輪</span><span>走廊腳步</span><span>日光燈低鳴</span><b class="sound-no">不使用</b><span>哭聲</span><span>心跳</span><span>案件真實錄音</span></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="glossary section-shell" id="glossary" aria-labelledby="glossary-title">
+      <header class="section-heading">
+        <div><p class="kicker">GLOSSARY · 司法與兒少保護名詞表</p><h2 id="glossary-title">同一個詞，<br>先確認它在這裡指什麼。</h2></div>
+        <p class="section-intro">法定用語、制度說明與本站編輯標籤分開標示；名詞表提供閱讀定位，不取代個案法律意見。</p>
+      </header>
+      <div class="glossary-list" id="glossary-list" aria-live="polite"><p class="data-loading">正在載入名詞表……</p></div>
+      <noscript><p class="noscript-note">請參閱<a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0050001">《兒童及少年福利與權益保障法》</a>與本站<a href="#source-guide">來源界線</a>。</p></noscript>
+    </section>
+
     <section class="full-copy" id="full-copy" aria-labelledby="full-copy-title" tabindex="-1"><div class="full-copy-heading section-shell"><div><p class="kicker">第一章｜沒有父母的孤兒</p><h2 id="full-copy-title">完整文案與動畫，<br>在正確的章節彼此照應。</h2></div><div class="section-intro"><p>正文是主體，劇場是轉場。略過所有動畫，仍能連續閱讀完整內容與來源。</p><div class="stat-chips"><span>8篇正文</span><span>4部 × 5幕</span><span>20場隨文劇場</span><span>全部可略過</span></div></div></div><div class="copy-layout section-shell"><aside class="copy-rail" aria-label="完整文案章節導覽"><header><span>READING MAP</span><strong>章節導覽</strong></header><nav id="copy-chapter-nav"><span>正在整理章節……</span></nav><p>電影負責大敘事轉折，隨文劇場負責逐章追問；兩者都不取代正文。</p><a href="story.html">開啟純文字閱讀模式 <span aria-hidden="true">→</span></a></aside><article class="inline-story" id="inline-story-content" aria-busy="true"><div class="copy-loading"><span></span><p>完整文案載入中……</p></div></article></div><noscript><p class="noscript-note section-shell">目前瀏覽器停用了 JavaScript，請直接開啟 <a href="story.html">完整文字閱讀模式</a>。</p></noscript></section>
 
-    <section class="visual-system" aria-labelledby="visual-system-title"><div class="visual-system-inner section-shell"><div class="visual-copy"><p class="kicker">VISUAL ETHICS · 場景與美術</p><h2 id="visual-system-title">鏡頭可以靠近，<br>但不越過孩子的尊嚴。</h2><p>改版後的場景以遠景、建築、中景人物、互動物件、環境與前景門框分層；角色互動遵循「一人先動、另一人後反應」，不讓所有元素同時喧鬧。</p><dl><div><dt>場景</dt><dd>多層視差、門框穿越、景深與光影</dd></div><div><dt>角色</dt><dd>預備、猶豫、接觸、重量轉移與收手</dd></div><div><dt>鏡頭</dt><dd>桌機16:9、手機直式獨立剪輯</dd></div><div><dt>倫理</dt><dd>不重演施虐、不追逐眼淚、不偽造證詞</dd></div></dl></div><div class="visual-montage" aria-hidden="true"><figure class="montage-a"><span></span><figcaption>土與退紅繡線</figcaption></figure><figure class="montage-b"><span></span><figcaption>雨夜與未抵達的長廊</figcaption></figure><figure class="montage-c"><span></span><figcaption>青絲、白髮與證人席</figcaption></figure><figure class="montage-d"><span></span><figcaption>兩個朝代▪︎不同世界▪︎同一扇門</figcaption></figure></div></div></section>
+    <section class="visual-system visual-system-collapsed" aria-labelledby="visual-system-title">
+      <details class="visual-system-details">
+        <summary class="section-shell"><span><b>VISUAL ETHICS</b><strong>場景與美術製作手記</strong></span><small>頁尾收合內容</small></summary>
+        <div class="visual-system-inner section-shell"><div class="visual-copy"><p class="kicker">VISUAL ETHICS · 場景與美術</p><h2 id="visual-system-title">鏡頭可以靠近，<br>但不越過孩子的尊嚴。</h2><p>改版後的場景以遠景、建築、中景人物、互動物件、環境與前景門框分層；角色互動遵循「一人先動、另一人後反應」，不讓所有元素同時喧鬧。</p><dl><div><dt>場景</dt><dd>多層視差、門框穿越、景深與光影</dd></div><div><dt>角色</dt><dd>預備、猶豫、接觸、重量轉移與收手</dd></div><div><dt>鏡頭</dt><dd>桌機16:9、手機直式獨立剪輯</dd></div><div><dt>倫理</dt><dd>不重演施虐、不追逐眼淚、不偽造證詞</dd></div></dl></div><div class="visual-montage" aria-hidden="true"><figure class="montage-a"><span></span><figcaption>土與退紅繡線</figcaption></figure><figure class="montage-b"><span></span><figcaption>雨夜與未抵達的長廊</figcaption></figure><figure class="montage-c"><span></span><figcaption>青絲、白髮與證人席</figcaption></figure><figure class="montage-d"><span></span><figcaption>兩個朝代▪︎不同世界▪︎同一扇門</figcaption></figure></div></div>
+      </details>
+    </section>
 
     <section class="chapter-two-preview" id="chapter-two-preview" aria-labelledby="chapter-two-title" data-chapter-two-version="chosen-life-v5">
       <div class="chapter-two-choice-field" aria-hidden="true">
@@ -316,6 +376,16 @@
           </blockquote>
           <p class="chapter-two-note">第二章不先從制度究責開始。我們把鏡頭降到孩子的高度，看大人如何一次次替他選擇，而一個還不能替自己決定的孩子，如何生活在那些選擇之中。</p>
           <p class="chapter-two-ethic">「沒人要」不是孩子的標籤。這一章追問的是：當所有人都能替一個孩子決定，他卻無法決定自己的人生，替他做選擇的大人，要如何確定那是一個安全的選擇？</p>
+          <aside class="chapter-two-evidence-gate" aria-labelledby="chapter-two-evidence-title">
+            <header><span>EDITORIAL HOLD · 暫緩製作</span><h3 id="chapter-two-evidence-title">三聯證據畫面留在第二章，來源完整前不上線。</h3></header>
+            <p>「辯方譯文／庭上攻防／法院核心認定」不能只靠一句爭議語句拼接。必須先取得可追溯原文與完整語境、可核對的庭上攻防材料，以及公開裁判中對應的核心認定。</p>
+            <ol aria-label="三聯證據畫面製作門檻">
+              <li><b>01</b><strong>辯方譯文</strong><span>待原文、譯者、前後文與版本齊備</span></li>
+              <li><b>02</b><strong>庭上攻防</strong><span>待可追溯筆錄、公開報導或書狀交叉核對</span></li>
+              <li><b>03</b><strong>法院核心認定</strong><span>只摘錄公開裁判真正採認的理由</span></li>
+            </ol>
+            <small>目前狀態：資料整理中。此處是製作條件，不是證據內容，也不預示法院結論。</small>
+          </aside>
           <nav class="chapter-actions" aria-label="第二章預告導覽">
             <a href="#reading-map">回到閱讀地圖</a>
             <a href="story.html#chapter-two-preview">閱讀文字版預告</a>
