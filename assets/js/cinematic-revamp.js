@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260824-copy-polish-1";
+  const version="20260824-animation-closeout-1";
   const load=(src,onload,onerror)=>{
     const script=document.createElement("script");
     script.src=src;
@@ -11,7 +11,6 @@
   };
   const bootDesignPolish=()=>load(`assets/js/chapter1-design-polish.js?v=${version}`,null,()=>{});
   const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${version}`,()=>bootDesignPolish(),()=>bootDesignPolish());
-  const bootCopyPolish=()=>load(`assets/data/chapter1-copy-polish.js?v=${version}`,bootLegacy,bootLegacy);
   let started=false;
   const start=()=>{
     if(started)return;
@@ -20,9 +19,9 @@
       try{
         if(typeof window.initChairPrologueRefined==="function")window.initChairPrologueRefined();
       }finally{
-        bootCopyPolish();
+        bootLegacy();
       }
-    },bootCopyPolish);
+    },bootLegacy);
   };
   const preload=document.createElement("link");
   preload.rel="preload";
