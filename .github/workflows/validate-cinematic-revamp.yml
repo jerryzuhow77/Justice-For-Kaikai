@@ -201,7 +201,11 @@ jobs:
               2> "visual-regression/player-${scene}-console.log"
 
             grep -q 'class="film-act-card"' "visual-regression/player-${scene}-dom.html"
-            grep -q 'class="scene-card film"' "visual-regression/player-${scene}-dom.html"
+            grep -q 'class="copy-scene-card film"' "visual-regression/player-${scene}-dom.html"
+            if grep -q 'id="scene-library"' "visual-regression/player-${scene}-dom.html"; then
+              echo "Removed scene-library block returned in the browser render."
+              exit 1
+            fi
             grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' "visual-regression/player-${scene}-dom.html"
             grep -q "data-film=\"${scene}\"" "visual-regression/player-${scene}-dom.html"
             grep -q 'data-beats="5"' "visual-regression/player-${scene}-dom.html"
