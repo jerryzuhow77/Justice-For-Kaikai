@@ -1,0 +1,79 @@
+/* Chapter 01 closeout — final visual QA overrides, 2026-08-24 */
+
+/* Film cards: keep the supplied artwork readable instead of burying it under the dark cover treatment. */
+.film-act-card::before{
+  filter:saturate(.8) contrast(1.02) brightness(.92)!important;
+}
+.film-act-card:hover::before,
+.film-act-card:focus-visible::before{
+  filter:saturate(.9) contrast(1.04) brightness(1.02)!important;
+}
+.film-act-card::after{
+  background:linear-gradient(180deg,rgba(5,11,10,.03) 0%,rgba(5,11,10,.16) 44%,rgba(5,11,10,.88) 100%)!important;
+}
+.film-act-card[data-scene-id="FM-A"]::before{
+  filter:saturate(.84) contrast(.98) brightness(1.16)!important;
+}
+.film-act-card[data-scene-id="FM-A"]:hover::before,
+.film-act-card[data-scene-id="FM-A"]:focus-visible::before{
+  filter:saturate(.92) contrast(1) brightness(1.24)!important;
+}
+
+/* Transcript drawers stay visually subordinate but remain easy to discover and tap. */
+.copy-scene-item .library-transcript>summary,
+.scene-library-item .library-transcript>summary{
+  min-height:3rem;
+  padding:.85rem 1rem;
+  cursor:pointer;
+}
+.copy-scene-item .library-transcript>summary span,
+.scene-library-item .library-transcript>summary span{
+  font-weight:700;
+}
+
+/* The four opening lines must never be clipped on short phones. */
+@media (max-width:760px) and (max-height:720px){
+  .entry-gate .gate-copy{
+    padding-top:max(3.4rem,calc(env(safe-area-inset-top) + 2.25rem))!important;
+  }
+  .entry-gate .gate-quatrain{
+    font-size:clamp(1.72rem,8.8vw,2.55rem)!important;
+    line-height:1.22!important;
+    margin-block:.45rem .85rem!important;
+  }
+  .entry-gate .gate-lead{font-size:.92rem!important;line-height:1.65!important}
+  .entry-gate .content-note{font-size:.78rem!important;line-height:1.55!important}
+  .entry-gate .gate-actions .button{min-height:2.65rem!important;padding-block:.55rem!important}
+}
+
+/* Mobile theatres are deliberately tall, but never force a horizontal crop outside the viewport. */
+@media (max-width:760px){
+  .copy-scene-card{width:100%!important;max-width:100vw!important}
+  .copy-scene-poster{overflow:hidden}
+  .copy-scene-meta{max-width:calc(100% - 1.5rem)}
+  .film-act-card h3{font-size:clamp(1.35rem,6.2vw,1.85rem)!important}
+}
+
+/* Reduced Motion: the design-polish layer becomes static as well as the cinematic core. */
+body.is-reduced .copy-scene-group,
+@media (prefers-reduced-motion:reduce){
+  .copy-scene-group{--stage-progress:1!important}
+}
+
+body.is-reduced .hero-copy,
+body.is-reduced .hero-brief{
+  transform:none!important;
+  opacity:1!important;
+}
+body.is-reduced .minnan-seal-field img{
+  translate:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  .hero-copy,.hero-brief{transform:none!important;opacity:1!important}
+  .minnan-seal-field img{animation:none!important;transition:none!important}
+  .film-act-card::before,.copy-scene-poster{transition:none!important}
+}
