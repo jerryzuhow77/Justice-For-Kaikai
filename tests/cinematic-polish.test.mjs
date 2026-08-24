@@ -99,7 +99,7 @@ test("synchronizes four act names and repairs single film cards and the dark fir
     assert.match(registry, new RegExp(title));
   }
   assert.match(app, /grid\.classList\.toggle\("is-single", validScenes\.length === 1\)/);
-  assert.match(html, /assets\/data\/scenes\.js\?v=20260824-web-closeout-1/);
+  assert.match(html, /assets\/data\/scenes\.js\?v=20260824-two-worlds-1/);
   assert.match(css, /\.copy-scene-grid\.is-single/);
   assert.match(css, /data-scene-id="FM-A"/);
 });
@@ -127,7 +127,19 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
   assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
-  assert.match(loader, /const version="20260824-prologue-skip-1"/);
-  assert.match(html, /cinematic-revamp\.css\?v=20260824-prologue-skip-1/);
-  assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-skip-1/);
+  assert.match(loader, /const version="20260824-prologue-text-1"/);
+  assert.match(html, /cinematic-revamp\.css\?v=20260824-prologue-text-1/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-text-1/);
+});
+
+test("keeps every prologue line readable without depending on GSAP", async () => {
+  const prologue = await readFile(new URL("assets/js/chair-prologue-refined.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/chair-prologue-refined.css", root), "utf8");
+
+  assert.match(css, /\.kkp6\{[^}]*opacity:1;visibility:visible/);
+  assert.match(css, /\.kkp6__line\{[^}]*opacity:1;visibility:visible/);
+  assert.match(css, /\.kkp6__bridge\{[^}]*opacity:1;visibility:visible/);
+  assert.doesNotMatch(prologue, /gsap\.set\(p,\{autoAlpha:0\}\)/);
+  assert.doesNotMatch(prologue, /fromTo\(lines\[\d\],\{autoAlpha:0/);
+  assert.doesNotMatch(prologue, /clipPath:"inset\(0 49% 0 49%\)"/);
 });
