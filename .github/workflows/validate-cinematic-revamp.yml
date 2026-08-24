@@ -46,6 +46,7 @@ jobs:
           css_wrapper_path = root / "assets/css/cinematic-revamp.css"
           css_core_path = root / "assets/css/cinematic-revamp-core.css"
           js_wrapper_path = root / "assets/js/cinematic-revamp.js"
+          js_legacy_path = root / "assets/js/cinematic-revamp-legacy.js"
           js_core_path = root / "assets/js/cinematic-revamp-core.js"
 
           class AuditParser(HTMLParser):
@@ -87,7 +88,7 @@ jobs:
           if missing_refs:
               raise SystemExit(f"Missing referenced scripts/styles: {missing_refs}")
 
-          for required_file in (css_core_path, js_core_path):
+          for required_file in (css_core_path, js_wrapper_path, js_legacy_path, js_core_path):
               if not required_file.is_file():
                   raise SystemExit(f"Missing cinematic core asset: {required_file}")
 
@@ -101,7 +102,7 @@ jobs:
               raise SystemExit("Unbalanced CSS braces")
           for token in (
               "@media (max-width: 760px)", "prefers-reduced-motion",
-              ".cinema-dialog", ".film-act-grid", "show-help-fab"
+              ".cinema-dialog", ".film-act-grid", ".help-fab"
           ):
               if token not in css:
                   raise SystemExit(f"Missing CSS regression token: {token}")
@@ -120,13 +121,17 @@ jobs:
               raise SystemExit(f"Missing CSS assets: {sorted(set(missing_css_assets))}")
 
           js_wrapper = js_wrapper_path.read_text(encoding="utf-8")
+          js_legacy = js_legacy_path.read_text(encoding="utf-8")
           js_core = js_core_path.read_text(encoding="utf-8")
           for token in ("FILM_ORDER", "buildTimeline", "openCinema", "setReduced", "loadInlineStory"):
               if token not in js_core:
                   raise SystemExit(f"Missing JavaScript core regression token: {token}")
-          for token in ("cinematic-revamp-core.js", "show-help-fab"):
+          for token in ("cinematic-revamp-legacy.js",):
               if token not in js_wrapper:
                   raise SystemExit(f"Missing JavaScript wrapper regression token: {token}")
+          for token in ("cinematic-revamp-core.js", "show-help-fab"):
+              if token not in js_legacy:
+                  raise SystemExit(f"Missing JavaScript legacy-layer regression token: {token}")
 
           print("Static cinematic regression checks passed.")
           PY
