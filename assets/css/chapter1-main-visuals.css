@@ -7,6 +7,7 @@
   --kaikai-gate-corridor:url("../img/hero/kaikai-gate-corridor.webp");
   --kaikai-main-portrait:url("../img/hero/kaikai-main-portrait.webp");
   --kaikai-two-worlds-original:url("../img/films/fm-c-two-worlds-v2.webp");
+  --kaikai-entry-mobile:url("../img/hero/kaikai-entry-mobile-bg.jpg");
 }
 
 /* Entry: the wide corridor remains outside the panel, while Kaikai and the
@@ -107,15 +108,23 @@
 
 @media(max-width:760px){
   .gate-backdrop{
-    opacity:.78;
+    opacity:.68;
     background:
-      linear-gradient(180deg,rgba(3,8,7,.28),rgba(3,8,7,.54) 48%,rgba(3,8,7,.9) 100%),
-      var(--kaikai-two-worlds-original) 50% 42%/auto 82% no-repeat!important;
+      linear-gradient(180deg,rgba(3,8,7,.12),rgba(3,8,7,.26) 52%,rgba(3,8,7,.72) 100%),
+      var(--kaikai-entry-mobile) 50% 30%/165% auto no-repeat!important;
     background-color:#06100e!important;
-    filter:saturate(.8) contrast(1.04) brightness(.88)!important;
+    filter:saturate(.9) contrast(1.03) brightness(.98)!important;
+  }
+  .gate-backdrop::after{
+    background:
+      radial-gradient(ellipse at 50% 32%,transparent 20%,rgba(3,8,7,.12) 62%,rgba(3,8,7,.58) 100%),
+      linear-gradient(180deg,rgba(2,6,5,.04),rgba(2,6,5,.18) 58%,rgba(2,6,5,.64))!important;
   }
   .entry-gate .gate-panel{
-    background:linear-gradient(180deg,rgba(5,12,11,.58),rgba(5,12,11,.72) 54%,rgba(5,12,11,.94))!important;
+    background:
+      linear-gradient(180deg,rgba(5,12,11,.24) 0%,rgba(5,12,11,.34) 44%,rgba(5,12,11,.68) 76%,rgba(5,12,11,.92) 100%),
+      var(--kaikai-entry-mobile) 50% 30%/165% auto no-repeat,
+      #06100e!important;
     backdrop-filter:none!important;
   }
   .entry-gate .gate-copy{
