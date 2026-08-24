@@ -27,7 +27,9 @@
     "08": { src: "public/media/chapter-08.m4a", label: "第八篇｜穿過竹屋簷" },
     "09": { src: "public/media/chapter-09.m4a", label: "終章｜杉木上的晨光" }
   };
+  const PROLOGUE_BACKGROUND_TRACK = { src: "public/media/prologue-chair-maiden.m4a", label: "序幕配樂｜椅仔姑傳說" };
   const SITE_BACKGROUND_TRACK = { src: "public/media/site-background.m4a", label: "全站背景｜玩偶落淚之處" };
+  const AMBIENT_TRACKS = [PROLOGUE_BACKGROUND_TRACK, SITE_BACKGROUND_TRACK];
 
   // [canvas width, canvas height, visible alpha height]. Pose-specific bounds
   // let every pair share one optical body height even when source canvases use
@@ -148,7 +150,8 @@
     pageMedia: null,
     musicEnabled: localStorage.getItem("kk-music-v8") !== "false",
     ambient: {
-      requested: false,
+      requested: window.__kaikaiAmbientRequested === true,
+      trackIndex: Number.isInteger(window.__kaikaiAmbientTrackIndex) ? clamp(window.__kaikaiAmbientTrackIndex, 0, AMBIENT_TRACKS.length - 1) : 0,
       resumeAfterForeground: false,
       resumeAfterVisibility: false
     },
@@ -249,6 +252,7 @@
   const scoreLibraryButtons = $$("[data-score]");
   const ambientAudio = $("#ambient-audio");
   const ambientToggles = $$("[data-ambient-toggle]");
+  const ambientTrackLabel = $("#ambient-track-label");
   const progressInput = $("#timeline-progress");
   const timelineTime = $("#timeline-time");
 
@@ -305,7 +309,7 @@
     const startWithMusic = $("#gate-music")?.checked === true;
     setPageGate(false);
     sessionStorage.setItem("kk-entered-v8", "true");
-    if (startWithMusic) playAmbient();
+    if (startWithMusic) playAmbient(); else pauseAmbient(true);
     if (target === "#top") playPageIntro();
     window.setTimeout(() => {
       const targetElement = $(target);
@@ -732,25 +736,53 @@
     return SCORE_TRACKS[scoreKeyForScene(scene)] || null;
   }
 
+  function currentAmbientTrack() {
+    if (!ambientAudio) return AMBIENT_TRACKS[state.ambient.trackIndex] || AMBIENT_TRACKS[0];
+    const currentSrc = ambientAudio.currentSrc || ambientAudio.src;
+    const matchedIndex = AMBIENT_TRACKS.findIndex((track) => new URL(track.src, window.location.href).href === currentSrc);
+    if (matchedIndex >= 0) state.ambient.trackIndex = matchedIndex;
+    return AMBIENT_TRACKS[state.ambient.trackIndex] || AMBIENT_TRACKS[0];
+  }
+
+  function setAmbientTrack(index, restart = false) {
+    if (!ambientAudio) return AMBIENT_TRACKS[0];
+    const normalizedIndex = ((Number(index) || 0) % AMBIENT_TRACKS.length + AMBIENT_TRACKS.length) % AMBIENT_TRACKS.length;
+    const track = AMBIENT_TRACKS[normalizedIndex];
+    const nextSrc = new URL(track.src, window.location.href).href;
+    state.ambient.trackIndex = normalizedIndex;
+    window.__kaikaiAmbientTrackIndex = normalizedIndex;
+    ambientAudio.loop = false;
+    if (ambientAudio.src !== nextSrc) {
+      ambientAudio.src = track.src;
+      ambientAudio.load();
+    } else if (restart) {
+      try { ambientAudio.currentTime = 0; } catch { /* metadata is not ready yet */ }
+    }
+    return track;
+  }
+
   function refreshAmbientUi() {
     if (!ambientAudio) return;
     const playing = !ambientAudio.paused;
+    const track = currentAmbientTrack();
+    if (ambientTrackLabel) ambientTrackLabel.textContent = track.label;
     ambientToggles.forEach((button) => {
       button.classList.toggle("is-playing", playing);
       button.setAttribute("aria-pressed", String(playing));
-      button.setAttribute("aria-label", playing ? `暫停${SITE_BACKGROUND_TRACK.label}` : `播放${SITE_BACKGROUND_TRACK.label}`);
+      button.setAttribute("aria-label", playing ? `暫停${track.label}` : `播放${track.label}`);
       button.title = playing ? "暫停背景音樂" : "播放背景音樂";
       const status = $(".ambient-status", button);
       if (status) status.textContent = playing ? "暫停" : "播放";
     });
   }
 
-  function playAmbient() {
+  function playAmbient(trackIndex = null) {
     if (!ambientAudio) return;
     state.ambient.requested = true;
+    window.__kaikaiAmbientRequested = true;
     ambientAudio.volume = .34;
-    const nextSrc = new URL(SITE_BACKGROUND_TRACK.src, window.location.href).href;
-    if (ambientAudio.src !== nextSrc) ambientAudio.src = SITE_BACKGROUND_TRACK.src;
+    if (Number.isInteger(trackIndex)) setAmbientTrack(trackIndex); else if (!ambientAudio.src) setAmbientTrack(state.ambient.trackIndex);
+    currentAmbientTrack();
     ambientAudio.play().then(refreshAmbientUi).catch(refreshAmbientUi);
   }
 
@@ -759,6 +791,7 @@
     ambientAudio.pause();
     if (userInitiated) {
       state.ambient.requested = false;
+      window.__kaikaiAmbientRequested = false;
       state.ambient.resumeAfterForeground = false;
       state.ambient.resumeAfterVisibility = false;
     }
@@ -767,7 +800,23 @@
 
   function toggleAmbient() {
     if (!ambientAudio) return;
-    if (ambientAudio.paused) playAmbient(); else pauseAmbient(true);
+    if (ambientAudio.paused) playAmbient(ambientAudio.ended ? (state.ambient.trackIndex + 1) % AMBIENT_TRACKS.length : null); else pauseAmbient(true);
+  }
+
+  function advanceAmbientTrack() {
+    if (!state.ambient.requested || document.hidden || dialog?.open || scoreLibraryAudio?.paused === false) return;
+    playAmbient((state.ambient.trackIndex + 1) % AMBIENT_TRACKS.length);
+  }
+
+  function syncPrologueAmbientIntent(event) {
+    const detail = event?.detail || {};
+    if (Number.isInteger(detail.trackIndex)) state.ambient.trackIndex = clamp(detail.trackIndex, 0, AMBIENT_TRACKS.length - 1);
+    state.ambient.requested = detail.requested === true;
+    if (!state.ambient.requested) {
+      state.ambient.resumeAfterForeground = false;
+      state.ambient.resumeAfterVisibility = false;
+    }
+    refreshAmbientUi();
   }
 
   function suspendAmbient() {
@@ -1555,6 +1604,8 @@
     ambientToggles.forEach((button) => button.addEventListener("click", toggleAmbient));
     ambientAudio?.addEventListener("play", refreshAmbientUi);
     ambientAudio?.addEventListener("pause", refreshAmbientUi);
+    ambientAudio?.addEventListener("ended", advanceAmbientTrack);
+    window.addEventListener("kaikai:ambient-intent", syncPrologueAmbientIntent);
     scoreLibraryButtons.forEach((button) => button.addEventListener("click", () => selectLibraryScore(button, true)));
     scoreLibraryAudio?.addEventListener("play", () => { cinemaAudio?.pause(); suspendAmbient(); });
     scoreLibraryAudio?.addEventListener("pause", () => { if (!dialog?.open) resumeAmbient(); });

@@ -27,7 +27,8 @@
     { "path": "/media/chapter-07.m4a", "duration_seconds": 180.93, "autoplay": false, "role": "chapter_score" },
     { "path": "/media/chapter-08.m4a", "duration_seconds": 145.43, "autoplay": false, "role": "chapter_score" },
     { "path": "/media/chapter-09.m4a", "duration_seconds": 150.97, "autoplay": false, "role": "finale_score" },
-    { "path": "/media/site-background.m4a", "duration_seconds": 30.8, "autoplay": false, "loop": true, "role": "site_background" }
+    { "path": "/media/prologue-chair-maiden.m4a", "duration_seconds": 30.79, "autoplay": false, "loop": false, "role": "prologue_background", "playlist": "ambient_alternating" },
+    { "path": "/media/site-background.m4a", "duration_seconds": 30.8, "autoplay": false, "loop": false, "role": "site_background", "playlist": "ambient_alternating" }
   ],
   "source_video": [
     "/media/1000025837.mp4", "/media/1000025838.mp4", "/media/1000025840.mp4",

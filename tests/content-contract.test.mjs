@@ -41,14 +41,14 @@ test("all four locales include eight chapters and stable dialogue ids", async ()
   }
 });
 
-test("six original masters, ten theatre scores, and one background score exist", async () => {
+test("six original masters, ten theatre scores, and two alternating background scores exist", async () => {
   for (const id of ["1000025837", "1000025838", "1000025840", "1000025841", "1000025842", "1000025843"]) {
     await access(new URL(`public/media/${id}.mp4`, root));
   }
   for (let index = 1; index <= 6; index += 1) {
     await access(new URL(`public/media/chapter-0${index}.m4a`, root));
   }
-  for (const file of ["chapter-00.m4a", "chapter-07.m4a", "chapter-08.m4a", "chapter-09.m4a", "site-background.m4a"]) {
+  for (const file of ["chapter-00.m4a", "chapter-07.m4a", "chapter-08.m4a", "chapter-09.m4a", "prologue-chair-maiden.m4a", "site-background.m4a"]) {
     await access(new URL(`public/media/${file}`, root));
   }
 });

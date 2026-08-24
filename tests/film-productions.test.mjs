@@ -47,6 +47,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(html, /assets\/data\/film-productions\.js\?v=20260824-web-closeout-1/);
   assert.equal((html.match(/data-score="FM-[ADBC]"/g) ?? []).length, 4);
   assert.doesNotMatch(html, /id="cinema-audio"[^>]*\bloop\b/);
+  assert.doesNotMatch(html, /id="ambient-audio"[^>]*\bloop\b/);
   assert.match(html, /id="film-production"/);
   assert.match(app, /function addProductionAct/);
   assert.match(app, /function syncSceneAudioToTimeline/);

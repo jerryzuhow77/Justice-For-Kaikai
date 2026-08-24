@@ -34,6 +34,7 @@
     "full_spec": "/docs/animation-film-production-v6.1.md"
   },
   "site_background_audio": "/media/site-background.m4a",
+  "site_background_playlist": ["/media/prologue-chair-maiden.m4a", "/media/site-background.m4a"],
   "state_machine": ["idle", "source_gate", "curtain_open", "dialogue", "curtain_close", "transition", "article"],
   "a11y": { "autoplay_audio": false, "flashes": false, "dialogue_transcript_available": true, "reduced_motion_supported": true, "skip_to_content": true }
 }
