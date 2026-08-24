@@ -1,5 +1,5 @@
 /* Chapter 01 supplied main visuals — 2026-08-24
-   User-directed artwork placement for the opening, mobile hero and film shelf
+   User-directed artwork placement for the opening, official homepage hero and film shelf
    while retaining the existing GSAP motion layers. */
 
 :root{
@@ -42,12 +42,12 @@
 /* Main hero: one artwork, three crop depths. This preserves the parallax
    choreography already driven by cinematic-revamp.js. */
 .hero-layer{
-  background-image:var(--kaikai-main-hero)!important;
+  background-image:var(--kaikai-two-worlds-original)!important;
 }
 .hero-layer-far{
   background-position:50% 50%!important;
   background-size:cover!important;
-  filter:saturate(.8) contrast(1.04) brightness(.82)!important;
+  filter:saturate(.86) contrast(1.04) brightness(.9)!important;
 }
 .hero-layer-mid{
   background-position:50% 49%!important;
@@ -70,6 +70,23 @@
   text-shadow:0 3px 30px rgba(0,0,0,.62);
 }
 
+.hero-home-line{
+  margin:.45rem 0 .9rem;
+  color:#dfbf83;
+  font:700 clamp(.74rem,.95vw,.9rem)/1.45 var(--sans);
+  letter-spacing:.14em;
+  text-shadow:0 2px 24px rgba(0,0,0,.72);
+}
+.hero-mission{
+  max-width:58ch;
+  margin:1rem 0 0;
+  padding:.8rem 1rem;
+  color:rgba(245,239,225,.88);
+  border-left:2px solid rgba(215,177,116,.78);
+  background:linear-gradient(90deg,rgba(6,16,14,.64),rgba(6,16,14,.12));
+  font:clamp(.9rem,1.08vw,1rem)/1.75 var(--serif);
+}
+
 /* Carry the doorway motif into the four-film shelf without adding a second,
    disconnected gallery section. */
 /* The supplied vertical chair / hospital doorway artwork becomes the
@@ -85,7 +102,7 @@
   filter:saturate(.8) contrast(1.04) brightness(.86)!important;
 }
 .montage-d{
-  --montage-image:var(--kaikai-main-hero)!important;
+  --montage-image:var(--kaikai-two-worlds-original)!important;
 }
 
 @media(max-width:760px){
@@ -196,5 +213,20 @@
     padding:.85rem 1rem;
     font-size:.84rem;
     line-height:1.72;
+  }
+}
+
+/* OFFICIAL-HOMEPAGE-COPY-20260824 */
+@media(max-width:760px){
+  .hero-home-line{
+    margin:.25rem 0 .7rem;
+    font-size:.7rem;
+    letter-spacing:.08em;
+  }
+  .hero-mission{
+    margin:.8rem 0 0;
+    padding:.7rem .85rem;
+    font-size:.84rem;
+    line-height:1.68;
   }
 }
