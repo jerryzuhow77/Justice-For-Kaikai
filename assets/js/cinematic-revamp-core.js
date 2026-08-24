@@ -918,6 +918,7 @@
     if (!production || !filmProduction) return;
     const actInfo = production.acts[meta.actionIndex];
     filmProduction.dataset.film = meta.scene.id;
+    filmProduction.dataset.act = String(meta.actionIndex + 1);
     filmProduction.dataset.effect = actInfo.effect;
     const slateSmall = $("small", filmActSlate);
     const slateStrong = $("strong", filmActSlate);
