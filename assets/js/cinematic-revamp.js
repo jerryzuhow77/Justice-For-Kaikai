@@ -18,6 +18,21 @@
     document.head.append(script);
   };
 
+  const ensureMobileStyle=()=>new Promise(resolve=>{
+    const current=document.querySelector("link[data-chair-mobile-v2]");
+    if(current){resolve();return;}
+    const link=document.createElement("link");
+    let settled=false;
+    const finish=()=>{if(settled)return;settled=true;resolve();};
+    link.rel="stylesheet";
+    link.href=`assets/css/chair-prologue-mobile-v2.css?v=${version}`;
+    link.dataset.chairMobileV2="1";
+    link.onload=finish;
+    link.onerror=finish;
+    document.head.append(link);
+    setTimeout(finish,1200);
+  });
+
   const bootDesignPolish=()=>load(`assets/js/chapter1-design-polish.js?v=${version}`,null,()=>{});
   const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${version}`,()=>bootDesignPolish(),()=>bootDesignPolish());
   let started=false;
@@ -52,8 +67,8 @@
   };
 
   if(mobileQuery.matches){
-    const fallbackTimer=setTimeout(start,2200);
-    prepareMobileArtwork()
+    const fallbackTimer=setTimeout(start,2400);
+    Promise.all([ensureMobileStyle(),prepareMobileArtwork()])
       .catch(error=>console.warn("[Chair prologue] portrait artwork fallback",error))
       .finally(()=>{
         clearTimeout(fallbackTimer);
