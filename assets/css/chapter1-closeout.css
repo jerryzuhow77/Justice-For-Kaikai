@@ -55,11 +55,7 @@
 }
 
 /* Reduced Motion: the design-polish layer becomes static as well as the cinematic core. */
-body.is-reduced .copy-scene-group,
-@media (prefers-reduced-motion:reduce){
-  .copy-scene-group{--stage-progress:1!important}
-}
-
+body.is-reduced .copy-scene-group{--stage-progress:1!important}
 body.is-reduced .hero-copy,
 body.is-reduced .hero-brief{
   transform:none!important;
@@ -73,6 +69,7 @@ body.is-reduced .minnan-seal-field img{
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto!important}
+  .copy-scene-group{--stage-progress:1!important}
   .hero-copy,.hero-brief{transform:none!important;opacity:1!important}
   .minnan-seal-field img{animation:none!important;transition:none!important}
   .film-act-card::before,.copy-scene-poster{transition:none!important}
