@@ -617,8 +617,8 @@ footer { padding-block: 2rem; border-top: 1px solid var(--line); background: rgb
 .act-markers { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .35rem; }
 .act-markers button { min-height: 36px; padding: .35rem .6rem; color: #abb1ab; border: 1px solid var(--line); border-radius: 999px; background: transparent; cursor: pointer; font-size: .68rem; }
 .act-markers button.is-current { color: #1b1d1b; border-color: var(--ehuang); background: var(--ehuang); }
-.act-markers button[data-recut="true"] { color:#f0d7a0; border-color:rgba(217,186,127,.72); box-shadow:0 0 0 1px rgba(217,186,127,.08),0 0 18px rgba(217,186,127,.12); }
-.act-markers button[data-recut="true"].is-current { color:#171a18; background:linear-gradient(115deg,#e2c78f,#d9a97e); box-shadow:0 0 24px rgba(226,199,143,.34); }
+.act-markers button[data-new-plate="true"] { color:#f0d7a0; border-color:rgba(217,186,127,.72); box-shadow:0 0 0 1px rgba(217,186,127,.08),0 0 18px rgba(217,186,127,.12); }
+.act-markers button[data-new-plate="true"].is-current { color:#171a18; background:linear-gradient(115deg,#e2c78f,#d9a97e); box-shadow:0 0 24px rgba(226,199,143,.34); }
 .storyboard { display: grid; grid-template-columns: repeat(10, minmax(92px, 1fr)); gap: .4rem; max-width: 1500px; margin: .55rem auto 0; padding-bottom: .35rem; overflow-x: auto; }
 .story-beat { position: relative; min-width: 92px; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--beat-image, #1d2926) var(--beat-position, center) / var(--beat-size, cover) no-repeat; filter: saturate(.52) brightness(.52); cursor: pointer; transition: filter .25s ease, border-color .25s ease, transform .25s ease; }
 .story-beat::after { content: attr(data-number); position: absolute; right: .25rem; bottom: .2rem; padding: .05rem .22rem; color: #fff; border-radius: 4px; background: rgba(0,0,0,.72); font-size: .56rem; }
@@ -842,9 +842,8 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 
 /* GSAP FIVE-ACT RELIGHT + DISTINCT ACT PLATES · 2026-08-24
  * Brighter projection values and five separate art-directed environments.
- * FM-C deliberately keeps the two-world master plate, while each act gains
- * an independent location/light/object layer so it no longer reads as one
- * still image with five crops.
+ * FM-C uses five dedicated act plates inside the player; its former master
+ * image remains available only to the surrounding site artwork.
  */
 .gate-backdrop {
   background:
@@ -890,17 +889,19 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .film-production[data-film="FM-C"][data-act="5"]::before { opacity:.92; background:radial-gradient(ellipse at 50% 47%,rgba(255,226,158,.64),transparent 25%),linear-gradient(90deg,rgba(130,77,44,.2),rgba(115,174,180,.23)); }
 .film-production[data-film="FM-C"][data-act="5"]::after { opacity:.7; background:linear-gradient(90deg,rgba(28,20,14,.52) 0 43%,transparent 43.5% 49.4%,rgba(255,239,190,.6) 49.7% 50.3%,transparent 50.6% 56.5%,rgba(22,34,34,.46) 57%); }
 
-/* 第四部／第四幕：五張概念圖依序剪接成「把責任交給活著的人」。 */
-.fm-c-act4-sequence{position:absolute;z-index:3;inset:0;overflow:hidden;opacity:0;visibility:hidden;background:#090d0c;isolation:isolate}
-.film-production[data-film="FM-C"][data-act="4"] .fm-c-act4-sequence{visibility:visible}
-.fm-c-act4-frame{position:absolute;inset:-1.5%;margin:0;overflow:hidden;opacity:0;will-change:opacity,filter}
-.fm-c-act4-frame::before{content:"";position:absolute;z-index:-1;inset:-8%;opacity:0;background:var(--act4-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.72) brightness(.52);transform:scale(1.08)}
-.fm-c-act4-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,6,.12),transparent 52%,rgba(2,6,6,.56)),radial-gradient(ellipse at center,transparent 45%,rgba(2,6,6,.4) 100%);pointer-events:none}
-.fm-c-act4-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.82) contrast(1.04) brightness(.9);will-change:transform;backface-visibility:hidden}
-.film-production[data-film="FM-C"][data-act="4"] .film-separated-palms{display:none}
-.film-production[data-film="FM-C"][data-act="4"] .film-seam{z-index:4}
-.film-production[data-film="FM-C"][data-act="4"] .film-source-tag,
-.film-production[data-film="FM-C"][data-act="4"] .film-act-slate{z-index:6}
+/* 第四部／五幕：一幕一張新概念圖，舊合成背景不再進入播放器。 */
+.cinema-stage[data-scene="FM-C"] .cinema-bg,
+.cinema-stage[data-scene="FM-C"] .cinema-depth{opacity:0!important;visibility:hidden!important;background-image:none!important}
+.fm-c-five-act-sequence{position:absolute;z-index:3;inset:0;overflow:hidden;opacity:0;visibility:hidden;background:#090d0c;isolation:isolate}
+.film-production[data-film="FM-C"] .fm-c-five-act-sequence{visibility:visible}
+.fm-c-act-frame{position:absolute;inset:-1.5%;margin:0;overflow:hidden;opacity:0;will-change:opacity,filter}
+.fm-c-act-frame::before{content:"";position:absolute;z-index:-1;inset:-8%;opacity:0;background:var(--act-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.72) brightness(.52);transform:scale(1.08)}
+.fm-c-act-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,6,.12),transparent 52%,rgba(2,6,6,.56)),radial-gradient(ellipse at center,transparent 45%,rgba(2,6,6,.4) 100%);pointer-events:none}
+.fm-c-act-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.82) contrast(1.04) brightness(.9);will-change:transform;backface-visibility:hidden}
+.film-production[data-film="FM-C"] .film-separated-palms{display:none}
+.film-production[data-film="FM-C"] .film-seam{z-index:4}
+.film-production[data-film="FM-C"] .film-source-tag,
+.film-production[data-film="FM-C"] .film-act-slate{z-index:6}
 
 /* 第四部核心構圖：椅仔姑與剴剴隔著時空裂縫相對合掌。 */
 .film-separated-palms{position:absolute;z-index:7;inset:7% 8% 17%;display:flex;align-items:center;justify-content:center;opacity:0;filter:drop-shadow(0 20px 25px rgba(0,0,0,.4))}
@@ -916,10 +917,8 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .palms-child b::after{content:"";position:absolute;top:50%;right:-13%;width:26%;aspect-ratio:.62;border-radius:60% 60% 44% 44%;background:#d1a27b;transform:translateY(-50%)}
 .palms-modern b::after{right:auto;left:-13%}
 .palms-child span{position:absolute;z-index:5;left:50%;bottom:-1.8rem;padding:.22rem .5rem;color:#f5ead7;border:1px solid rgba(242,220,174,.34);border-radius:999px;background:rgba(11,20,19,.76);font:700 clamp(.55rem,.9vw,.72rem)/1 var(--sans);letter-spacing:.08em;white-space:nowrap;transform:translateX(-50%)}
-.film-production[data-film="FM-C"] .film-separated-palms{visibility:visible}
 .film-production:not([data-film="FM-C"]) .film-separated-palms{display:none}
 .cinema-stage[data-scene="FM-C"] .cinema-play-overlay{left:auto;right:clamp(.8rem,2vw,1.5rem);top:clamp(.8rem,2vw,1.5rem);transform:none;width:clamp(68px,7vw,92px);height:clamp(68px,7vw,92px)}
-body.is-reduced .film-production[data-film="FM-C"] .film-separated-palms,body.is-reduced .film-production[data-film="FM-C"] .film-separated-palms>em{opacity:1}
 
 @media (max-width:760px) {
   .gate-backdrop { filter:saturate(.8) brightness(.98); }
@@ -927,16 +926,16 @@ body.is-reduced .film-production[data-film="FM-C"] .film-separated-palms,body.is
   .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.88) brightness(1.08); }
   .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.92) contrast(.98) brightness(1.2); }
   .cinema-stage[data-type="shadow"] .cinema-actor img,.cinema-stage[data-type="side"] .cinema-actor img{filter:saturate(.78) brightness(1.08) contrast(1.02)}
-  .fm-c-act4-frame{inset:0;background:#080c0c}
-  .fm-c-act4-frame::before{z-index:0;opacity:1}
-  .fm-c-act4-frame img{position:relative;z-index:1;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.36)) saturate(.84) contrast(1.03) brightness(.92)}
-  .fm-c-act4-frame::after{z-index:1}
+  .fm-c-act-frame{inset:0;background:#080c0c}
+  .fm-c-act-frame::before{z-index:0;opacity:1}
+  .fm-c-act-frame img{position:relative;z-index:1;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.36)) saturate(.84) contrast(1.03) brightness(.92)}
+  .fm-c-act-frame::after{z-index:1}
   .film-separated-palms{inset:10% 0 24%}
   .palms-child{width:38%;height:60%}.palms-qing{left:4%}.palms-modern{right:4%}
   .palms-child b{top:38%;width:46%}.palms-qing b{right:-20%}.palms-modern b{left:-20%}
 }
 
-body.is-reduced .fm-c-act4-frame img{transform:none!important}
+body.is-reduced .fm-c-act-frame img{transform:none!important}
 
 @media (max-width: 430px) {
   .brand small { display: none; }

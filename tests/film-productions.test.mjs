@@ -61,7 +61,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /body\.is-reduced \.film-local-flash/);
 });
 
-test("FM-C fourth act cuts five concept plates across its GSAP clock", async () => {
+test("FM-C maps five new concept plates one-to-one across its five-act GSAP clock", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
@@ -79,18 +79,25 @@ test("FM-C fourth act cuts five concept plates across its GSAP clock", async () 
     await access(new URL(`assets/img/films/fm-c-act4/${shot}`, root));
     assert.match(app, new RegExp(shot.replaceAll(".", "\\.")));
   }
-  assert.match(app, /const FM_C_ACT4_CUTS = \[0, \.16, \.35, \.59, \.81, 1\]/);
-  assert.match(app, /function addFmCAct4Sequence/);
-  assert.match(app, /actInfo\.effect === "responsibility"/);
+  assert.match(app, /const FM_C_ACT_PLATES = \[/);
+  assert.equal((app.match(/data-act-plate=/g) ?? []).length, 1);
+  assert.match(app, /function addFmCActPlate/);
+  assert.match(app, /filmActFrames\[meta\.actionIndex\]/);
+  assert.doesNotMatch(app, /FM_C_ACT4_CUTS|addFmCAct4Sequence/);
+  assert.match(app, /scene\.id === "FM-C" \? "" : scene\.image/);
+  assert.match(app, /scene\.image && scene\.id !== "FM-C"/);
   assert.match(app, /params\.get\("act"\)/);
-  assert.match(app, /新版五鏡頭/);
+  assert.match(app, /新幕圖/);
+  assert.match(app, /dataset\.newPlate = "true"/);
   assert.match(app, /url\.searchParams\.set\("act", String\(actIndex \+ 1\)\)/);
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
-  assert.match(html, /rev=20260824-fmc-act4-direct-2/);
-  assert.match(css, /\.fm-c-act4-sequence/);
-  assert.match(css, /\.fm-c-act4-sequence\{position:absolute;z-index:3/);
-  assert.match(css, /button\[data-recut="true"\]/);
-  assert.match(css, /data-act="4"\] \.film-separated-palms\{display:none\}/);
-  assert.match(css, /body\.is-reduced \.fm-c-act4-frame img/);
+  assert.match(html, /rev=20260824-fmc-five-acts-1/);
+  assert.match(css, /\.fm-c-five-act-sequence/);
+  assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
+  assert.match(css, /button\[data-new-plate="true"\]/);
+  assert.match(css, /data-film="FM-C"\] \.film-separated-palms\{display:none\}/);
+  assert.match(css, /data-scene="FM-C"\] \.cinema-bg/);
+  assert.match(css, /background-image:none!important/);
+  assert.match(css, /body\.is-reduced \.fm-c-act-frame img/);
 });
