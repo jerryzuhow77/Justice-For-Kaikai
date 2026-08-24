@@ -1,0 +1,18 @@
+@import url("./chair-prologue-mobile-v2.css?v=20260824-chair-mobile-v2b");
+
+/* Use arithmetic-free values for broad Android WebView and Safari compatibility. */
+@media(max-width:760px){
+  .kkp6__artboard{
+    width:min(94vw,52.875vh)!important;
+    height:min(94vh,167.111vw)!important;
+  }
+}
+
+@supports(height:100dvh){
+  @media(max-width:760px){
+    .kkp6__artboard{
+      width:min(94vw,52.875dvh)!important;
+      height:min(94dvh,167.111vw)!important;
+    }
+  }
+}
