@@ -1,0 +1,81 @@
+name: Validate Chapter 1 web closeout
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - assets/css/cinematic-revamp.css
+      - assets/css/chapter1-design-polish.css
+      - assets/css/chapter1-closeout.css
+      - assets/js/cinematic-revamp.js
+      - assets/js/chapter1-design-polish.js
+      - assets/data/chapter1-copy-polish.js
+      - .github/workflows/validate-chapter1-closeout.yml
+  pull_request:
+    paths:
+      - index.html
+      - assets/css/cinematic-revamp.css
+      - assets/css/chapter1-design-polish.css
+      - assets/css/chapter1-closeout.css
+      - assets/js/cinematic-revamp.js
+      - assets/js/chapter1-design-polish.js
+      - assets/data/chapter1-copy-polish.js
+
+permissions:
+  contents: read
+
+jobs:
+  closeout-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JavaScript syntax
+        run: |
+          node --check assets/js/cinematic-revamp.js
+          node --check assets/js/chapter1-design-polish.js
+          node --check assets/data/chapter1-copy-polish.js
+
+      - name: Chapter 1 static QA
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          root = Path('.')
+          html = (root/'index.html').read_text(encoding='utf-8')
+          css_wrapper = (root/'assets/css/cinematic-revamp.css').read_text(encoding='utf-8')
+          design_css = (root/'assets/css/chapter1-design-polish.css').read_text(encoding='utf-8')
+          closeout_css = (root/'assets/css/chapter1-closeout.css').read_text(encoding='utf-8')
+          design_js = (root/'assets/js/chapter1-design-polish.js').read_text(encoding='utf-8')
+
+          required = [
+              '花有重開日，','人無再少年。','應須惜兒孫，','安樂是天倫。',
+              'id="film-reel"','id="full-copy"','id="scene-library"','id="chapter-two-preview"',
+              'id="cinema-dialog"','id="transcript"','id="toggle-transcript"','id="ambient-audio"',
+              '20260824-web-closeout-1'
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit(f'Missing closeout markers: {missing}')
+
+          for filename, text in [
+              ('chapter1-design-polish.css', design_css),
+              ('chapter1-closeout.css', closeout_css),
+          ]:
+              if text.count('{') != text.count('}'):
+                  raise SystemExit(f'Unbalanced CSS braces: {filename}')
+
+          if 'chapter1-closeout.css?v=20260824-web-closeout-1' not in css_wrapper:
+              raise SystemExit('Closeout CSS is not loaded by cinematic-revamp.css')
+          if 'prefers-reduced-motion: reduce' not in design_js or 'kk-reduced-v8' not in design_js:
+              raise SystemExit('Design polish does not fully honor reduced motion')
+          if 'brightness(.92)' not in closeout_css:
+              raise SystemExit('Film-card brightness closeout override missing')
+
+          class Parser(HTMLParser):
+              pass
+          Parser().feed(html)
+          print('Chapter 1 closeout static QA passed')
+          PY
