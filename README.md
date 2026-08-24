@@ -22,6 +22,25 @@
 4. 四語文字版：修改根目錄 `story*.html` 及其實際引用內容。
 5. 修改後應直接檢查 GitHub Pages 公開網址，不以 `app/` 預覽結果判定發布成功。
 
+## 動畫製作 Source of Truth｜V8.0
+
+第一章動畫文案與五幕製作已於 2026-08-24 收斂為 V8.0。後續維護依下列優先順序：
+
+1. `docs/V6.2-mother-script.md` — 第一章母稿與來源分層。
+2. `assets/data/film-productions.js` — 四部電影實際播放的五幕、時間碼、cue、來源標籤與配樂。
+3. `assets/data/scenes.js` — 24 場場景註冊、皮影／側視場次資料。
+4. `docs/V8.0-animation-closeout.md` — 最新正式片名、角色限制、配樂與結案規格。
+5. `docs/films/` — 四部電影各自的五幕 GSAP 製作稿。
+
+**不得另以 closeout／polish JavaScript 二次改寫角色台詞。** 若需修改播放文字，應回到母稿與 `film-productions.js` 依來源層級正式改版。
+
+### 四部五幕電影正式名稱
+
+- `FM-A`｜**土掩埋不住的清朝民間傳說**
+- `FM-D`｜**無法再相見▪︎天涯各自分**
+- `FM-B`｜**青絲變白髮**
+- `FM-C`｜**兩個朝代▪︎不同世界▪︎同一扇門**
+
 ## 非 GitHub Pages 發布來源
 
 `app/`、`public/`、Vinext／React、Cloudflare Worker 相關檔案目前保留作為**製作母稿、實驗版與歷史建置來源**，不是 `jerryzuhow77.github.io/Justice-For-Kaikai/` 的直接發布來源。
@@ -35,7 +54,7 @@
 - 第二章預告：〈沒人要的孩子〉／**孩子被選擇的人生**。
 - 第二章預告採孩子視角：大人一次次做決定，而孩子承受每一次決定的結果。
 - 正式靜態版已使用 GSAP + ScrollTrigger；相關腳本由 `assets/vendor/gsap/` 與 `assets/js/` 載入。
-- 主頁包含四幕電影長卷、隨文劇場、完整正文、來源分層與守護行動。
+- 主頁包含**四部五幕電影長卷**、20 場隨文劇場、完整正文、來源分層與守護行動。
 - 支援手機版、鍵盤操作、`prefers-reduced-motion` 與低動態模式。
 
 ## 維護規則
@@ -47,6 +66,7 @@
 - 重要視覺修改後，同時檢查桌機與手機版。
 - 動畫必須保留減少動態備援，不以動畫作為取得核心資訊的唯一方式。
 - 文學／藝術重構、家屬說法、機構說明、媒體報導與法院認定維持來源分層，不互相冒充。
+- 四部電影逐句播放文字以 `film-productions.js` 為 runtime 準據；製作文檔不得建立另一套易漂移台詞。
 
 ## 目錄角色
 
@@ -54,6 +74,8 @@
 index.html              GitHub Pages 正式首頁【正式】
 story*.html             GitHub Pages 四語文字版【正式】
 assets/                  GitHub Pages CSS / JS / GSAP / images【正式】
+docs/V8.0-animation-closeout.md   第一章動畫 V8 結案規格
+docs/films/             四部五幕電影獨立製作稿
 app/                     React/Vinext 製作母稿【非 Pages 直接來源】
 public/                  React/Vinext 內容與資產來源【非 Pages 直接來源】
 .github/workflows/       CI／離線建置／驗證流程
@@ -67,6 +89,8 @@ Justice-For-Kaikai/      歷史／封裝副本；勿作為 Pages 日常編輯入
 - [ ] 修改的是正確發布來源。
 - [ ] `index.html` 保留開場四句詩。
 - [ ] 第二章預告仍為「孩子被選擇的人生」。
+- [ ] 四部電影正式片名與 `film-productions.js`／V8 文件一致。
+- [ ] 不存在額外 JavaScript 覆蓋正式電影 cue。
 - [ ] GSAP 載入失敗時，核心文字仍可閱讀。
 - [ ] 手機 320–430px 不裁切四句詩與主要按鈕。
 - [ ] `prefers-reduced-motion` 可正常使用。
