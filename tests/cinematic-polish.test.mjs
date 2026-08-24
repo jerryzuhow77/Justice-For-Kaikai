@@ -58,19 +58,24 @@ test("sets the opening proverb as four lines and varies article emphasis", async
   assert.match(css, /blockquote\.opening-quatrain/);
 });
 
-test("ships ten theatre scores and one consent-based site background track", async () => {
+test("ships ten theatre scores and two consent-based alternating background tracks", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   assert.match(html, /id="cinema-audio"/);
   assert.match(html, /id="toggle-music"/);
   assert.match(html, /id="score-library-audio"/);
   assert.match(html, /id="ambient-audio"/);
+  assert.doesNotMatch(html, /id="ambient-audio"[^>]*\bloop\b/);
   assert.match(html, /id="gate-music"[^>]*checked/);
   assert.equal((html.match(/data-score="\d{2}"/g) ?? []).length, 10);
   assert.match(app, /const SCORE_TRACKS/);
   assert.match(app, /chapter-00\.m4a/);
   assert.match(app, /chapter-09\.m4a/);
+  assert.match(app, /prologue-chair-maiden\.m4a/);
   assert.match(app, /site-background\.m4a/);
+  assert.match(app, /const AMBIENT_TRACKS = \[PROLOGUE_BACKGROUND_TRACK, SITE_BACKGROUND_TRACK\]/);
+  assert.match(app, /function advanceAmbientTrack/);
+  assert.match(app, /addEventListener\("ended", advanceAmbientTrack\)/);
   assert.match(app, /public\/media\/chapter-\$\{chapter\}\.m4a/);
   assert.match(app, /scene\.type !== "shadow" && scene\.type !== "side"/);
   assert.match(app, /playSceneAudio\(\)/);
@@ -127,9 +132,22 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
   assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
-  assert.match(loader, /const version="20260824-prologue-text-2"/);
+  assert.match(loader, /const version="20260824-prologue-audio-1"/);
   assert.match(html, /cinematic-revamp\.css\?v=20260824-prologue-text-1/);
   assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-text-2/);
+  assert.match(html, /audio=20260824-prologue-audio-1/);
+});
+
+test("gives the prologue an explicit mobile-safe music control", async () => {
+  const prologue = await readFile(new URL("assets/js/chair-prologue-refined.js", root), "utf8");
+  const mobileCss = await readFile(new URL("assets/css/chair-prologue-mobile-v2.css", root), "utf8");
+
+  assert.match(prologue, /class="kkp6__sound"[^>]*aria-pressed="false"/);
+  assert.match(prologue, /播放序幕配樂/);
+  assert.match(prologue, /const PROLOGUE_SCORE="public\/media\/prologue-chair-maiden\.m4a"/);
+  assert.match(prologue, /new CustomEvent\("kaikai:ambient-intent"/);
+  assert.match(mobileCss, /\.kkp6__sound\{[^}]*bottom:var\(--mobile-safe-bottom\)!important/);
+  assert.match(mobileCss, /\.kkp6__sound\{[^}]*min-height:44px!important/);
 });
 
 test("keeps every prologue line readable without depending on GSAP", async () => {

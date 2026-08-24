@@ -10,7 +10,9 @@
 | `chapter-01.m4a`–`chapter-06.m4a` | 由上述MP4抽取的網站音訊 | 衍生自使用者提供檔案 | 權利範圍與原始MP4相同，不另推定授權 |
 | `raindrops_on_temple_stone.mp4`、`one_hundred_fifteenth_day.mp4`、`through_the_bamboo_roof.mp4`、`sunbeams_on_cedar.mp4` | 序問、第七篇、第八篇、終章原創配樂原始影片 | 2026-08-23由使用者提供 | 保存作曲、演奏、錄音與視覺封面權利證明 |
 | `where_the_dolls_wept.mp4` | 全站背景音樂原始影片 | 2026-08-23由使用者提供 | 同上；僅在讀者明確啟用後播放 |
+| `gemini_music (5).mp4` | 椅仔姑傳說序幕配樂原始影片 | 2026-08-24由使用者提供並指定為序幕配樂 | 同上；僅在讀者明確啟用後播放 |
 | `chapter-00.m4a`、`chapter-07.m4a`–`chapter-09.m4a`、`site-background.m4a` | 由上述五支MP4抽取、響度校正的網站音訊 | 衍生自使用者提供檔案 | 權利範圍與原始MP4相同，不另推定授權 |
+| `prologue-chair-maiden.m4a` | 由 `gemini_music (5).mp4` 抽取並與全站背景曲完成響度匹配的網站音訊 | 衍生自使用者提供檔案 | 與〈玩偶落淚之處〉交互播放，不與劇場或單曲疊音 |
 | `female-guardian-pose-sheet-v1.png`、`female-01.webp`–`female-12.webp` | 原創女守門人角色動畫 | 2026-08-18依本專題規格生成；不以真實人物塑形、不複製既有遊戲角色 | 保存最終提示、SHA-256與本專題使用紀錄；對外不得宣稱為任何遊戲官方素材 |
 | `male-guardian-pose-sheet-v1.png`、`male-01.webp`–`male-12.webp` | 原創男守門人／調查者角色動畫 | 2026-08-18依本專題規格生成；不以真實人物塑形、不複製既有遊戲角色 | 同上 |
 | `grandmother-pose-sheet-v1.png`、`grandmother-01.webp`–`grandmother-12.webp` | 原創外婆象徵角色動畫 | 2026-08-18依本專題規格生成；為虛構形象，不還原真實家屬外貌 | 同上；任何文案仍須保留家屬說法來源層級 |
@@ -33,6 +35,11 @@
 - `chapter-07.m4a`：`f605f98006846f7a0cbacedeefc6bee7e326a7ec7098c6ce4ed5236b2f35665a`
 - `chapter-08.m4a`：`c4514b408a72ba9699cfc57e6b53fb43576dcab18121b30c1a815f725f8499a8`
 - `chapter-09.m4a`：`d08c5ece521adcdcad437d4dde293b4a3c1545e791ff0fcf3784c67f35b313b6`
+
+## 2026-08-24 序幕配樂原始檔與網站音訊雜湊
+
+- `gemini_music (5).mp4`：`cc745682eff60426a6be8ab4e056a0f3236b653145e64807c73a491cf99a106f`
+- `prologue-chair-maiden.m4a`：`37caa6aa0b99e2dcea9d3e4363a9da7c5fd2f24a927b4707e7ffe8ddcb458605`
 
 ## 禁止事項
 

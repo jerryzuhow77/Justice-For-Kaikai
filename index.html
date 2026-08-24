@@ -36,13 +36,13 @@
   <link rel="preload" as="image" href="assets/img/hero/kaikai-gate-corridor.webp" media="(min-width: 761px)">
   <link rel="preload" as="image" href="assets/img/films/fm-a-buried-name.webp">
   <link rel="preload" as="image" href="assets/img/films/fm-c-two-worlds-v2.webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260824-prologue-text-1&amp;rev=20260824-fmc-act4-direct-2&amp;home=20260824-official-home-1">
+  <link rel="stylesheet" href="assets/css/cinematic-revamp.css?v=20260824-prologue-text-1&amp;rev=20260824-fmc-act4-direct-2&amp;home=20260824-official-home-1&amp;audio=20260824-prologue-audio-1">
   <link rel="stylesheet" href="assets/css/official-home-v2.css?v=20260824-evidence-home-1">
   <script defer src="assets/vendor/gsap/gsap.min.js"></script>
   <script defer src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
   <script defer src="assets/data/scenes.js?v=20260824-two-worlds-1"></script>
   <script defer src="assets/data/film-productions.js?v=20260824-web-closeout-1"></script>
-  <script defer src="assets/js/cinematic-revamp.js?v=20260824-prologue-text-2&amp;rev=20260824-fmc-act4-direct-2&amp;home=20260824-official-home-2"></script>
+  <script defer src="assets/js/cinematic-revamp.js?v=20260824-prologue-text-2&amp;rev=20260824-fmc-act4-direct-2&amp;home=20260824-official-home-2&amp;audio=20260824-prologue-audio-1"></script>
   <script defer src="assets/js/official-home-v2.js?v=20260824-evidence-home-1"></script>
   <title>JUSTICE FOR KAIKAI｜為剴剴，也為下一個孩子</title>
   <script type="application/ld+json">
@@ -101,7 +101,7 @@
           <a class="button button-text" href="story.html">省流量文字版</a>
         </div>
         <div class="gate-options">
-          <label class="motion-choice"><input id="gate-music" type="checkbox" checked> 入場後播放背景音樂（可隨時暫停）</label>
+          <label class="motion-choice"><input id="gate-music" type="checkbox" checked> 入場後交互播放兩首背景配樂（可隨時暫停）</label>
           <label class="motion-choice"><input id="gate-reduced" type="checkbox"> 使用低動態模式</label>
         </div>
       </div>
@@ -253,11 +253,11 @@
     </section>
 
     <section class="score-library section-shell" id="original-scores" aria-labelledby="score-library-title">
-      <header><div><p class="kicker">ORIGINAL SCORE · 四首電影配樂＋十首劇場配樂＋一首背景音樂</p><h2 id="score-library-title">每一段路，<br>都有自己的聲音。</h2></div><p>四部五幕電影各自使用一首專屬配樂，不循環、不拉伸；十首章節配樂涵蓋序問、八篇正文與終章。全站背景曲另由頁首音樂鍵控制，所有聲音都能隨時暫停。</p></header>
+      <header><div><p class="kicker">ORIGINAL SCORE · 四首電影配樂＋十首劇場配樂＋兩首交互背景配樂</p><h2 id="score-library-title">每一段路，<br>都有自己的聲音。</h2></div><p>四部五幕電影各自使用一首專屬配樂，不循環、不拉伸；十首章節配樂涵蓋序問、八篇正文與終章。序幕曲與全站背景曲依序交互播放，並由頁首音樂鍵統一控制。</p></header>
       <details class="score-library-details">
-        <summary><span>展開原創配樂庫</span><small>15首曲目與全站背景音樂；預設收合，不影響正文閱讀</small></summary>
+        <summary><span>展開原創配樂庫</span><small>16 首曲目（含兩首交互背景配樂）；預設收合，不影響正文閱讀</small></summary>
       <div class="score-player-card">
-        <div class="ambient-track-row"><div><b>BG</b><span><strong>全站背景｜玩偶落淚之處</strong><small>閱讀長卷時循環播放；劇場或單曲開始時自動暫停。</small></span></div><button type="button" data-ambient-toggle aria-pressed="false"><span class="ambient-status">播放</span>背景音樂</button></div>
+        <div class="ambient-track-row"><div><b>BG</b><span><strong id="ambient-track-label">序幕配樂｜椅仔姑傳說</strong><small>與〈玩偶落淚之處〉依序交互播放；劇場或單曲開始時自動暫停。</small></span></div><button type="button" data-ambient-toggle aria-pressed="false"><span class="ambient-status">播放</span>背景音樂</button></div>
         <div class="score-track-grid" role="group" aria-label="選擇原創配樂">
           <button type="button" data-score="FM-A" aria-pressed="false"><b>A</b><span>Stamped in Marble｜土掩埋不住的清朝民間傳說</span></button>
           <button type="button" data-score="FM-D" aria-pressed="false"><b>D</b><span>來不及的追問｜無法再相見▪︎天涯各自分</span></button>
@@ -352,6 +352,6 @@
       <div class="cinema-control-dock"><div class="cinema-controls"><button id="prev-beat" type="button">上一拍</button><button class="play-button" id="play-cinema" type="button" aria-pressed="false">播放</button><button id="next-beat" type="button">下一拍</button><button id="toggle-transcript" type="button" aria-expanded="false" aria-controls="transcript">展開逐字稿 ↓</button></div><div class="timeline-control"><label for="timeline-progress">播放進度</label><input id="timeline-progress" type="range" min="0" max="1000" value="0" step="1"><output id="timeline-time" for="timeline-progress">00:00 / 00:00</output></div></div>
     </div>
   </dialog>
-  <audio id="ambient-audio" preload="none" loop src="public/media/site-background.m4a"></audio>
+  <audio id="ambient-audio" preload="metadata" src="public/media/prologue-chair-maiden.m4a"></audio>
 </body>
 </html>
