@@ -44,7 +44,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
 
-  assert.match(html, /assets\/data\/film-productions\.js\?v=20260824-web-closeout-1/);
+  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fmc-act4-responsibility-1/);
   assert.equal((html.match(/data-score="FM-[ADBC]"/g) ?? []).length, 4);
   assert.doesNotMatch(html, /id="cinema-audio"[^>]*\bloop\b/);
   assert.doesNotMatch(html, /id="ambient-audio"[^>]*\bloop\b/);
@@ -61,7 +61,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /body\.is-reduced \.film-local-flash/);
 });
 
-test("FM-C maps ten concept plates into five moving GSAP storyboards", async () => {
+test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an eight-shot responsibility act", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
@@ -75,14 +75,25 @@ test("FM-C maps ten concept plates into five moving GSAP storyboards", async () 
     "shot-05-shadows.webp",
   ];
   const actionShots = Array.from({ length: 5 }, (_, index) => `shot-${String(index + 1).padStart(2, "0")}-action.webp`);
+  const responsibilityShots = ["shot-04-handoff.webp", "shot-04-handle.webp", "shot-04-stepback.webp"];
 
-  for (const shot of [...baseShots, ...actionShots]) {
+  for (const shot of [...baseShots, ...actionShots, ...responsibilityShots]) {
     await access(new URL(`assets/img/films/fm-c-act4/${shot}`, root));
     assert.match(app, new RegExp(shot.replaceAll(".", "\\.")));
   }
   assert.match(app, /const FM_C_ACT_PLATES = \[/);
   assert.equal((app.match(/actionSrc:/g) ?? []).length, 5);
   assert.match(app, /const FM_C_ACT_SHOTS =/);
+  assert.match(app, /actIndex === 3/);
+  assert.match(app, /kind: "handoff"/);
+  assert.match(app, /kind: "handle"/);
+  assert.match(app, /kind: "stepback"/);
+  assert.match(app, /start: \.88/);
+  assert.match(app, /filmResponsibilityRig/);
+  assert.match(app, /playFmCFoley\("fluorescent"\)/);
+  assert.match(app, /playFmCFoley\("paper"\)/);
+  assert.match(app, /playFmCFoley\("latch"\)/);
+  assert.match(app, /playFmCFoley\("step"\)/);
   assert.match(app, /data-shot-kind=/);
   assert.match(app, /\.fm-c-live-fx/);
   assert.equal((app.match(/data-act-plate=/g) ?? []).length, 1);
@@ -92,19 +103,25 @@ test("FM-C maps ten concept plates into five moving GSAP storyboards", async () 
   assert.match(app, /scene\.id === "FM-C" \? "" : scene\.image/);
   assert.match(app, /scene\.image && scene\.id !== "FM-C"/);
   assert.match(app, /params\.get\("act"\)/);
-  assert.match(app, /5鏡位/);
+  assert.match(app, /shotCount/);
   assert.match(app, /dataset\.newPlate = "true"/);
   assert.match(app, /url\.searchParams\.set\("act", String\(actIndex \+ 1\)\)/);
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
-  assert.match(html, /rev=20260824-fmc-motion-storyboard-1/);
+  assert.match(html, /rev=20260825-fmc-act4-responsibility-1/);
   assert.match(css, /\.fm-c-five-act-sequence/);
   assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
   assert.match(css, /\.fm-c-act-shot\{/);
   assert.match(css, /\.fm-c-live-fx\{/);
+  assert.match(css, /\.fm-c-responsibility-rig\{/);
+  assert.match(css, /data-speaker-tone="chorus"/);
   assert.match(css, /button\[data-new-plate="true"\]/);
   assert.match(css, /data-film="FM-C"\] \.film-separated-palms\{display:none\}/);
   assert.match(css, /data-scene="FM-C"\] \.cinema-bg/);
   assert.match(css, /background-image:none!important/);
   assert.match(css, /body\.is-reduced \.fm-c-act-shot img/);
+
+  const registry = await loadRegistry();
+  const ancientLine = registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].cues.find((cue) => cue.text.startsWith("花有重開日"));
+  assert.equal(ancientLine?.speaker, "椅仔姑與剴剴｜兩人合聲");
 });

@@ -43,6 +43,10 @@ for (let index = 1; index <= 5; index += 1) {
     if (!fs.existsSync(shot)) errors.push(`第四部第${index}幕缺少${suffix === "action" ? "動作" : "建立"}鏡位`);
   }
 }
+for (const shotName of ["shot-04-handoff.webp", "shot-04-handle.webp", "shot-04-stepback.webp"]) {
+  const shot = path.join(root, "assets/img/films/fm-c-act4", shotName);
+  if (!fs.existsSync(shot)) errors.push(`第四部第四幕缺少加強動作鏡位：${shotName}`);
+}
 
 const app = fs.readFileSync(path.join(root, "assets/js/cinematic-revamp-core.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
@@ -63,6 +67,8 @@ if (!html.includes('id="source-guide"') || !story.includes('id="source-index"'))
 if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(410px, 112vw, 690px)") || !css.includes('.cinema-stage[data-type="side"] .cinema-actor img')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
 if (!app.includes("productionView") || !css.includes('.film-production[data-film="FM-C"]')) errors.push("手機電影構圖或雙世界分割尚未接入");
 if (!app.includes("FM_C_ACT_SHOTS") || !app.includes("data-shot-kind") || !css.includes(".fm-c-live-fx")) errors.push("第四部五幕仍缺多鏡位或動態效果層");
+if (!app.includes("filmResponsibilityRig") || !app.includes("playFmCFoley") || !css.includes(".fm-c-responsibility-rig")) errors.push("第四部第四幕仍缺責任交接、門把或環境聲動態");
+if (!filmRegistry.includes("椅仔姑與剴剴｜兩人合聲")) errors.push("第四部古句尚未改成兩人合聲");
 if (app.includes(".stats-band") || app.includes('trigger: ".stats-band"')) errors.push("播放器仍引用不存在的stats-band動畫目標");
 if (!html.includes('id="cinema-play-overlay"') || !html.includes('id="share-cinema"') || !app.includes("shareCinema")) errors.push("播放器中央播放鍵或單場分享尚未接入");
 if (!html.includes('class="cinema-control-dock"') || !css.includes(".cinema-control-dock { position: fixed")) errors.push("播放器控制列尚未固定於可視範圍");
