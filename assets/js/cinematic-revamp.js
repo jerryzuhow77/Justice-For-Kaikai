@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260823-prologue-refined-v2";
+  const version="20260824-design-polish-1";
   const load=(src,onload,onerror)=>{
     const script=document.createElement("script");
     script.src=src;
@@ -9,7 +9,8 @@
     script.onerror=onerror;
     document.head.append(script);
   };
-  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${version}`,null,()=>{});
+  const bootPolish=()=>load(`assets/js/chapter1-design-polish.js?v=${version}`,null,()=>{});
+  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${version}`,()=>bootPolish(),()=>bootPolish());
   let started=false;
   const start=()=>{
     if(started)return;
