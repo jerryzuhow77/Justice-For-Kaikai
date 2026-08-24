@@ -14,18 +14,10 @@
   }
 
   function markStages(root=document){
-    root.querySelectorAll(SELECTOR).forEach((group,index)=>{
+    root.querySelectorAll(SELECTOR).forEach((group)=>{
       if(group.dataset.designPolish===VERSION)return;
       group.dataset.designPolish=VERSION;
       group.dataset.hdStage="true";
-      const header=group.querySelector(":scope > header");
-      if(header&&!header.querySelector(".hd-stage-badge")){
-        const badge=document.createElement("i");
-        badge.className="hd-stage-badge";
-        badge.textContent=`HD STAGE ${String(index+1).padStart(2,"0")}`;
-        badge.setAttribute("aria-hidden","true");
-        header.append(badge);
-      }
     });
   }
 
