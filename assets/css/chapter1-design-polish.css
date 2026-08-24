@@ -1,0 +1,217 @@
+/* Chapter 01 design polish — 2026-08-24
+   Visual-only layer. Keeps film scripts, cues and source text untouched. */
+:root{
+  --c1-shell:min(1680px,96vw);
+  --c1-prose:min(860px,88vw);
+  --c1-ink:#f4ecdc;
+  --c1-paper:#eee2ca;
+  --c1-jade:#6f9287;
+  --c1-gold:#d2ae72;
+  --c1-rose:#b97972;
+  --c1-night:#07110f;
+}
+
+/* Opening gate: keep the complete four-line poem visible on every viewport. */
+.entry-gate{
+  padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.entry-gate .gate-panel{
+  width:min(1500px,96vw);
+  min-height:min(860px,calc(100dvh - 24px));
+  max-height:none;
+  border:1px solid rgba(226,202,157,.16);
+  box-shadow:0 36px 120px rgba(0,0,0,.52),inset 0 0 0 1px rgba(255,255,255,.02);
+}
+.entry-gate .gate-copy{padding:clamp(1.5rem,4vw,4.5rem)}
+.entry-gate .gate-quatrain{
+  gap:.08em!important;
+  margin-block:.85rem 1.15rem;
+  font-size:clamp(1.8rem,4.1vw,4.6rem);
+  line-height:1.28;
+  letter-spacing:.08em;
+}
+.entry-gate .gate-quatrain span{
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+  text-wrap:balance;
+}
+.entry-gate .gate-quatrain span:nth-child(3),
+.entry-gate .gate-quatrain span:nth-child(4){color:#efd7b5;text-shadow:0 3px 28px rgba(216,177,113,.12)}
+.entry-gate .gate-lead{max-width:48ch;font-size:clamp(1rem,1.45vw,1.18rem);line-height:1.9}
+
+/* Header stays compact; brand and controls are less likely to wrap awkwardly. */
+.site-header{backdrop-filter:blur(18px) saturate(1.08)}
+.site-header .brand b{white-space:nowrap}
+.site-header .brand small{max-width:36ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Hero becomes a clearer cinematic opening instead of another text block. */
+.hero{min-height:max(760px,100svh);isolation:isolate}
+.hero .section-shell{width:var(--c1-shell);max-width:none}
+.hero-content{align-items:end;padding-top:clamp(7rem,12vh,10rem);padding-bottom:clamp(5rem,10vh,8rem)}
+.hero-copy{max-width:min(880px,72vw)}
+.hero-copy h1{font-size:clamp(3.3rem,7.7vw,8.8rem);letter-spacing:-.055em;line-height:.9!important;text-wrap:balance}
+.hero-copy h1 em{display:inline-block;color:#e8c28d;text-shadow:0 10px 50px rgba(0,0,0,.28)}
+.hero-deck{font-size:clamp(1.06rem,1.65vw,1.36rem);line-height:1.9;color:rgba(244,236,220,.82)}
+.hero-brief{border-color:rgba(229,202,157,.2);background:linear-gradient(160deg,rgba(12,25,22,.76),rgba(7,13,12,.58));box-shadow:0 24px 80px rgba(0,0,0,.22)}
+
+/* Main film shelf uses larger posters and clearer hierarchy. */
+.film-reel.section-shell{width:var(--c1-shell);max-width:none}
+.film-reel{padding-top:clamp(5rem,9vw,9rem);padding-bottom:clamp(5rem,9vw,9rem)}
+.film-reel .reel-stage{min-height:clamp(420px,47vw,760px);border-radius:clamp(24px,3vw,44px);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.3)}
+.film-act-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2vw,1.8rem)}
+.film-act-card{min-height:clamp(330px,31vw,520px);border-radius:clamp(20px,2.3vw,34px);overflow:hidden;box-shadow:0 28px 70px rgba(0,0,0,.24)}
+
+/* Prose stays readable; theatres break out to full cinematic width. */
+.copy-layout.section-shell{width:var(--c1-shell);max-width:none;grid-template-columns:minmax(230px,290px) minmax(0,1fr);gap:clamp(2rem,4vw,5rem)}
+.inline-story{min-width:0;max-width:none}
+.inline-story > :not(.copy-scene-group){max-width:var(--c1-prose);margin-left:auto;margin-right:auto}
+.inline-story > h2,.inline-story > h3,.inline-story > h4{width:100%}
+.copy-scene-group{
+  --stage-progress:0;
+  position:relative;
+  margin:clamp(4.5rem,9vw,8.5rem) calc(50% - 50vw);
+  padding:clamp(1.1rem,2.2vw,2rem) max(1rem,calc((100vw - min(1680px,96vw))/2)) clamp(2rem,4vw,4rem);
+  background:
+    radial-gradient(circle at calc(var(--stage-progress) * 100%) 0%,rgba(205,169,111,.11),transparent 30%),
+    linear-gradient(180deg,#07100f 0%,#0c1715 58%,#07100f 100%);
+  border-top:1px solid rgba(222,192,139,.15);
+  border-bottom:1px solid rgba(222,192,139,.12);
+  box-shadow:0 38px 100px rgba(0,0,0,.26);
+}
+.copy-scene-group::before{
+  content:"";
+  position:absolute;left:0;top:0;height:2px;width:calc(var(--stage-progress) * 100%);
+  background:linear-gradient(90deg,rgba(111,146,135,.2),#d2ae72,rgba(185,121,114,.55));
+  box-shadow:0 0 22px rgba(210,174,114,.35);
+  pointer-events:none;
+}
+.copy-scene-group>header,.copy-scene-grid{width:min(1680px,96vw);margin-inline:auto}
+.copy-scene-group>header{display:grid;grid-template-columns:auto 1fr auto;align-items:end;gap:.75rem 1.25rem;margin-bottom:clamp(1rem,2vw,1.6rem);padding-inline:clamp(.25rem,1vw,.8rem)}
+.copy-scene-group>header span{color:#d2ae72;letter-spacing:.18em;text-transform:uppercase;font-size:.72rem}
+.copy-scene-group>header b{font-family:var(--serif);font-size:clamp(1.3rem,2.1vw,2rem);color:#f4ecdc}
+.copy-scene-group>header small{justify-self:end;color:rgba(244,236,220,.58)}
+.copy-scene-grid{display:grid!important;grid-template-columns:1fr!important;gap:clamp(1.2rem,2.4vw,2.2rem)!important}
+.copy-scene-item{border-radius:clamp(24px,2.6vw,40px)!important;overflow:hidden;background:#07100f!important;box-shadow:0 34px 90px rgba(0,0,0,.38)!important}
+.copy-scene-card{
+  width:100%;
+  min-height:0!important;
+  aspect-ratio:16/9;
+  border-radius:inherit!important;
+  overflow:hidden;
+  background:#07100f;
+}
+.copy-scene-poster{transform-origin:center center}
+.copy-scene-meta{
+  left:clamp(1.2rem,3vw,3rem)!important;
+  right:clamp(1.2rem,3vw,3rem)!important;
+  bottom:clamp(1.2rem,3vw,2.8rem)!important;
+  padding-top:clamp(3rem,9vw,8rem);
+  text-shadow:0 4px 28px #000,0 1px 2px #000;
+}
+.copy-scene-meta small{letter-spacing:.14em;color:#d7b67e}
+.copy-scene-meta strong{font-size:clamp(1.55rem,3.1vw,3rem)!important;line-height:1.12}
+.copy-scene-meta>span:last-child{max-width:60ch;color:rgba(245,238,224,.78);line-height:1.65}
+
+/* Optical balance: male silhouettes receive a small size nudge without touching source assets. */
+.copy-scene-card.shadow .copy-scene-actor.female,
+.copy-scene-card.side .copy-scene-actor.female{width:57%!important;height:84%!important;scale:.99;transform-origin:50% 100%}
+.copy-scene-card.shadow .copy-scene-actor.male,
+.copy-scene-card.side .copy-scene-actor.male{width:64%!important;height:91%!important;scale:1.07;transform-origin:50% 100%}
+
+/* The scene library becomes an archive/index, so full-size theatres are not duplicated again. */
+.scene-library.section-shell{width:var(--c1-shell);max-width:none}
+.library-layout-note{margin:1.2rem 0 1.8rem;padding:1rem 1.2rem;border-left:3px solid #6f9287;border-radius:0 16px 16px 0;background:rgba(111,146,135,.08);color:rgba(244,236,220,.76);line-height:1.75}
+.scene-library .scene-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.8rem,1.4vw,1.25rem)}
+.scene-library-item{min-width:0;border:1px solid rgba(226,198,148,.1);border-radius:20px;background:rgba(8,16,14,.62);overflow:hidden}
+.scene-library .scene-card{min-height:230px;border-radius:0;box-shadow:none}
+.scene-library .scene-card-poster{opacity:.58;filter:saturate(.82) contrast(1.04)}
+.scene-library .scene-card-meta{padding:1rem!important}
+.scene-library .scene-card-meta h3{font-size:clamp(1rem,1.35vw,1.22rem)}
+.scene-library .scene-card-meta p{font-size:.8rem;line-height:1.5}
+.scene-library .library-transcript{border-top:1px solid rgba(226,198,148,.1);background:rgba(255,255,255,.015)}
+.scene-library .scene-card-actor.male{scale:1.06;transform-origin:50% 100%}
+
+/* Seals are intentionally dispersed and visible, not tiled wallpaper. */
+.minnan-seal-field{opacity:1!important;pointer-events:none}
+.minnan-seal-field img{position:fixed!important;width:clamp(74px,8vw,138px)!important;opacity:.11!important;filter:sepia(.15) saturate(.8) contrast(.95);mix-blend-mode:screen;will-change:transform}
+.minnan-seal-field img:nth-child(1){left:2%;top:18%;transform:rotate(-9deg)}
+.minnan-seal-field img:nth-child(2){right:3%;top:28%;transform:rotate(7deg)}
+.minnan-seal-field img:nth-child(3){left:5%;top:54%;transform:rotate(5deg)}
+.minnan-seal-field img:nth-child(4){right:4%;top:68%;transform:rotate(-8deg)}
+.minnan-seal-field img:nth-child(5){left:16%;top:82%;transform:rotate(11deg)}
+.minnan-seal-field img:nth-child(6){right:18%;top:9%;transform:rotate(-4deg)}
+.minnan-seal-field img:nth-child(n+7){display:none!important}
+
+/* Stronger text contrast without turning the article into one uniform color. */
+.inline-story{color:#3d433e}
+.inline-story p{line-height:1.95}
+.inline-story h2{color:#2f3933}
+.inline-story h3,.inline-story h4{color:#46564e}
+.inline-story .story-question{color:#74504d}
+.inline-story .story-data-line{color:#496a73}
+.inline-story .story-contrast{color:#6e5b3d}
+.inline-story .story-key-line{color:#4c403c}
+
+@media (max-width:1100px){
+  .copy-layout.section-shell{grid-template-columns:1fr}
+  .copy-rail{position:relative!important;top:auto!important;display:none}
+  .scene-library .scene-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-copy{max-width:min(900px,90vw)}
+}
+
+@media (max-width:760px){
+  .entry-gate{display:block!important;padding:0!important;background:#07100f}
+  .entry-gate .gate-panel{display:block!important;width:100%!important;min-height:100dvh!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+  .entry-gate .gate-copy{padding:max(4.5rem,calc(env(safe-area-inset-top) + 2.5rem)) 1.25rem max(2rem,calc(env(safe-area-inset-bottom) + 1rem))}
+  .entry-gate .gate-preview{display:none!important}
+  .entry-gate .gate-quatrain{font-size:clamp(2rem,10.4vw,3.2rem)!important;line-height:1.3!important;letter-spacing:.055em!important;margin-bottom:1.25rem!important}
+  .entry-gate .gate-quatrain span{white-space:nowrap;text-align:left}
+  .entry-gate .gate-actions{display:grid!important;grid-template-columns:1fr!important;gap:.65rem!important}
+  .entry-gate .gate-actions .button{width:100%;min-height:3rem}
+  .entry-gate .gate-options{display:grid;gap:.7rem;margin-top:1rem}
+
+  .site-header .brand small{display:none}
+  .site-header .brand b{font-size:.86rem}
+  .header-tools{gap:.35rem}
+  .header-button{min-width:auto;padding-inline:.65rem}
+
+  .hero{min-height:100svh}
+  .hero-content{padding-top:7rem;padding-bottom:5.5rem;align-items:end}
+  .hero-copy{max-width:100%}
+  .hero-copy h1{font-size:clamp(3.2rem,16.5vw,5.7rem);line-height:.88!important}
+  .hero-deck{max-width:30ch;font-size:1.02rem}
+  .hero-brief{margin-top:1rem}
+
+  .film-act-grid{grid-template-columns:1fr}
+  .film-act-card{min-height:360px}
+  .film-reel .reel-stage{min-height:420px}
+
+  .full-copy-heading.section-shell,.copy-layout.section-shell{width:min(100% - 1.5rem,960px)}
+  .inline-story > :not(.copy-scene-group){max-width:min(100%,42rem)}
+  .copy-scene-group{margin:4rem calc(50% - 50vw);padding:1rem .75rem 2.5rem}
+  .copy-scene-group>header,.copy-scene-grid{width:calc(100vw - 1.5rem)}
+  .copy-scene-group>header{grid-template-columns:1fr;align-items:start;gap:.35rem;padding-inline:.35rem}
+  .copy-scene-group>header small{justify-self:start}
+  .copy-scene-card{aspect-ratio:4/5;min-height:0!important}
+  .copy-scene-meta{padding-top:8rem!important}
+  .copy-scene-meta strong{font-size:clamp(1.7rem,8vw,2.45rem)!important}
+  .copy-scene-meta>span:last-child{font-size:.92rem;line-height:1.55}
+  .copy-scene-card.shadow .copy-scene-actor.female,
+  .copy-scene-card.side .copy-scene-actor.female{width:64%!important;height:80%!important;scale:.96}
+  .copy-scene-card.shadow .copy-scene-actor.male,
+  .copy-scene-card.side .copy-scene-actor.male{width:76%!important;height:93%!important;scale:1.08}
+
+  .scene-library .scene-grid{grid-template-columns:1fr}
+  .scene-library .scene-card{min-height:210px}
+  .minnan-seal-field img{width:82px!important;opacity:.09!important}
+  .minnan-seal-field img:nth-child(5),.minnan-seal-field img:nth-child(6){display:none!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .copy-scene-group::before{width:100%}
+  .minnan-seal-field img{will-change:auto}
+}
