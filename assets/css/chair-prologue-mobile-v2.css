@@ -1,0 +1,203 @@
+/* Mobile Chair Maiden prologue v2
+   Uses the portrait artwork supplied for phones so all four women and the bamboo chair remain visible. */
+@keyframes kkp6MobileSkipPulse{
+  0%,100%{box-shadow:0 12px 34px rgba(0,0,0,.62),0 0 0 4px rgba(209,132,120,.12)}
+  50%{box-shadow:0 14px 40px rgba(0,0,0,.72),0 0 0 7px rgba(224,151,137,.2)}
+}
+
+@media(max-width:760px){
+  .kkp6{
+    --art:var(--chair-mobile-art,url("../img/prologue/chair-maiden-concept.webp"));
+    --mobile-safe-right:max(14px,calc(env(safe-area-inset-right) + 10px));
+    --mobile-safe-bottom:max(16px,calc(env(safe-area-inset-bottom) + 12px));
+    background:#020403!important;
+  }
+
+  .kkp6__ambient-bg{
+    background-image:linear-gradient(rgba(2,4,4,.44),rgba(2,4,4,.68)),var(--art)!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    filter:blur(26px) saturate(.7) brightness(.62)!important;
+    transform:scale(1.14)!important;
+    opacity:.98!important;
+  }
+
+  .kkp6__artboard{
+    width:min(94vw,calc(94vh * .5625))!important;
+    height:min(94vh,calc(94vw * 1.777778))!important;
+    top:50%!important;
+    aspect-ratio:9/16!important;
+    overflow:visible!important;
+    box-shadow:0 0 86px rgba(0,0,0,.92)!important;
+  }
+
+  @supports(height:100dvh){
+    .kkp6__artboard{
+      width:min(94vw,calc(94dvh * .5625))!important;
+      height:min(94dvh,calc(94vw * 1.777778))!important;
+    }
+  }
+
+  .kkp6__plate,
+  .kkp6__motion{
+    background-image:var(--art)!important;
+    background-size:100% 100%!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+  }
+
+  /* The portrait artwork contains no embedded copy, so the old desktop eraser masks only hid people. */
+  .kkp6__erase{display:none!important}
+
+  .kkp6__plate{
+    filter:saturate(.88) contrast(1.08) brightness(.94)!important;
+  }
+
+  .kkp6__screen{
+    background:linear-gradient(180deg,rgba(0,0,0,.22),transparent 19%,transparent 73%,rgba(0,0,0,.56)),radial-gradient(ellipse at 50% 60%,transparent 0 42%,rgba(0,0,0,.08) 64%,rgba(0,0,0,.58) 100%)!important;
+    box-shadow:inset 0 0 54px 10px rgba(0,0,0,.66)!important;
+  }
+
+  .kkp6__paper{opacity:.045!important}
+  .kkp6__grain{opacity:.085!important}
+  .kkp6__rain{opacity:.045!important}
+  .kkp6__dust{opacity:.15!important}
+
+  /* Local motion masks follow the four figures in the portrait composition. */
+  .kkp6__motion{mix-blend-mode:screen!important;opacity:.16!important}
+  .kkp6__motion--left{
+    transform-origin:23% 72%!important;
+    -webkit-mask-image:radial-gradient(ellipse 27% 45% at 16% 66%,#000 0 49%,rgba(0,0,0,.88) 61%,transparent 75%),radial-gradient(ellipse 18% 31% at 34% 60%,#000 0 49%,rgba(0,0,0,.82) 62%,transparent 76%)!important;
+    mask-image:radial-gradient(ellipse 27% 45% at 16% 66%,#000 0 49%,rgba(0,0,0,.88) 61%,transparent 75%),radial-gradient(ellipse 18% 31% at 34% 60%,#000 0 49%,rgba(0,0,0,.82) 62%,transparent 76%)!important;
+  }
+  .kkp6__motion--right{
+    transform-origin:77% 71%!important;
+    -webkit-mask-image:radial-gradient(ellipse 25% 42% at 69% 64%,#000 0 50%,rgba(0,0,0,.87) 63%,transparent 77%),radial-gradient(ellipse 19% 38% at 88% 66%,#000 0 49%,rgba(0,0,0,.83) 62%,transparent 76%)!important;
+    mask-image:radial-gradient(ellipse 25% 42% at 69% 64%,#000 0 50%,rgba(0,0,0,.87) 63%,transparent 77%),radial-gradient(ellipse 19% 38% at 88% 66%,#000 0 49%,rgba(0,0,0,.83) 62%,transparent 76%)!important;
+  }
+  .kkp6__motion--arm{
+    transform-origin:67% 61%!important;
+    opacity:.22!important;
+    clip-path:polygon(54% 49%,75% 47%,81% 67%,74% 79%,54% 74%,49% 59%)!important;
+    -webkit-mask-image:linear-gradient(118deg,transparent 4%,#000 31%,#000 73%,transparent 96%)!important;
+    mask-image:linear-gradient(118deg,transparent 4%,#000 31%,#000 73%,transparent 96%)!important;
+  }
+  .kkp6__motion--chair{
+    transform-origin:50% 79%!important;
+    opacity:.29!important;
+    -webkit-mask-image:radial-gradient(ellipse 18% 27% at 50% 69%,#000 0 54%,rgba(0,0,0,.78) 67%,transparent 83%)!important;
+    mask-image:radial-gradient(ellipse 18% 27% at 50% 69%,#000 0 54%,rgba(0,0,0,.78) 67%,transparent 83%)!important;
+  }
+  .kkp6__motion--lantern{
+    transform-origin:50% 27%!important;
+    opacity:.19!important;
+    -webkit-mask-image:radial-gradient(ellipse 12% 17% at 14% 24%,#000 0 45%,transparent 75%),radial-gradient(ellipse 11% 17% at 90% 25%,#000 0 45%,transparent 75%)!important;
+    mask-image:radial-gradient(ellipse 12% 17% at 14% 24%,#000 0 45%,transparent 75%),radial-gradient(ellipse 11% 17% at 90% 25%,#000 0 45%,transparent 75%)!important;
+  }
+
+  .kkp6__chair-light{
+    bottom:9%!important;
+    width:92vw!important;
+    height:58%!important;
+    opacity:.53!important;
+  }
+  .kkp6__chair-shadow{
+    bottom:24%!important;
+    width:24vw!important;
+    opacity:.68!important;
+  }
+  .kkp6__lantern-light{
+    left:0!important;
+    bottom:44%!important;
+    width:100vw!important;
+    height:45%!important;
+    opacity:.42!important;
+    background:radial-gradient(ellipse at 14% 38%,rgba(239,184,99,.25),transparent 25%),radial-gradient(ellipse at 89% 40%,rgba(239,184,99,.22),transparent 24%)!important;
+  }
+
+  .kkp6__header{
+    top:max(.82rem,env(safe-area-inset-top))!important;
+    left:max(.88rem,env(safe-area-inset-left))!important;
+  }
+  .kkp6__header strong{font-size:.86rem!important;letter-spacing:.17em!important}
+  .kkp6__header small{font-size:.49rem!important}
+
+  .kkp6__copy{
+    top:max(4.05rem,calc(env(safe-area-inset-top) + 3.38rem))!important;
+    width:92vw!important;
+    gap:.08rem!important;
+  }
+  .kkp6__line{
+    font-size:clamp(.96rem,4.95vw,1.24rem)!important;
+    line-height:1.58!important;
+    letter-spacing:.045em!important;
+  }
+  .kkp6__line--sigh{font-size:clamp(1.03rem,5.3vw,1.38rem)!important}
+
+  .kkp6__bridge{
+    bottom:calc(var(--mobile-safe-bottom) + 88px)!important;
+    width:90vw!important;
+    gap:.28rem!important;
+  }
+  .kkp6__bridge span{font-size:.7rem!important;letter-spacing:.09em!important}
+  .kkp6__bridge strong{font-size:.92rem!important;line-height:1.48!important}
+
+  .kkp6__progress{
+    bottom:calc(var(--mobile-safe-bottom) + 60px)!important;
+    width:min(42vw,180px)!important;
+    height:2px!important;
+    background:rgba(245,229,202,.2)!important;
+  }
+
+  /* Large, tactile and high-contrast: always inside Android/iOS safe areas. */
+  .kkp6__skip{
+    position:fixed!important;
+    z-index:40!important;
+    top:auto!important;
+    right:var(--mobile-safe-right)!important;
+    bottom:var(--mobile-safe-bottom)!important;
+    min-width:124px!important;
+    min-height:48px!important;
+    padding:.76rem 1rem!important;
+    border:1.5px solid rgba(244,225,194,.78)!important;
+    border-radius:999px!important;
+    background:linear-gradient(135deg,rgba(58,35,31,.96),rgba(16,14,13,.95))!important;
+    color:#fff5e8!important;
+    font-size:.82rem!important;
+    font-weight:800!important;
+    line-height:1!important;
+    letter-spacing:.1em!important;
+    text-shadow:0 1px 3px #000!important;
+    box-shadow:0 12px 34px rgba(0,0,0,.62),0 0 0 4px rgba(209,132,120,.12)!important;
+    backdrop-filter:blur(16px)!important;
+    -webkit-backdrop-filter:blur(16px)!important;
+    touch-action:manipulation!important;
+    pointer-events:auto!important;
+  }
+  .kkp6__skip::before{
+    content:"↘";
+    display:inline-block;
+    margin-right:.42rem;
+    color:#efaa9c;
+    font-size:1rem;
+    transform:translateY(-.02rem);
+  }
+  .kkp6__skip:active{transform:scale(.97)!important}
+  .kkp6__caption{display:none!important}
+}
+
+@media(max-width:430px){
+  .kkp6__header small{display:none!important}
+  .kkp6__copy{top:max(3.72rem,calc(env(safe-area-inset-top) + 3.02rem))!important}
+  .kkp6__line{font-size:clamp(.92rem,4.9vw,1.08rem)!important}
+  .kkp6__bridge{bottom:calc(var(--mobile-safe-bottom) + 86px)!important}
+  .kkp6__skip{min-width:118px!important;min-height:47px!important;font-size:.79rem!important}
+}
+
+@media(max-width:760px) and (prefers-reduced-motion:no-preference){
+  .kkp6__skip{animation:kkp6MobileSkipPulse 2.35s ease-in-out 1.15s 2}
+}
+
+@media(max-width:760px) and (prefers-reduced-motion:reduce){
+  .kkp6__skip{animation:none!important}
+}
