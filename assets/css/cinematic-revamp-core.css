@@ -838,6 +838,57 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
   .timeline-control label { grid-column: 1 / -1; }
 }
 
+/* GSAP FIVE-ACT RELIGHT + DISTINCT ACT PLATES · 2026-08-24
+ * Brighter projection values and five separate art-directed environments.
+ * FM-C deliberately keeps the two-world master plate, while each act gains
+ * an independent location/light/object layer so it no longer reads as one
+ * still image with five crops.
+ */
+.gate-backdrop {
+  background:
+    linear-gradient(90deg, rgba(5,11,10,.68), rgba(9,16,15,.28), rgba(5,10,9,.58)),
+    url("../img/films/fm-c-two-worlds-v2.webp") center / cover no-repeat;
+  filter: saturate(.82) contrast(1.02) brightness(1.08);
+}
+.gate-backdrop::after { background: radial-gradient(circle at 56% 44%, transparent 8%, rgba(3,8,7,.18) 58%, rgba(3,8,7,.55) 100%); }
+.gate-panel { background: linear-gradient(118deg, rgba(23,36,34,.93) 0 55%, rgba(29,43,40,.88)); }
+.hero-vignette { background: linear-gradient(90deg, rgba(5,11,10,.68), rgba(5,11,10,.18) 62%, rgba(5,11,10,.46)), linear-gradient(180deg, transparent, rgba(5,11,10,.64) 94%); }
+.cinema-bg { filter: saturate(.82) contrast(1.02) brightness(1.08); }
+.cinema-stage[data-type="side"] .cinema-bg { filter: saturate(.62) contrast(1.02) brightness(.8) blur(1px); }
+.cinema-stage[data-production="true"] .cinema-bg { filter: saturate(.88) contrast(1.01) brightness(1.16); }
+.cinema-stage[data-production="true"] .cinema-depth { opacity: .3; filter: saturate(.92) brightness(1.18); }
+.cinema-stage[data-production="true"] .cinema-atmosphere { opacity: .25; mix-blend-mode: screen; }
+.cinema-visual::after { background: linear-gradient(180deg, rgba(4,9,8,.02), transparent 56%, rgba(4,9,8,.46)); }
+.story-beat { filter: saturate(.72) brightness(.82); }
+.story-beat.is-current { filter: saturate(.96) brightness(1.08); }
+
+.film-production::before,
+.film-production::after { content:""; position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .65s ease; }
+.film-production::before { z-index:-1; mix-blend-mode:screen; }
+.film-production::after { z-index:1; mix-blend-mode:soft-light; }
+
+/* 第四部／第一幕：清代厝埕與現代醫院長廊，中縫第一次相觸。 */
+.film-production[data-film="FM-C"][data-act="1"]::before { opacity:.78; background:radial-gradient(ellipse at 22% 62%,rgba(217,154,91,.34),transparent 32%),radial-gradient(ellipse at 78% 38%,rgba(144,211,222,.3),transparent 32%),linear-gradient(90deg,rgba(108,55,32,.3) 0 49.7%,rgba(75,132,143,.26) 50.3%); }
+.film-production[data-film="FM-C"][data-act="1"]::after { opacity:.7; background:linear-gradient(90deg,transparent 16%,rgba(39,21,14,.52) 16.4% 18%,transparent 18.4% 47%,rgba(224,241,240,.3) 47.4% 48%,transparent 48.4%); }
+/* 第二幕：訊息與表單形成資訊牆，冷暖兩側仍無人伸手。 */
+.film-production[data-film="FM-C"][data-act="2"]::before { opacity:.74; background:repeating-linear-gradient(90deg,transparent 0 8%,rgba(129,205,214,.13) 8.2% 8.5%,transparent 8.8% 16%),linear-gradient(90deg,rgba(136,72,42,.18),rgba(72,135,149,.35)); }
+.film-production[data-film="FM-C"][data-act="2"]::after { opacity:.58; background:repeating-linear-gradient(0deg,transparent 0 11%,rgba(231,242,238,.16) 11.3% 11.7%,transparent 12% 22%); }
+/* 第三幕：油燈與端正表格同框，中央留下孩子形狀的負空間。 */
+.film-production[data-film="FM-C"][data-act="3"]::before { opacity:.8; background:radial-gradient(circle at 24% 42%,rgba(239,168,76,.5),transparent 18%),radial-gradient(circle at 76% 42%,rgba(188,224,222,.34),transparent 20%),linear-gradient(90deg,rgba(73,40,25,.28),rgba(44,92,94,.24)); }
+.film-production[data-film="FM-C"][data-act="3"]::after { opacity:.74; background:radial-gradient(ellipse at 50% 62%,rgba(4,9,8,.82) 0 6%,transparent 6.5%),linear-gradient(90deg,transparent 49.6%,rgba(240,224,180,.38) 50%,transparent 50.4%); }
+/* 第四幕：髮簪、藍白布帶與暖金責任線，各自落地。 */
+.film-production[data-film="FM-C"][data-act="4"]::before { opacity:.82; background:radial-gradient(ellipse at 29% 70%,rgba(211,133,74,.34),transparent 21%),radial-gradient(ellipse at 72% 68%,rgba(118,184,202,.38),transparent 24%),linear-gradient(90deg,rgba(112,57,32,.22),rgba(56,112,126,.24)); }
+.film-production[data-film="FM-C"][data-act="4"]::after { opacity:.82; background:linear-gradient(115deg,transparent 0 26%,rgba(235,191,91,.7) 26.2% 26.45%,transparent 26.7% 64%,rgba(202,231,235,.3) 64.3% 66%,transparent 66.4%); }
+/* 第五幕：兩扇門各開一寸，門後是可抵達的普通清晨。 */
+.film-production[data-film="FM-C"][data-act="5"]::before { opacity:.92; background:radial-gradient(ellipse at 50% 47%,rgba(255,226,158,.64),transparent 25%),linear-gradient(90deg,rgba(130,77,44,.2),rgba(115,174,180,.23)); }
+.film-production[data-film="FM-C"][data-act="5"]::after { opacity:.7; background:linear-gradient(90deg,rgba(28,20,14,.52) 0 43%,transparent 43.5% 49.4%,rgba(255,239,190,.6) 49.7% 50.3%,transparent 50.6% 56.5%,rgba(22,34,34,.46) 57%); }
+
+@media (max-width:760px) {
+  .gate-backdrop { filter:saturate(.8) brightness(.98); }
+  .hero-vignette { background:linear-gradient(180deg,rgba(5,11,10,.1),rgba(5,11,10,.62) 72%,rgba(5,11,10,.82)); }
+  .cinema-stage[data-production="true"] .cinema-bg { filter:saturate(.88) brightness(1.08); }
+}
+
 @media (max-width: 430px) {
   .brand small { display: none; }
   .hero-brief dl { grid-template-columns: 1fr 1fr; }
