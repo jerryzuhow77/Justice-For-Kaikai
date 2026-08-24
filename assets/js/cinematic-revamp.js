@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260824-chair-mobile-v2b";
+  const version="20260824-all-transcripts-palms-1";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
