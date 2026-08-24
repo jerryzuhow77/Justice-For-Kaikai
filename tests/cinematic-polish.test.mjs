@@ -113,3 +113,21 @@ test("layers GSAP motion across the gate, seals, score cards, copy, and cinema",
   assert.match(css, /perspective: 1100px/);
   assert.match(css, /html\.has-gsap \.gate-film-image/);
 });
+
+test("keeps the prologue skip control immediately visible and mobile-safe", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const loader = await readFile(new URL("assets/js/cinematic-revamp.js", root), "utf8");
+  const prologue = await readFile(new URL("assets/js/chair-prologue-refined.js", root), "utf8");
+  const refinedCss = await readFile(new URL("assets/css/chair-prologue-refined.css", root), "utf8");
+  const mobileCss = await readFile(new URL("assets/css/chair-prologue-mobile-v2.css", root), "utf8");
+
+  assert.match(prologue, /class="kkp6__skip"[^>]*>略過序幕<\/button>/);
+  assert.match(prologue, /skip\.addEventListener\("click",finish\)/);
+  assert.doesNotMatch(prologue, /\.from\("\.kkp6__skip",\{autoAlpha:0/);
+  assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
+  assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
+  assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
+  assert.match(loader, /const version="20260824-prologue-skip-1"/);
+  assert.match(html, /cinematic-revamp\.css\?v=20260824-prologue-skip-1/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-skip-1/);
+});

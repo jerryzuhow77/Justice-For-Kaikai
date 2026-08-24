@@ -8,6 +8,7 @@
 @media(max-width:760px){
   .kkp6{
     --art:var(--chair-mobile-art,url("../img/prologue/chair-maiden-concept.webp"));
+    --mobile-safe-top:max(14px,calc(env(safe-area-inset-top) + 10px));
     --mobile-safe-right:max(14px,calc(env(safe-area-inset-right) + 10px));
     --mobile-safe-bottom:max(16px,calc(env(safe-area-inset-bottom) + 12px));
     background:#020403!important;
@@ -153,12 +154,14 @@
   .kkp6__skip{
     position:fixed!important;
     z-index:40!important;
-    top:auto!important;
+    top:var(--mobile-safe-top)!important;
     right:var(--mobile-safe-right)!important;
-    bottom:var(--mobile-safe-bottom)!important;
+    bottom:auto!important;
     min-width:124px!important;
     min-height:48px!important;
     padding:.76rem 1rem!important;
+    opacity:1!important;
+    visibility:visible!important;
     border:1.5px solid rgba(244,225,194,.78)!important;
     border-radius:999px!important;
     background:linear-gradient(135deg,rgba(58,35,31,.96),rgba(16,14,13,.95))!important;
