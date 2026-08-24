@@ -12,6 +12,10 @@ test("removes the duplicate scene-library block while keeping chapter theatres",
   assert.doesNotMatch(html, /href="#scene-library"/);
   assert.match(html, /皮影與陰翳側視已分散至各篇章節/);
   assert.match(app, /className = `copy-scene-item \$\{scene\.type\}`/);
+  assert.match(app, /\$\$\("h2, h3, h4, h5", target\)/);
+  for (const sceneId of ["SP00", "DV00", "FM-A", "FM-D", "FM-B", "SP09", "DV09", "FM-C"]) {
+    assert.match(app, new RegExp(`"${sceneId}"`));
+  }
   assert.doesNotMatch(app, /renderSceneLibrary/);
 });
 

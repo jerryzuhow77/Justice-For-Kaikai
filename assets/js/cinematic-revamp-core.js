@@ -43,7 +43,7 @@
   };
   const INLINE_PLACEMENTS = [
     { match: ["開頭引言", "花會再開", "童年不會重來"], label: "序幕電影", scenes: ["FM-A"] },
-    { match: ["皮影序問", "六扇門"], label: "序問雙劇場", scenes: ["SP00", "DV00"] },
+    { match: ["皮影序問", "六扇門", "先了解案件", "一個孩子生命最後的一百一十五天"], label: "序問雙劇場", scenes: ["SP00", "DV00"] },
     { match: ["古老的傳說", "綁在椅子上的孩子"], label: "第一篇章劇場", scenes: ["SP01", "DV01"] },
     { match: ["離開原來的家", "當孩子必須離開"], label: "第二篇章劇場", scenes: ["SP02", "DV02"] },
     { match: ["越來越多求救", "進入制度"], label: "第三篇章劇場", scenes: ["SP03", "DV03"] },
@@ -53,7 +53,7 @@
     { match: ["制度留下的接縫", "從珮珮到剴剴"], label: "第七篇章劇場", scenes: ["SP07", "DV07"] },
     { match: ["外婆的眼淚", "第二章前夜"], label: "第八篇章前奏", scenes: ["FM-D", "SP08", "DV08"] },
     { match: ["外婆含淚的指責", "正文收束"], label: "法庭電影", scenes: ["FM-B"] },
-    { match: ["結尾皮影戲", "下一扇門更早打開"], label: "終章三聯劇場", scenes: ["SP09", "DV09", "FM-C"] }
+    { match: ["結尾皮影戲", "下一扇門更早打開", "普通清晨"], label: "終章三聯劇場", scenes: ["SP09", "DV09", "FM-C"] }
   ];
 
   const MOTION_POSES = [
@@ -564,7 +564,7 @@
   }
 
   function findPlacementHeading(target, placement) {
-    const headings = $$("h2, h3, h4", target);
+    const headings = $$("h2, h3, h4, h5", target);
     return headings.find((heading) => { const normalized = normalizeText(heading.textContent); return placement.match.some((needle) => normalized.includes(normalizeText(needle))); });
   }
 

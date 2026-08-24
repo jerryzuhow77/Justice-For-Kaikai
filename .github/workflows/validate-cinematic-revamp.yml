@@ -202,6 +202,7 @@ jobs:
 
             grep -q 'class="film-act-card"' "visual-regression/player-${scene}-dom.html"
             grep -q 'class="copy-scene-card film"' "visual-regression/player-${scene}-dom.html"
+            test "$(grep -o 'class="copy-scene-item' "visual-regression/player-${scene}-dom.html" | wc -l)" -eq 24
             if grep -q 'id="scene-library"' "visual-regression/player-${scene}-dom.html"; then
               echo "Removed scene-library block returned in the browser render."
               exit 1
