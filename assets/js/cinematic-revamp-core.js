@@ -197,25 +197,38 @@
   const stageProp = $("#cinema-prop");
   const filmProduction = $("#film-production");
   const FM_C_ACT_PLATES = [
-    { src: "assets/img/films/fm-c-act4/shot-01-object.webp", label: "第一幕｜兩個孩子走向同一條門縫" },
-    { src: "assets/img/films/fm-c-act4/shot-02-theatre.webp", label: "第二幕｜資訊走得更快，保護仍可能遲到" },
-    { src: "assets/img/films/fm-c-act4/shot-03-corridor.webp", label: "第三幕｜沉默只是換了衣裳" },
-    { src: "assets/img/films/fm-c-act4/shot-04-doors.webp", label: "第四幕｜把責任交給活著的人" },
-    { src: "assets/img/films/fm-c-act4/shot-05-shadows.webp", label: "第五幕｜兩扇門各自打開一寸" }
+    { src: "assets/img/films/fm-c-act4/shot-01-object.webp", actionSrc: "assets/img/films/fm-c-act4/shot-01-action.webp", label: "第一幕｜兩個孩子走向同一條門縫" },
+    { src: "assets/img/films/fm-c-act4/shot-02-theatre.webp", actionSrc: "assets/img/films/fm-c-act4/shot-02-action.webp", label: "第二幕｜資訊走得更快，保護仍可能遲到" },
+    { src: "assets/img/films/fm-c-act4/shot-03-corridor.webp", actionSrc: "assets/img/films/fm-c-act4/shot-03-action.webp", label: "第三幕｜沉默只是換了衣裳" },
+    { src: "assets/img/films/fm-c-act4/shot-04-doors.webp", actionSrc: "assets/img/films/fm-c-act4/shot-04-action.webp", label: "第四幕｜把責任交給活著的人" },
+    { src: "assets/img/films/fm-c-act4/shot-05-shadows.webp", actionSrc: "assets/img/films/fm-c-act4/shot-05-action.webp", label: "第五幕｜兩扇門各自打開一寸" }
   ];
-  const FM_C_ACT_MOTION = [
-    { from: { scale: 1.075, xPercent: -.35, yPercent: 1.4 }, to: { scale: 1.015, xPercent: .25, yPercent: 0 } },
-    { from: { scale: 1.018, xPercent: 0, yPercent: 0 }, to: { scale: 1.058, xPercent: 0, yPercent: -.35 } },
-    { from: { scale: 1.055, xPercent: -1.25, yPercent: .25 }, to: { scale: 1.025, xPercent: 1.15, yPercent: -.15 } },
-    { from: { scale: 1.07, xPercent: 0, yPercent: 1.1 }, to: { scale: 1.018, xPercent: 0, yPercent: -.2 } },
-    { from: { scale: 1.045, xPercent: 0, yPercent: -1 }, to: { scale: 1.012, xPercent: 0, yPercent: .2 } }
+  const FM_C_ACT_CAMERA = [
+    { qing: "29% 47%", modern: "72% 47%", detail: 1.58, action: 1.08 },
+    { qing: "39% 67%", modern: "61% 67%", detail: 2.16, action: 1.08 },
+    { qing: "27% 58%", modern: "75% 58%", detail: 1.7, action: 1.075 },
+    { qing: "25% 57%", modern: "76% 57%", detail: 1.68, action: 1.065 },
+    { qing: "28% 48%", modern: "78% 48%", detail: 1.78, action: 1.07 }
   ];
+  const fmCShotPlan = (actIndex) => {
+    const plate = FM_C_ACT_PLATES[actIndex];
+    const camera = FM_C_ACT_CAMERA[actIndex];
+    return [
+      { src: plate.src, kind: "establish", start: 0, origin: "50% 50%", from: { scale: 1.075, xPercent: 0, yPercent: .5 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } },
+      { src: plate.src, kind: "qing-close", start: .19, origin: camera.qing, from: { scale: camera.detail * .94, xPercent: 0, yPercent: 0 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.25 } },
+      { src: plate.actionSrc, kind: "action", start: .38, origin: "50% 50%", from: { scale: 1.015, xPercent: 0, yPercent: .35 }, to: { scale: camera.action, xPercent: 0, yPercent: 0 } },
+      { src: plate.actionSrc, kind: "modern-close", start: .61, origin: camera.modern, from: { scale: camera.detail * .94, xPercent: 0, yPercent: 0 }, to: { scale: camera.detail * 1.015, xPercent: 0, yPercent: -.2 } },
+      { src: plate.actionSrc, kind: "resolve", start: .8, origin: "50% 50%", from: { scale: camera.action * 1.035, xPercent: 0, yPercent: -.15 }, to: { scale: 1.015, xPercent: 0, yPercent: 0 } }
+    ];
+  };
+  const FM_C_ACT_SHOTS = FM_C_ACT_PLATES.map((plate, index) => fmCShotPlan(index));
   const filmActSequence = document.createElement("div");
   filmActSequence.className = "fm-c-five-act-sequence";
   filmActSequence.setAttribute("aria-hidden", "true");
-  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<figure class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')"><img src="${plate.src}" alt="" loading="eager" decoding="async"></figure>`).join("");
+  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
   filmProduction?.prepend(filmActSequence);
   const filmActFrames = $$(".fm-c-act-frame", filmActSequence);
+  const filmActShots = $$(".fm-c-act-shot", filmActSequence);
   const filmSeparatedPalms = document.createElement("div");
   filmSeparatedPalms.className = "film-separated-palms";
   filmSeparatedPalms.innerHTML = '<i class="palms-child palms-qing"><b></b><span>椅仔姑</span></i><em aria-hidden="true"></em><i class="palms-child palms-modern"><b></b><span>剴剴</span></i>';
@@ -482,7 +495,7 @@
     sequence.forEach((scene) => {
       if (scene.image && scene.id !== "FM-C") { const image = new Image(); image.src = scene.image; }
       if (scene.id === "FM-C") {
-        FM_C_ACT_PLATES.forEach((plate) => { const image = new Image(); image.src = plate.src; });
+        FM_C_ACT_PLATES.flatMap((plate) => [plate.src, plate.actionSrc]).forEach((src) => { const image = new Image(); image.src = src; });
       }
       if (scene.type !== "film") {
         ["female", "male"].forEach((sex) => actorPosePlan(scene, sex).forEach((pose) => { const image = new Image(); image.src = poseAsset(scene, sex, pose); }));
@@ -985,6 +998,10 @@
     timeline.set(filmTimeRift, { scaleY: .82, autoAlpha: 0 }, at);
     timeline.set(filmActSequence, { autoAlpha: 0 }, at);
     timeline.set(filmActFrames, { autoAlpha: 0, filter: "brightness(.72)" }, at);
+    timeline.set(filmActShots, { autoAlpha: 0, clipPath: "inset(0 0 0 0)", zIndex: 0 }, at);
+    timeline.set($$(".fm-c-act-shot img", filmActSequence), { clearProps: "transform" }, at);
+    timeline.set($$(".fm-c-live-fx", filmActSequence), { autoAlpha: 0, clearProps: "filter" }, at);
+    timeline.set($$(".fm-c-live-fx b,.fm-c-live-fx em,.fm-c-live-fx i", filmActSequence), { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1, clearProps: "filter" }, at);
     timeline.set(door, { autoAlpha: 0 }, at);
     timeline.set([$("i", door), $("b", door)], { xPercent: 0 }, at);
   }
@@ -992,12 +1009,44 @@
   function addFmCActPlate(timeline, meta, at, duration) {
     const frame = filmActFrames[meta.actionIndex];
     if (!frame) return;
-    const image = $("img", frame);
-    const motion = FM_C_ACT_MOTION[meta.actionIndex];
-    const transition = Math.min(.9, Math.max(.42, duration * .035));
+    const shots = $$(".fm-c-act-shot", frame);
+    const plans = FM_C_ACT_SHOTS[meta.actionIndex];
+    const fx = $(".fm-c-live-fx", frame);
+    const fxPulse = $("b", fx);
+    const fxBeam = $("em", fx);
+    const particles = $$("i", fx);
+    const transition = Math.min(.82, Math.max(.48, duration * .026));
     timeline.set(filmActSequence, { autoAlpha: 1 }, at);
     timeline.fromTo(frame, { autoAlpha: 0, filter: "brightness(.72)" }, { autoAlpha: 1, filter: "brightness(1)", duration: transition, ease: "power2.inOut", immediateRender: false }, at);
-    timeline.fromTo(image, motion.from, { ...motion.to, duration, ease: "none", immediateRender: false }, at);
+    timeline.set(fx, { autoAlpha: 1 }, at);
+    timeline.fromTo(fxPulse, { autoAlpha: .18, xPercent: -50, scaleX: .62, scaleY: .76 }, { autoAlpha: .72, xPercent: -50, scaleX: 1.14, scaleY: 1.08, duration: duration / 8, repeat: 7, yoyo: true, ease: "sine.inOut", immediateRender: false }, at);
+    timeline.fromTo(fxBeam, { autoAlpha: 0, xPercent: -135 }, { autoAlpha: .34, xPercent: 135, duration, ease: "sine.inOut", immediateRender: false }, at);
+
+    plans.forEach((plan, shotIndex) => {
+      const shot = shots[shotIndex];
+      const image = $("img", shot);
+      const shotAt = at + duration * plan.start;
+      const nextStart = plans[shotIndex + 1]?.start ?? 1;
+      const motionDuration = Math.max(1.2, duration * (nextStart - plan.start) + transition);
+      timeline.set(shot, { zIndex: shotIndex + 1 }, shotAt);
+      if (shotIndex === 0) {
+        timeline.set(shot, { autoAlpha: 1, clipPath: "inset(0 0 0 0)" }, shotAt);
+      } else {
+        const reveal = shotIndex === 1 ? "inset(0 100% 0 0)" : shotIndex === 2 ? "polygon(50% 0,50% 0,50% 100%,50% 100%)" : shotIndex === 3 ? "inset(0 0 0 100%)" : "inset(47% 0 47% 0)";
+        const fullReveal = shotIndex === 2 ? "polygon(0 0,100% 0,100% 100%,0 100%)" : "inset(0 0 0 0)";
+        timeline.fromTo(shot, { autoAlpha: 0, clipPath: reveal }, { autoAlpha: 1, clipPath: fullReveal, duration: transition, ease: shotIndex === 2 ? "power3.inOut" : "power2.out", immediateRender: false }, shotAt);
+        timeline.to(shots[shotIndex - 1], { autoAlpha: 0, duration: transition * .55, ease: "power1.out" }, shotAt + transition * .45);
+        timeline.fromTo(fx, { filter: "brightness(1.38)" }, { filter: "brightness(1)", duration: transition * .7, ease: "power2.out", immediateRender: false }, shotAt);
+      }
+      timeline.fromTo(image, plan.from, { ...plan.to, duration: motionDuration, ease: shotIndex === 0 || shotIndex === 4 ? "none" : "sine.inOut", immediateRender: false }, shotAt);
+    });
+
+    particles.forEach((particle, particleIndex) => {
+      const particleAt = at + duration * (.05 + particleIndex * .075);
+      const direction = particleIndex % 2 === 0 ? 1 : -1;
+      timeline.fromTo(particle, { autoAlpha: 0, xPercent: direction * -160, yPercent: 120 + particleIndex * 12, rotation: direction * -18, scale: .72 + particleIndex * .035 }, { autoAlpha: .5, xPercent: direction * 210, yPercent: -170 - particleIndex * 8, rotation: direction * 70, scale: 1, duration: duration * .34, ease: "sine.out", immediateRender: false }, particleAt);
+      timeline.to(particle, { autoAlpha: 0, duration: .5, ease: "power1.out" }, particleAt + duration * .3);
+    });
   }
 
   function addProductionAct(timeline, meta, at) {
@@ -1226,15 +1275,24 @@
       gsap.set(clearTargets, { clearProps: "opacity,visibility,transform,filter,clipPath,backgroundColor" });
       gsap.set(filmActSequence, { autoAlpha: 0 });
       gsap.set(filmActFrames, { autoAlpha: 0, filter: "brightness(1)" });
+      gsap.set(filmActShots, { autoAlpha: 0, clipPath: "inset(0 0 0 0)", zIndex: 0 });
+      gsap.set($$(".fm-c-live-fx", filmActSequence), { autoAlpha: 0, clearProps: "filter" });
       filmProduction.style.setProperty("--split", productionSplitForCue(meta.cue));
       if (usesFmCActPlate) {
         const frame = filmActFrames[meta.actionIndex];
-        const image = $("img", frame);
-        const motion = FM_C_ACT_MOTION[meta.actionIndex];
-        const interpolate = (key) => motion.from[key] + (motion.to[key] - motion.from[key]) * progress;
+        const plans = FM_C_ACT_SHOTS[meta.actionIndex];
+        const shots = $$(".fm-c-act-shot", frame);
+        const shotIndex = plans.reduce((current, plan, index) => progress + .0001 >= plan.start ? index : current, 0);
+        const shotPlan = plans[shotIndex];
+        const shot = shots[shotIndex];
+        const image = $("img", shot);
+        const nextStart = plans[shotIndex + 1]?.start ?? 1;
+        const shotProgress = clamp((progress - shotPlan.start) / Math.max(.001, nextStart - shotPlan.start), 0, 1);
+        const interpolate = (key) => shotPlan.from[key] + (shotPlan.to[key] - shotPlan.from[key]) * shotProgress;
         gsap.set([bgA, bgB, depthFar, depthMid, depthNear], { autoAlpha: 0 });
         gsap.set(filmActSequence, { autoAlpha: 1 });
         gsap.set(frame, { autoAlpha: 1, filter: "brightness(1)" });
+        gsap.set(shot, { autoAlpha: 1, clipPath: "inset(0 0 0 0)", zIndex: shotIndex + 1 });
         gsap.set(image, { scale: interpolate("scale"), xPercent: interpolate("xPercent"), yPercent: interpolate("yPercent") });
       } else {
         gsap.set([bgA, bgB, depthFar, depthMid, depthNear], { backgroundPosition: view.position, backgroundSize: view.size, scale: 1.018 + progress * .037, xPercent: 0, yPercent: 0 });
@@ -1268,6 +1326,12 @@
       filmActSequence.style.opacity = usesFmCActPlate ? "1" : "0";
       filmActFrames.forEach((frame, index) => { frame.style.opacity = usesFmCActPlate && index === meta.actionIndex ? "1" : "0"; });
       if (usesFmCActPlate) {
+        const plans = FM_C_ACT_SHOTS[meta.actionIndex];
+        const frame = filmActFrames[meta.actionIndex];
+        const shots = $$(".fm-c-act-shot", frame);
+        const shotIndex = plans.reduce((current, plan, index) => progress + .0001 >= plan.start ? index : current, 0);
+        filmActShots.forEach((shot) => { shot.style.opacity = "0"; });
+        if (shots[shotIndex]) shots[shotIndex].style.opacity = "1";
         [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => { element.style.opacity = "0"; });
       }
       else {
@@ -1426,10 +1490,10 @@
         button.dataset.sceneId = singleScene.id;
         button.dataset.actIndex = String(index);
         const usesNewActPlate = singleScene.id === "FM-C" && Boolean(FM_C_ACT_PLATES[index]);
-        button.textContent = `第${CHINESE_ACT_NUMBERS[index]}幕 · ${actInfo.title}${usesNewActPlate ? " · 新幕圖" : ""}`;
+        button.textContent = `第${CHINESE_ACT_NUMBERS[index]}幕 · ${actInfo.title}${usesNewActPlate ? " · 5鏡位" : ""}`;
         if (usesNewActPlate) {
           button.dataset.newPlate = "true";
-          button.title = `依設計概念圖重製的 GSAP 第${CHINESE_ACT_NUMBERS[index]}幕`;
+          button.title = `依十張設計概念圖重製的 GSAP 第${CHINESE_ACT_NUMBERS[index]}幕多鏡位動畫`;
         }
         button.addEventListener("click", () => {
           const stepIndex = state.player.stepMeta.findIndex((meta) => meta.scene.id === singleScene.id && meta.actionIndex === index);

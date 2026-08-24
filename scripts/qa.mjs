@@ -35,6 +35,15 @@ for (const required of ["index.html", "story.html", "story-zh-hans.html", "story
   if (!fs.existsSync(path.join(root, required))) errors.push(`缺必要檔：${required}`);
 }
 
+const fmCBaseShotNames = ["object", "theatre", "corridor", "doors", "shadows"];
+for (let index = 1; index <= 5; index += 1) {
+  const number = String(index).padStart(2, "0");
+  for (const suffix of [fmCBaseShotNames[index - 1], "action"]) {
+    const shot = path.join(root, `assets/img/films/fm-c-act4/shot-${number}-${suffix}.webp`);
+    if (!fs.existsSync(shot)) errors.push(`第四部第${index}幕缺少${suffix === "action" ? "動作" : "建立"}鏡位`);
+  }
+}
+
 const app = fs.readFileSync(path.join(root, "assets/js/cinematic-revamp-core.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const story = fs.readFileSync(path.join(root, "story.html"), "utf8");
@@ -53,6 +62,7 @@ if (html.includes('id="sound-toggle"') || app.includes("待掛曲")) errors.push
 if (!html.includes('id="source-guide"') || !story.includes('id="source-index"')) errors.push("來源分層或完整來源索引尚未公開");
 if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(410px, 112vw, 690px)") || !css.includes('.cinema-stage[data-type="side"] .cinema-actor img')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
 if (!app.includes("productionView") || !css.includes('.film-production[data-film="FM-C"]')) errors.push("手機電影構圖或雙世界分割尚未接入");
+if (!app.includes("FM_C_ACT_SHOTS") || !app.includes("data-shot-kind") || !css.includes(".fm-c-live-fx")) errors.push("第四部五幕仍缺多鏡位或動態效果層");
 if (app.includes(".stats-band") || app.includes('trigger: ".stats-band"')) errors.push("播放器仍引用不存在的stats-band動畫目標");
 if (!html.includes('id="cinema-play-overlay"') || !html.includes('id="share-cinema"') || !app.includes("shareCinema")) errors.push("播放器中央播放鍵或單場分享尚未接入");
 if (!html.includes('class="cinema-control-dock"') || !css.includes(".cinema-control-dock { position: fixed")) errors.push("播放器控制列尚未固定於可視範圍");

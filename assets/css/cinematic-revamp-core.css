@@ -894,10 +894,22 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .cinema-stage[data-scene="FM-C"] .cinema-depth{opacity:0!important;visibility:hidden!important;background-image:none!important}
 .fm-c-five-act-sequence{position:absolute;z-index:3;inset:0;overflow:hidden;opacity:0;visibility:hidden;background:#090d0c;isolation:isolate}
 .film-production[data-film="FM-C"] .fm-c-five-act-sequence{visibility:visible}
-.fm-c-act-frame{position:absolute;inset:-1.5%;margin:0;overflow:hidden;opacity:0;will-change:opacity,filter}
-.fm-c-act-frame::before{content:"";position:absolute;z-index:-1;inset:-8%;opacity:0;background:var(--act-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.72) brightness(.52);transform:scale(1.08)}
-.fm-c-act-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,6,.12),transparent 52%,rgba(2,6,6,.56)),radial-gradient(ellipse at center,transparent 45%,rgba(2,6,6,.4) 100%);pointer-events:none}
-.fm-c-act-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.82) contrast(1.04) brightness(.9);will-change:transform;backface-visibility:hidden}
+.fm-c-act-frame{position:absolute;inset:-1.5%;margin:0;overflow:hidden;opacity:0;isolation:isolate;will-change:opacity,filter}
+.fm-c-act-frame::before{content:"";position:absolute;z-index:0;inset:-8%;opacity:.3;background:var(--act-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.72) brightness(.52);transform:scale(1.08)}
+.fm-c-act-frame::after{content:"";position:absolute;z-index:4;inset:0;background:linear-gradient(180deg,rgba(2,6,6,.1),transparent 47%,rgba(2,6,6,.54)),radial-gradient(ellipse at center,transparent 43%,rgba(2,6,6,.38) 100%);pointer-events:none}
+.fm-c-act-shot{position:absolute;z-index:1;inset:0;margin:0;overflow:hidden;opacity:0;background:var(--shot-backdrop) center/cover no-repeat;will-change:opacity,clip-path}
+.fm-c-act-shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transform-origin:var(--shot-focus,50% 50%);filter:saturate(.88) contrast(1.045) brightness(.94);will-change:transform;backface-visibility:hidden}
+.fm-c-act-shot[data-shot-kind$="close"] img{filter:saturate(.9) contrast(1.055) brightness(.96)}
+.fm-c-live-fx{position:absolute;z-index:3;inset:0;overflow:hidden;opacity:0;pointer-events:none;mix-blend-mode:screen}
+.fm-c-live-fx b{position:absolute;left:50%;top:-4%;bottom:-4%;width:clamp(3px,.46vw,8px);border-radius:999px;background:linear-gradient(90deg,transparent,rgba(252,224,164,.78),#fff3c7,rgba(153,219,224,.44),transparent);box-shadow:0 0 16px rgba(246,213,143,.52);transform:translateX(-50%);transform-origin:50% 50%}
+.fm-c-live-fx em{position:absolute;left:-24%;top:-24%;width:52%;height:148%;background:linear-gradient(90deg,transparent,rgba(245,225,184,.17),transparent);transform:skewX(-17deg);filter:blur(5px)}
+.fm-c-live-fx i{position:absolute;display:block;left:50%;top:72%;width:clamp(5px,.65vw,10px);aspect-ratio:1;border:1px solid rgba(244,221,176,.38);border-radius:50%;background:rgba(246,226,184,.32);box-shadow:0 0 10px rgba(240,214,158,.32)}
+.fm-c-live-fx i:nth-of-type(1){left:13%;top:76%}.fm-c-live-fx i:nth-of-type(2){left:25%;top:62%}.fm-c-live-fx i:nth-of-type(3){left:38%;top:82%}.fm-c-live-fx i:nth-of-type(4){left:47%;top:58%}
+.fm-c-live-fx i:nth-of-type(5){left:57%;top:78%}.fm-c-live-fx i:nth-of-type(6){left:69%;top:66%}.fm-c-live-fx i:nth-of-type(7){left:81%;top:84%}.fm-c-live-fx i:nth-of-type(8){left:90%;top:61%}
+.fm-c-act-frame[data-act-plate="2"] .fm-c-live-fx i,
+.fm-c-act-frame[data-act-plate="3"] .fm-c-live-fx i{width:clamp(13px,1.8vw,28px);aspect-ratio:1.35;border-radius:1px;background:rgba(224,214,191,.26);clip-path:polygon(4% 8%,94% 0,100% 88%,9% 100%)}
+.fm-c-act-frame[data-act-plate="4"] .fm-c-live-fx i,
+.fm-c-act-frame[data-act-plate="5"] .fm-c-live-fx i{width:2px;height:clamp(42px,8vw,110px);aspect-ratio:auto;border:0;border-radius:999px;background:linear-gradient(180deg,transparent,rgba(255,226,161,.55),transparent)}
 .film-production[data-film="FM-C"] .film-separated-palms{display:none}
 .film-production[data-film="FM-C"] .film-seam{z-index:4}
 .film-production[data-film="FM-C"] .film-source-tag,
@@ -928,14 +940,17 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
   .cinema-stage[data-type="shadow"] .cinema-actor img,.cinema-stage[data-type="side"] .cinema-actor img{filter:saturate(.78) brightness(1.08) contrast(1.02)}
   .fm-c-act-frame{inset:0;background:#080c0c}
   .fm-c-act-frame::before{z-index:0;opacity:1}
-  .fm-c-act-frame img{position:relative;z-index:1;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.36)) saturate(.84) contrast(1.03) brightness(.92)}
-  .fm-c-act-frame::after{z-index:1}
+  .fm-c-act-shot{background:var(--shot-backdrop) center/cover no-repeat}
+  .fm-c-act-shot img{position:relative;z-index:1;object-fit:contain;filter:drop-shadow(0 14px 24px rgba(0,0,0,.36)) saturate(.88) contrast(1.04) brightness(.95)}
+  .fm-c-act-shot[data-shot-kind$="close"] img{object-fit:cover;filter:saturate(.9) contrast(1.05) brightness(.96)}
+  .fm-c-act-frame::after{z-index:4}
+  .fm-c-live-fx{z-index:3}
   .film-separated-palms{inset:10% 0 24%}
   .palms-child{width:38%;height:60%}.palms-qing{left:4%}.palms-modern{right:4%}
   .palms-child b{top:38%;width:46%}.palms-qing b{right:-20%}.palms-modern b{left:-20%}
 }
 
-body.is-reduced .fm-c-act-frame img{transform:none!important}
+body.is-reduced .fm-c-act-shot img{transform:none!important}
 
 @media (max-width: 430px) {
   .brand small { display: none; }
