@@ -194,6 +194,13 @@
   const papers = $("#cinema-papers");
   const stageProp = $("#cinema-prop");
   const filmProduction = $("#film-production");
+  const filmSeparatedPalms = document.createElement("div");
+  filmSeparatedPalms.className = "film-separated-palms";
+  filmSeparatedPalms.innerHTML = '<i class="palms-child palms-qing"><b></b><span>椅仔姑</span></i><em aria-hidden="true"></em><i class="palms-child palms-modern"><b></b><span>剴剴</span></i>';
+  filmProduction?.append(filmSeparatedPalms);
+  const filmQingChild = $(".palms-qing", filmSeparatedPalms);
+  const filmModernChild = $(".palms-modern", filmSeparatedPalms);
+  const filmTimeRift = $("em", filmSeparatedPalms);
   const filmWorldQing = $(".film-world-qing", filmProduction);
   const filmWorldModern = $(".film-world-modern", filmProduction);
   const filmCurtain = $(".film-curtain", filmProduction);
@@ -940,6 +947,9 @@
     timeline.set(filmHairItems, { autoAlpha: 0, yPercent: 0, rotation: 0, backgroundColor: "#262724" }, at);
     timeline.set(filmLinePath, { autoAlpha: 0, strokeDasharray: 1000, strokeDashoffset: 1000 }, at);
     timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 0 }, at);
+    timeline.set(filmSeparatedPalms, { autoAlpha: 0 }, at);
+    timeline.set([filmQingChild, filmModernChild], { xPercent: 0, y: 0, scale: 1 }, at);
+    timeline.set(filmTimeRift, { scaleY: .82, autoAlpha: 0 }, at);
     timeline.set(door, { autoAlpha: 0 }, at);
     timeline.set([$("i", door), $("b", door)], { xPercent: 0 }, at);
   }
@@ -1042,24 +1052,36 @@
         break;
       case "split-shadow":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.fromTo(filmSeparatedPalms, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2 }, at + .25);
+        timeline.fromTo(filmQingChild, { xPercent: -12 }, { xPercent: 0, duration: 3.2, ease: "power2.out" }, at + .25);
+        timeline.fromTo(filmModernChild, { xPercent: 12 }, { xPercent: 0, duration: 3.2, ease: "power2.out" }, at + .25);
+        timeline.fromTo(filmTimeRift, { autoAlpha: 0, scaleY: .65 }, { autoAlpha: 1, scaleY: 1, duration: 1.8, ease: "sine.out" }, at + 1.25);
         lineDraw(1.6, duration * .64, 430);
         break;
       case "information":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.set([filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 }, at);
+        timeline.to([filmQingChild, filmModernChild], { y: -3, duration: 2.8, repeat: 3, yoyo: true, ease: "sine.inOut" }, at + .4);
         timeline.fromTo(filmInfoItems, { autoAlpha: 0, y: 18, rotation: -4 }, { autoAlpha: .76, y: 0, rotation: 0, duration: .65, stagger: 1, ease: "power2.out" }, at + .8);
         timeline.to(filmInfoItems, { autoAlpha: .32, y: -8, duration: duration * .55, stagger: .18, ease: "sine.inOut" }, at + 7);
         break;
       case "silence-clothes":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.set([filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 }, at);
         timeline.fromTo(filmDoorItems, { autoAlpha: 0, filter: "brightness(.65)" }, { autoAlpha: .32, filter: "brightness(1)", duration: .7, stagger: .7 }, at + .5);
         timeline.fromTo(filmInfoItems.slice(1, 4), { autoAlpha: .18, rotation: -4 }, { autoAlpha: .45, rotation: 5, duration: duration * .74, stagger: .6, ease: "sine.inOut" }, at + 1.4);
         break;
       case "responsibility":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.set([filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 }, at);
+        timeline.to(filmQingChild, { xPercent: 2.5, duration: 3.6, repeat: 2, yoyo: true, ease: "sine.inOut" }, at + .8);
+        timeline.to(filmModernChild, { xPercent: -2.5, duration: 3.6, repeat: 2, yoyo: true, ease: "sine.inOut" }, at + .8);
+        timeline.to(filmTimeRift, { filter: "brightness(1.5) drop-shadow(0 0 14px rgba(241,220,168,.8))", duration: 1.8, repeat: 3, yoyo: true, ease: "sine.inOut" }, at + 1.2);
         lineDraw(1.4, duration * .46, 0);
         break;
       case "one-inch":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        timeline.set([filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 }, at);
         timeline.set(door, { autoAlpha: .42 }, at + .4);
         timeline.to(doorLeft, { xPercent: -4, duration: 4.2, ease: "power1.inOut" }, at + 1.2);
         timeline.to(doorRight, { xPercent: 4, duration: 4.2, ease: "power1.inOut" }, at + 1.2);
@@ -1149,7 +1171,10 @@
       gsap.set(filmActSlate, { autoAlpha: 1, y: 0 });
       gsap.set(filmLinePath, { clearProps: "opacity,visibility", strokeDasharray: 1000, strokeDashoffset: 1000 - progress * 1000 });
       if (/mud-thread|bundle|trust-corridor|six-doors|testimony|split-shadow|responsibility|one-inch/.test(actInfo.effect)) gsap.set(filmLinePath, { autoAlpha: .8 });
-      if (meta.scene.id === "FM-C") gsap.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 });
+      if (meta.scene.id === "FM-C") {
+        gsap.set([filmWorldQing, filmWorldModern, filmSeam, filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 });
+        gsap.set([filmQingChild, filmModernChild], { xPercent: 0, y: 0, scale: 1 });
+      }
       if (actInfo.effect === "six-doors" || actInfo.effect === "silence-clothes") gsap.set(filmDoorItems.slice(0, Math.max(1, Math.ceil(progress * 6))), { autoAlpha: .82 });
       if (actInfo.effect === "information") gsap.set(filmInfoItems.slice(0, Math.max(1, Math.ceil(progress * 5))), { autoAlpha: .62 });
       if (actInfo.effect === "qing-hair" || actInfo.effect === "white-hair") gsap.set(filmHairItems, { autoAlpha: .82, backgroundColor: actInfo.effect === "white-hair" ? "#d8d8d2" : "#20211f" });
