@@ -36,10 +36,10 @@
 @media(max-width:700px){.story-toc{margin-top:1rem!important}.story-toc nav{grid-template-columns:1fr}.story-toc a.is-major{grid-column:auto}.story-content>p{font-size:1.04rem;line-height:1.95}.story-content>h2,.story-content>h3{scroll-margin-top:7.2rem}.story-back-top{bottom:max(4.2rem,env(safe-area-inset-bottom))}}
 @media print{.story-header,.story-help,.story-back-top,.story-reading-progress{display:none!important}.story-content{width:100%;padding:0;color:#111}.story-toc{break-inside:avoid}.story-content details>*{display:block!important}.story-content a{color:#111;text-decoration:none}}
 
-/* All 24 animation transcripts, loaded as text only on demand. */
-.all-animation-transcripts{margin:clamp(5rem,10vw,8rem) 0 4rem;padding-top:1rem;border-top:3px double rgba(126,83,70,.28)}
-.all-animation-transcripts>h2{margin:1rem 0 .8rem!important;border:0!important;padding:0!important;font-size:clamp(2rem,5vw,3.35rem)!important}
-.all-animation-transcripts>p{max-width:44rem;margin:0 0 1.4rem;color:#625e55}
+/* Chapter-local animation transcripts, loaded as text only on demand. */
+.chapter-animation-transcripts{margin:.9rem 0 2.2rem;padding:.75rem 0 0;border-top:1px solid rgba(126,83,70,.2)}
+.chapter-animation-transcripts::before{content:"本章動畫逐字稿";display:block;margin:0 0 .55rem;color:#726d64;font:800 .66rem/1.4 var(--sans);letter-spacing:.14em}
+.chapter-animation-transcripts .animation-transcript-loader{margin:0!important}
 .animation-transcript-loader{max-width:none!important;border-color:rgba(69,110,103,.28)!important;background:rgba(255,255,255,.42)!important}
 .animation-transcript-loader>summary{display:grid;gap:.15rem;padding:1rem 3.2rem 1rem 1.15rem!important;background:linear-gradient(110deg,rgba(69,110,103,.12),rgba(158,92,90,.07))}
 .animation-transcript-loader>summary span{font:700 1.06rem/1.4 var(--serif)}
