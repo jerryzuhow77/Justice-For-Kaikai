@@ -72,7 +72,7 @@ jobs:
 
           required_ids = {
               "entry-gate", "site-header", "main", "film-reel", "full-copy",
-              "scene-library", "source-guide", "action", "cinema-dialog",
+              "source-guide", "action", "cinema-dialog",
               "cinema-stage", "cinema-bg-a", "cinema-bg-b", "dialogue-box",
               "timeline-progress", "play-cinema", "toggle-transcript"
           }

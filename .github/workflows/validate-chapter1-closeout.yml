@@ -65,13 +65,15 @@ jobs:
 
           required_html = [
               '花有重開日，','人無再少年。','應須惜兒孫，','安樂是天倫。',
-              'id="film-reel"','id="full-copy"','id="scene-library"','id="chapter-two-preview"',
+              'id="film-reel"','id="full-copy"','id="chapter-two-preview"',
               'id="cinema-dialog"','id="transcript"','id="toggle-transcript"','id="ambient-audio"',
               '20260824-web-closeout-1'
           ]
           missing = [item for item in required_html if item not in html]
           if missing:
               raise SystemExit(f'Missing closeout markers: {missing}')
+          if 'id="scene-library"' in html or 'SCENE LIBRARY · 場景資料庫' in html:
+              raise SystemExit('Removed scene-library block returned')
 
           for filename, text in [
               ('chapter1-design-polish.css', design_css),

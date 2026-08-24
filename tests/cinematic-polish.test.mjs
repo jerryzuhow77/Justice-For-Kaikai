@@ -4,6 +4,17 @@ import test from "node:test";
 
 const root = new URL("../", import.meta.url);
 
+test("removes the duplicate scene-library block while keeping chapter theatres", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  assert.doesNotMatch(html, /id="scene-library"/);
+  assert.doesNotMatch(html, /SCENE LIBRARY · 場景資料庫/);
+  assert.doesNotMatch(html, /href="#scene-library"/);
+  assert.match(html, /皮影與陰翳側視已分散至各篇章節/);
+  assert.match(app, /className = `copy-scene-item \$\{scene\.type\}`/);
+  assert.doesNotMatch(app, /renderSceneLibrary/);
+});
+
 test("ships twelve translucent Minnan seals as decorative backgrounds", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
@@ -84,7 +95,7 @@ test("synchronizes four act names and repairs single film cards and the dark fir
     assert.match(registry, new RegExp(title));
   }
   assert.match(app, /grid\.classList\.toggle\("is-single", validScenes\.length === 1\)/);
-  assert.match(html, /assets\/data\/scenes\.js\?v=20260823-scene2/);
+  assert.match(html, /assets\/data\/scenes\.js\?v=20260824-web-closeout-1/);
   assert.match(css, /\.copy-scene-grid\.is-single/);
   assert.match(css, /data-scene-id="FM-A"/);
 });
