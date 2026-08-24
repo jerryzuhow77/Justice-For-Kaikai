@@ -11,59 +11,73 @@
     script.src = src; script.onload = resolve; script.onerror = reject; document.head.append(script);
   });
 
-  const buildAnimationTranscripts = async (container, status) => {
+  let scenePromise;
+  const getScenes = () => {
+    if (scenePromise) return scenePromise;
+    scenePromise = (async () => {
+      await loadScript("assets/data/scenes.js?v=20260824-chapter-transcripts-1");
+      await loadScript("assets/data/film-productions.js?v=20260824-chapter-transcripts-1");
+      return new Map(Array.from(window.KAIKAI_SCENES || []).map((scene) => [scene.id, scene]));
+    })();
+    return scenePromise;
+  };
+
+  const createTranscriptItem = (scene) => {
+    const lines = scene.production?.cues || scene.dialogue || [];
+    const labels = { film: "五幕電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
+    const details = document.createElement("details"); details.className = `animation-transcript-item ${scene.type}`;
+    const summary = document.createElement("summary");
+    summary.innerHTML = `<span><b>${scene.id}</b>${scene.title}</span><small>${labels[scene.type]} · ${lines.length}段完整對話／場景說明</small>`;
+    const body = document.createElement("div"); body.className = "animation-transcript-lines";
+    lines.forEach((line) => {
+      const row = document.createElement("p");
+      const speaker = document.createElement("strong");
+      const stamp = Number.isFinite(line.time) ? `${String(Math.floor(line.time / 60)).padStart(2,"0")}:${String(Math.round(line.time % 60)).padStart(2,"0")} · ` : "";
+      speaker.textContent = `${stamp}${line.speaker || "旁白"}`;
+      const text = document.createElement("span"); text.textContent = line.text || "";
+      row.append(speaker, text); body.append(row);
+    });
+    details.append(summary, body);
+    return details;
+  };
+
+  const buildChapterTranscripts = async (container, status, sceneIds) => {
     if (container.dataset.ready) return;
-    status.textContent = "正在載入24場動畫逐字稿……";
+    status.textContent = "正在載入本章動畫逐字稿……";
     try {
-      await loadScript("assets/data/scenes.js?v=20260824-all-transcripts-1");
-      await loadScript("assets/data/film-productions.js?v=20260824-all-transcripts-1");
-      const scenes = Array.from(window.KAIKAI_SCENES || []);
-      const labels = { film: "五幕電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
-      const groups = ["film", "shadow", "side"];
-      groups.forEach((type) => {
-        const groupScenes = scenes.filter((scene) => scene.type === type);
-        if (!groupScenes.length) return;
-        const group = document.createElement("section"); group.className = "animation-transcript-group";
-        const heading = document.createElement("h3"); heading.textContent = `${labels[type]}｜${groupScenes.length}場`;
-        group.append(heading);
-        groupScenes.forEach((scene, index) => {
-          const lines = scene.production?.cues || scene.dialogue || [];
-          const details = document.createElement("details"); details.className = "animation-transcript-item";
-          const summary = document.createElement("summary");
-          summary.innerHTML = `<span><b>${scene.id}</b>${scene.title}</span><small>${lines.length}段完整對話／場景說明</small>`;
-          const body = document.createElement("div"); body.className = "animation-transcript-lines";
-          lines.forEach((line) => {
-            const row = document.createElement("p");
-            const speaker = document.createElement("strong");
-            const stamp = Number.isFinite(line.time) ? `${String(Math.floor(line.time / 60)).padStart(2,"0")}:${String(Math.round(line.time % 60)).padStart(2,"0")} · ` : "";
-            speaker.textContent = `${stamp}${line.speaker || "旁白"}`;
-            const text = document.createElement("span"); text.textContent = line.text || "";
-            row.append(speaker, text); body.append(row);
-          });
-          details.append(summary, body); group.append(details);
-        });
-        container.append(group);
-      });
+      const sceneMap = await getScenes();
+      sceneIds.map((id) => sceneMap.get(id)).filter(Boolean).forEach((scene) => container.append(createTranscriptItem(scene)));
       container.dataset.ready = "true";
-      status.textContent = `已載入${scenes.length}場動畫完整逐字稿；點選各場標題展開或收合。`;
+      status.textContent = `本章共${container.children.length}場動畫；點選各場標題展開或收合。`;
     } catch (error) {
       status.textContent = "逐字稿載入失敗，請重新整理頁面後再試。";
     }
   };
 
   if (document.documentElement.lang === "zh-Hant") {
-    const transcriptSection = document.createElement("section");
-    transcriptSection.className = "all-animation-transcripts";
-    transcriptSection.id = "all-animation-transcripts";
-    transcriptSection.innerHTML = '<h2>全部動畫完整逐字稿</h2><p>收錄四部五幕電影、十場皮影詩劇與十場陰翳側視劇場。為維持省流量模式，只有展開本區時才載入文字資料。</p>';
-    const loader = document.createElement("details"); loader.className = "animation-transcript-loader";
-    const summary = document.createElement("summary"); summary.innerHTML = '<span>展開24場動畫逐字稿</span><small>四部電影＋十場皮影＋十場陰翳側視</small>';
-    const status = document.createElement("p"); status.className = "animation-transcript-status"; status.textContent = "尚未載入，展開後僅下載文字資料。";
-    const container = document.createElement("div"); container.className = "animation-transcript-container";
-    loader.append(summary, status, container); transcriptSection.append(loader);
-    const sourceIndex = root.querySelector("#source-index");
-    if (sourceIndex) sourceIndex.before(transcriptSection); else root.append(transcriptSection);
-    loader.addEventListener("toggle", () => { if (loader.open) buildAnimationTranscripts(container, status); });
+    const placements = [
+      ["古老的傳說綁在椅子上的孩子", ["FM-A", "SP00", "DV00", "SP01", "DV01"]],
+      ["當孩子必須離開原來的家", ["SP02", "DV02"]],
+      ["越來越多求救進入制度", ["SP03", "DV03"]],
+      ["隔著布簾的急診記憶", ["SP04", "DV04"]],
+      ["從一紙修法開始兒福聯盟的誕生", ["SP05", "DV05"]],
+      ["珮珮另一間病房裡的孩子", ["SP06", "DV06"]],
+      ["從珮珮到剴剴制度留下的接縫", ["SP07", "DV07"]],
+      ["外婆的眼淚第二章前夜", ["FM-D", "FM-B", "SP08", "DV08"]],
+      ["普通清晨", ["FM-C", "SP09", "DV09"]]
+    ];
+    placements.forEach(([headingId, sceneIds], chapterIndex) => {
+      const heading = document.getElementById(headingId);
+      if (!heading) return;
+      const section = document.createElement("aside"); section.className = "chapter-animation-transcripts";
+      const loader = document.createElement("details"); loader.className = "animation-transcript-loader";
+      const summary = document.createElement("summary");
+      summary.innerHTML = `<span>本章動畫完整逐字稿</span><small>${sceneIds.length}場 · 點擊展開</small>`;
+      const status = document.createElement("p"); status.className = "animation-transcript-status"; status.textContent = "尚未載入；展開後僅下載文字資料。";
+      const container = document.createElement("div"); container.className = "animation-transcript-container";
+      loader.append(summary, status, container); section.append(loader); heading.insertAdjacentElement("afterend", section);
+      loader.addEventListener("toggle", () => { if (loader.open) buildChapterTranscripts(container, status, sceneIds); });
+    });
   }
 
   const progress = document.createElement("span");
