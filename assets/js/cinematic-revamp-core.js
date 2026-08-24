@@ -1360,7 +1360,7 @@
 
   function startPlayback() { if (!state.player.stepMeta.length) return; if (state.reduced || !state.player.timeline) { goToStep(state.player.stepIndex + 1); return; } if (state.player.timeline.progress() >= .999) { state.player.timeline.pause(0, true); renderStep(0, false); } scoreLibraryAudio?.pause(); state.player.playing = true; updatePlayButton(); playSceneAudio(); state.player.timeline.play(); }
   function pausePlayback() { state.player.timeline?.pause(); cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); }
-  function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); syncSceneAudioToTimeline(true); }
+  function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); syncSceneAudioToTimeline(true); const meta = state.player.stepMeta[target]; if (state.player.mode === "single" && meta) setPlayerUrl(meta.scene.id, "single", meta.actionIndex); }
   function jumpToScene(id) { const index = state.player.stepMeta.findIndex((meta) => meta.scene.id === id); if (index >= 0) goToStep(index); }
 
   function renderActMarkers() {
@@ -1373,7 +1373,12 @@
         button.type = "button";
         button.dataset.sceneId = singleScene.id;
         button.dataset.actIndex = String(index);
-        button.textContent = `第${CHINESE_ACT_NUMBERS[index]}幕 · ${actInfo.title}`;
+        const isAct4Recut = singleScene.id === "FM-C" && index === 3;
+        button.textContent = `第${CHINESE_ACT_NUMBERS[index]}幕 · ${actInfo.title}${isAct4Recut ? " · 新版五鏡頭" : ""}`;
+        if (isAct4Recut) {
+          button.dataset.recut = "true";
+          button.title = "依五張設計概念圖重製的 GSAP 第四幕";
+        }
         button.addEventListener("click", () => {
           const stepIndex = state.player.stepMeta.findIndex((meta) => meta.scene.id === singleScene.id && meta.actionIndex === index);
           if (stepIndex >= 0) goToStep(stepIndex);
@@ -1452,8 +1457,8 @@
   }
 
   function relativeUrl(url) { return `${url.pathname}${url.search}${url.hash}`; }
-  function urlWithoutPlayer() { const url = new URL(window.location.href); url.searchParams.delete("scene"); url.searchParams.delete("reel"); return relativeUrl(url); }
-  function setPlayerUrl(id, mode) { const url = new URL(window.location.href); url.hash = ""; url.searchParams.delete("scene"); url.searchParams.delete("reel"); if (mode === "reel") url.searchParams.set("reel", "1"); else url.searchParams.set("scene", id); window.history.replaceState({ scene: id, mode }, "", relativeUrl(url)); }
+  function urlWithoutPlayer() { const url = new URL(window.location.href); url.searchParams.delete("scene"); url.searchParams.delete("reel"); url.searchParams.delete("act"); return relativeUrl(url); }
+  function setPlayerUrl(id, mode, actIndex = 0) { const url = new URL(window.location.href); url.hash = ""; url.searchParams.delete("scene"); url.searchParams.delete("reel"); url.searchParams.delete("act"); if (mode === "reel") url.searchParams.set("reel", "1"); else { url.searchParams.set("scene", id); if (actIndex > 0) url.searchParams.set("act", String(actIndex + 1)); } window.history.replaceState({ scene: id, mode, act: actIndex + 1 }, "", relativeUrl(url)); }
 
   function openCinema(id, mode = "single") {
     const scene = sceneById.get(id) || sceneById.get(FILM_ORDER[0]); if (!scene || !dialog) return;
@@ -1476,7 +1481,7 @@
       .fromTo(".cinema-control-dock", { autoAlpha: 0 }, { autoAlpha: 1, duration: .35, clearProps: "opacity,visibility" }, "-=.26");
   }
   function closeCinema() { pausePlayback(); destroyTimeline(); if (dialog?.open) dialog.close(); }
-  function sceneShareUrl() { const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href; const url = new URL(canonical, window.location.href); if (state.player.mode === "reel") url.searchParams.set("reel", "1"); else if (state.player.currentScene) url.searchParams.set("scene", state.player.currentScene.id); return url.href; }
+  function sceneShareUrl() { const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href; const url = new URL(canonical, window.location.href); if (state.player.mode === "reel") url.searchParams.set("reel", "1"); else if (state.player.currentScene) { url.searchParams.set("scene", state.player.currentScene.id); const meta = state.player.stepMeta[state.player.stepIndex]; if (productionFor(state.player.currentScene) && meta?.actionIndex > 0) url.searchParams.set("act", String(meta.actionIndex + 1)); } return url.href; }
   function setShareStatus(message) { const status = $("#share-status"); if (!status) return; window.clearTimeout(state.player.shareTimer); status.textContent = message; state.player.shareTimer = window.setTimeout(() => { status.textContent = ""; }, 3200); }
 
   async function shareCinema() {
@@ -1543,7 +1548,7 @@
     $("#play-cinema")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); $("#cinema-play-overlay")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); dialogueBox?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
     $("#toggle-transcript")?.addEventListener("click", () => { if (!transcript) return; transcript.open = !transcript.open; syncTranscriptToggle(true); });
     transcript?.addEventListener("toggle", () => { syncTranscriptToggle(false); animateTranscriptOpen(transcript, ".transcript-scene"); });
-    progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); state.player.timeline.pause(time, true); renderStep(stepAtTime(time), false); syncTimelineProgress(); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
+    progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); const target = stepAtTime(time); state.player.timeline.pause(time, true); renderStep(target, false); syncTimelineProgress(); const meta = state.player.stepMeta[target]; if (state.player.mode === "single" && meta) setPlayerUrl(meta.scene.id, "single", meta.actionIndex); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
     dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); resumeAmbient(); });
     musicToggle?.addEventListener("click", toggleMusic);
     cinemaAudio?.addEventListener("loadedmetadata", () => syncSceneAudioToTimeline(true));
@@ -1577,8 +1582,19 @@
   }
 
   function initDirectPlayer() {
-    const params = new URLSearchParams(window.location.search); const sceneId = params.get("scene"); const reel = params.get("reel") === "1";
-    if (reel || (sceneId && sceneById.has(sceneId))) { setPageGate(false); sessionStorage.setItem("kk-entered-v8", "true"); window.setTimeout(() => openCinema(reel ? FILM_ORDER[0] : sceneId, reel ? "reel" : "single"), 120); return true; }
+    const params = new URLSearchParams(window.location.search); const sceneId = params.get("scene"); const reel = params.get("reel") === "1"; const requestedAct = clamp(Math.trunc(Number(params.get("act"))) || 1, 1, 5) - 1;
+    if (reel || (sceneId && sceneById.has(sceneId))) {
+      setPageGate(false); sessionStorage.setItem("kk-entered-v8", "true");
+      window.setTimeout(() => {
+        const targetSceneId = reel ? FILM_ORDER[0] : sceneId;
+        openCinema(targetSceneId, reel ? "reel" : "single");
+        if (!reel && requestedAct > 0) {
+          const stepIndex = state.player.stepMeta.findIndex((meta) => meta.scene.id === targetSceneId && meta.actionIndex === requestedAct);
+          if (stepIndex >= 0) goToStep(stepIndex);
+        }
+      }, 120);
+      return true;
+    }
     return false;
   }
 

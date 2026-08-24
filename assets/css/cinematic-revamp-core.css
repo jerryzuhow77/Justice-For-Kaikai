@@ -617,6 +617,8 @@ footer { padding-block: 2rem; border-top: 1px solid var(--line); background: rgb
 .act-markers { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .35rem; }
 .act-markers button { min-height: 36px; padding: .35rem .6rem; color: #abb1ab; border: 1px solid var(--line); border-radius: 999px; background: transparent; cursor: pointer; font-size: .68rem; }
 .act-markers button.is-current { color: #1b1d1b; border-color: var(--ehuang); background: var(--ehuang); }
+.act-markers button[data-recut="true"] { color:#f0d7a0; border-color:rgba(217,186,127,.72); box-shadow:0 0 0 1px rgba(217,186,127,.08),0 0 18px rgba(217,186,127,.12); }
+.act-markers button[data-recut="true"].is-current { color:#171a18; background:linear-gradient(115deg,#e2c78f,#d9a97e); box-shadow:0 0 24px rgba(226,199,143,.34); }
 .storyboard { display: grid; grid-template-columns: repeat(10, minmax(92px, 1fr)); gap: .4rem; max-width: 1500px; margin: .55rem auto 0; padding-bottom: .35rem; overflow-x: auto; }
 .story-beat { position: relative; min-width: 92px; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--beat-image, #1d2926) var(--beat-position, center) / var(--beat-size, cover) no-repeat; filter: saturate(.52) brightness(.52); cursor: pointer; transition: filter .25s ease, border-color .25s ease, transform .25s ease; }
 .story-beat::after { content: attr(data-number); position: absolute; right: .25rem; bottom: .2rem; padding: .05rem .22rem; color: #fff; border-radius: 4px; background: rgba(0,0,0,.72); font-size: .56rem; }
@@ -889,13 +891,16 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 .film-production[data-film="FM-C"][data-act="5"]::after { opacity:.7; background:linear-gradient(90deg,rgba(28,20,14,.52) 0 43%,transparent 43.5% 49.4%,rgba(255,239,190,.6) 49.7% 50.3%,transparent 50.6% 56.5%,rgba(22,34,34,.46) 57%); }
 
 /* 第四部／第四幕：五張概念圖依序剪接成「把責任交給活著的人」。 */
-.fm-c-act4-sequence{position:absolute;z-index:0;inset:0;overflow:hidden;opacity:0;visibility:hidden;background:#090d0c;isolation:isolate}
+.fm-c-act4-sequence{position:absolute;z-index:3;inset:0;overflow:hidden;opacity:0;visibility:hidden;background:#090d0c;isolation:isolate}
 .film-production[data-film="FM-C"][data-act="4"] .fm-c-act4-sequence{visibility:visible}
 .fm-c-act4-frame{position:absolute;inset:-1.5%;margin:0;overflow:hidden;opacity:0;will-change:opacity,filter}
 .fm-c-act4-frame::before{content:"";position:absolute;z-index:-1;inset:-8%;opacity:0;background:var(--act4-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.72) brightness(.52);transform:scale(1.08)}
 .fm-c-act4-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,6,.12),transparent 52%,rgba(2,6,6,.56)),radial-gradient(ellipse at center,transparent 45%,rgba(2,6,6,.4) 100%);pointer-events:none}
 .fm-c-act4-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.82) contrast(1.04) brightness(.9);will-change:transform;backface-visibility:hidden}
 .film-production[data-film="FM-C"][data-act="4"] .film-separated-palms{display:none}
+.film-production[data-film="FM-C"][data-act="4"] .film-seam{z-index:4}
+.film-production[data-film="FM-C"][data-act="4"] .film-source-tag,
+.film-production[data-film="FM-C"][data-act="4"] .film-act-slate{z-index:6}
 
 /* 第四部核心構圖：椅仔姑與剴剴隔著時空裂縫相對合掌。 */
 .film-separated-palms{position:absolute;z-index:7;inset:7% 8% 17%;display:flex;align-items:center;justify-content:center;opacity:0;filter:drop-shadow(0 20px 25px rgba(0,0,0,.4))}
