@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  const version="20260824-animation-closeout-1";
+  const version="20260824-five-act-relight-1";
   const load=(src,onload,onerror)=>{
     const script=document.createElement("script");
     script.src=src;
