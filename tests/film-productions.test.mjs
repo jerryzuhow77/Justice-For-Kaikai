@@ -44,7 +44,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
 
-  assert.match(html, /assets\/data\/film-productions\.js\?v=20260823-film5-1/);
+  assert.match(html, /assets\/data\/film-productions\.js\?v=20260824-web-closeout-1/);
   assert.equal((html.match(/data-score="FM-[ADBC]"/g) ?? []).length, 4);
   assert.doesNotMatch(html, /id="cinema-audio"[^>]*\bloop\b/);
   assert.match(html, /id="film-production"/);

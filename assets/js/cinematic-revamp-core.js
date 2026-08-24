@@ -5,7 +5,6 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const scenes = (window.KAIKAI_SCENES || []).slice();
-  const order = (window.KAIKAI_SCENE_ORDER || scenes.map((scene) => scene.id)).slice();
   const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
   const filmProductions = window.KAIKAI_FILM_PRODUCTIONS || {};
   const hasGSAP = Boolean(window.gsap);
@@ -176,7 +175,6 @@
   const nav = $("#main-nav");
   const navToggle = $("#nav-toggle");
   const motionToggle = $("#motion-toggle");
-  const sceneGrid = $("#scene-grid");
   const filmActGrid = $("#film-act-grid");
   const dialog = $("#cinema-dialog");
   const stage = $("#cinema-stage");
@@ -542,47 +540,6 @@
     details.append(summary, lines);
     details.addEventListener("toggle", () => animateTranscriptOpen(details, ".library-transcript-lines p"));
     return details;
-  }
-
-  function createSceneCard(scene, position) {
-    const item = document.createElement("article");
-    item.className = `scene-library-item ${scene.type}`;
-    item.dataset.type = scene.type;
-    item.dataset.sceneId = scene.id;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `scene-card ${scene.type}`;
-    button.dataset.type = scene.type;
-    button.dataset.sceneId = scene.id;
-    button.setAttribute("aria-label", `播放${TYPE_LABELS[scene.type]}：${scene.title}`);
-    const poster = document.createElement("span"); poster.className = "scene-card-poster";
-    if (scene.image) poster.style.setProperty("--scene-poster", `url('${scene.image}')`);
-    if (scene.type !== "film") {
-      const previewBeat = scene.chapter === "終章" ? 9 : 4;
-      ["female", "male"].forEach((sex) => {
-        const pose = actorPosePlan(scene, sex)[previewBeat];
-        const image = document.createElement("img"); image.className = `scene-card-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, pose); configurePreviewActor(image, scene, sex, pose); button.append(image);
-      });
-    }
-    const play = document.createElement("span"); play.className = "scene-card-play"; play.textContent = scene.type === "film" ? "電影" : "播放";
-    const meta = document.createElement("span"); meta.className = "scene-card-meta";
-    const small = document.createElement("small"); small.textContent = `${String(position + 1).padStart(2, "0")} / 24 · ${scene.id} · ${TYPE_LABELS[scene.type]}`;
-    const heading = document.createElement("h3"); heading.textContent = scene.title;
-    const production = productionFor(scene);
-    const paragraph = document.createElement("p"); paragraph.textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}｜${production.score.label.split("｜")[0]}` : scene.subtitle;
-    meta.append(small, heading, paragraph); button.append(poster, play, meta);
-    button.addEventListener("click", () => openCinema(scene.id, "single"));
-    item.append(button);
-    item.append(createLibraryTranscript(scene));
-    return item;
-  }
-
-  function renderSceneLibrary() {
-    if (!sceneGrid) return;
-    const fragment = document.createDocumentFragment();
-    order.forEach((id, index) => { const scene = sceneById.get(id); if (scene) fragment.append(createSceneCard(scene, index)); });
-    sceneGrid.replaceChildren(fragment);
-    requestActorCalibration(sceneGrid);
   }
 
   function createInlineSceneCard(scene) {
@@ -1484,7 +1441,7 @@
       revealBatch(".film-act-card", { y: 42, rotationX: context.conditions.desktop ? 7 : 0, scale: .965 });
       revealBatch(".score-track-grid button", { y: 24, scale: .95 });
       revealBatch(".reading-map-grid a", { y: 28, scale: .975 });
-      revealBatch(".source-grid article, .scene-library-item, .visual-montage figure, .action-cards a", { y: 30, scale: .98 });
+      revealBatch(".source-grid article, .visual-montage figure, .action-cards a", { y: 30, scale: .98 });
       gsap.from(".ambient-track-row, .score-now-playing, .score-player-card audio", { y: 18, autoAlpha: 0, duration: .62, stagger: .09, ease: "power2.out", scrollTrigger: { trigger: ".score-player-card", start: "top 86%", once: true } });
       gsap.utils.toArray(".minnan-seal-field img").forEach((seal, index) => {
         const direction = index % 2 ? -1 : 1;
@@ -1526,7 +1483,6 @@
     scoreLibraryAudio?.addEventListener("play", () => { cinemaAudio?.pause(); suspendAmbient(); });
     scoreLibraryAudio?.addEventListener("pause", () => { if (!dialog?.open) resumeAmbient(); });
     scoreLibraryAudio?.addEventListener("ended", () => { if (!dialog?.open) resumeAmbient(); });
-    $$(".filter").forEach((button) => button.addEventListener("click", () => { $$(".filter").forEach((item) => { const active = item === button; item.classList.toggle("is-active", active); item.setAttribute("aria-pressed", String(active)); }); const filter = button.dataset.filter; $$(".scene-library-item", sceneGrid).forEach((card) => card.classList.toggle("is-hidden", filter !== "all" && card.dataset.type !== filter)); window.setTimeout(() => window.ScrollTrigger?.refresh(), 60); }));
     document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") goToStep(state.player.stepIndex + 1); if (event.key === "ArrowLeft") goToStep(state.player.stepIndex - 1); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
@@ -1559,7 +1515,7 @@
     if (!scenes.length) { console.error("Scene registry was not loaded."); return; }
     const gated = sessionStorage.getItem("kk-entered-v8") !== "true";
     setPageGate(gated);
-    refreshMotionUi(); refreshAmbientUi(); renderFilmActs(); renderSceneLibrary(); bindEvents(); updateReadingProgress(); loadInlineStory(); setupPageMotion();
+    refreshMotionUi(); refreshAmbientUi(); renderFilmActs(); bindEvents(); updateReadingProgress(); loadInlineStory(); setupPageMotion();
     const directPlayer = initDirectPlayer();
     if (!directPlayer) { if (gated) playGateIntro(); else playPageIntro(); }
   }

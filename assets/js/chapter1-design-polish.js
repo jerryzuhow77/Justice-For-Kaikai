@@ -14,16 +14,6 @@
     return motionQuery.matches||stored||document.body.classList.contains("is-reduced");
   }
 
-  function addLibraryNote(){
-    const section=document.querySelector("#scene-library");
-    const heading=section?.querySelector(".section-heading");
-    if(!section||!heading||section.querySelector(".library-layout-note"))return;
-    const note=document.createElement("p");
-    note.className="library-layout-note";
-    note.textContent="此區改為場景索引與逐字稿資料庫；完整尺寸的皮影、側視與電影劇場已分散回各篇正文，避免同一段動畫在頁面重複佔據閱讀節奏。";
-    heading.insertAdjacentElement("afterend",note);
-  }
-
   function markStages(root=document){
     root.querySelectorAll(SELECTOR).forEach((group)=>{
       group.dataset.designPolish=VERSION;
@@ -123,7 +113,6 @@
 
   function refresh(){
     document.body.classList.add("chapter1-design-polish");
-    addLibraryNote();
     markStages(document);
     window.ScrollTrigger?.refresh();
   }
