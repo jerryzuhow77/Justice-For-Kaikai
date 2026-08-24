@@ -1,7 +1,7 @@
 (function(){
   "use strict";
   const version="20260824-prologue-audio-1";
-  const coreVersion="20260825-fmc-act4-responsibility-1-home-2-ambient-1";
+  const coreVersion="20260825-fmc-act4-handoff-2-home-2-ambient-1";
   const directVersion="20260824-fmc-act4-direct-2-prologue-audio-1";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[

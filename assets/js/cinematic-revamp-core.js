@@ -223,13 +223,13 @@
     if (actIndex === 3) {
       return [
         { src: plate.src, kind: "establish", start: 0, reveal: "full", origin: "50% 50%", from: { scale: 1.075, xPercent: 0, yPercent: .5 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } },
-        { src: plate.src, kind: "qing-close", start: .12, reveal: "left", origin: camera.qing, from: { scale: camera.detail * .94, xPercent: 0, yPercent: .08 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.18 } },
-        { src: plate.actionSrc, kind: "modern-close", start: .24, reveal: "right", origin: camera.modern, from: { scale: camera.detail * .94, xPercent: 0, yPercent: .08 }, to: { scale: camera.detail * 1.008, xPercent: 0, yPercent: -.18 } },
-        { src: plate.actionSrc, kind: "action", start: .36, reveal: "seam", origin: "50% 50%", from: { scale: 1.035, xPercent: 0, yPercent: .28 }, to: { scale: camera.action, xPercent: 0, yPercent: 0 } },
+        { src: plate.actionSrc, kind: "kaikai-close", start: .12, reveal: "right", origin: camera.modern, from: { scale: camera.detail * .94, xPercent: 0, yPercent: .08 }, to: { scale: camera.detail * 1.008, xPercent: 0, yPercent: -.18 } },
+        { src: plate.src, kind: "qing-release-close", start: .24, reveal: "left", origin: camera.qing, from: { scale: camera.detail * .94, xPercent: 0, yPercent: .08 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.18 } },
+        { src: plate.actionSrc, kind: "transfer", start: .36, reveal: "seam", origin: "50% 50%", from: { scale: 1.035, xPercent: 0, yPercent: .28 }, to: { scale: camera.action, xPercent: 0, yPercent: 0 } },
         { src: plate.handoffSrc, kind: "handoff", start: .44, reveal: "iris", origin: "50% 54%", from: { scale: 1.06, xPercent: 0, yPercent: .2 }, to: { scale: 1.095, xPercent: 0, yPercent: -.08 } },
         { src: plate.handleSrc, kind: "handle", start: .58, reveal: "seam", origin: "50% 47%", from: { scale: 1.045, xPercent: 0, yPercent: .1 }, to: { scale: 1.115, xPercent: 0, yPercent: -.08 } },
         { src: plate.stepbackSrc, kind: "stepback", start: .76, reveal: "vertical", origin: "50% 52%", from: { scale: 1.12, xPercent: 0, yPercent: -.1 }, to: { scale: 1.055, xPercent: 0, yPercent: .08 } },
-        { src: plate.stepbackSrc, kind: "resolve", start: .88, reveal: "horizontal", origin: "50% 50%", from: { scale: 1.055, xPercent: 0, yPercent: .08 }, to: { scale: 1.012, xPercent: 0, yPercent: 0 } }
+        { src: plate.handleSrc, kind: "responsibility-hold", start: .88, reveal: "horizontal", origin: "50% 47%", from: { scale: 1.28, xPercent: 0, yPercent: -.08 }, to: { scale: 1.2, xPercent: 0, yPercent: 0 } }
       ];
     }
     return [
@@ -241,10 +241,25 @@
     ];
   };
   const FM_C_ACT_SHOTS = FM_C_ACT_PLATES.map((plate, index) => fmCShotPlan(index));
+  const fmCResponsibilityRigMarkup = (plate) => `<div class="fm-c-responsibility-rig" aria-hidden="true" style="--adult-focus-image:url('${plate.handleSrc}')">
+    <span class="duty-fluorescent duty-fluorescent-qing"></span><span class="duty-fluorescent duty-fluorescent-modern"></span>
+    <span class="duty-shadow duty-shadow-qing"></span><span class="duty-shadow duty-shadow-modern"></span>
+    <span class="duty-grip"><i></i></span><span class="duty-release"><i></i><i></i><i></i></span>
+    <svg class="duty-transfer-paths" viewBox="0 0 1000 562" preserveAspectRatio="none"><path class="duty-transfer-path duty-transfer-path-qing" d="M210 355 C245 410 292 348 336 270"></path><path class="duty-transfer-path duty-transfer-path-modern" d="M790 355 C755 410 708 348 664 270"></path></svg>
+    <i class="duty-thread"></i><i class="duty-thread-transfer duty-thread-transfer-qing"></i><i class="duty-thread-transfer duty-thread-transfer-modern"></i>
+    <i class="duty-paper duty-paper-qing"></i><i class="duty-paper duty-paper-modern"></i>
+    <b class="duty-stamp duty-stamp-qing"></b><b class="duty-stamp duty-stamp-modern"></b>
+    <span class="duty-adult-focus duty-adult-focus-qing"></span><span class="duty-adult-focus duty-adult-focus-modern"></span>
+    <span class="duty-door-leaf duty-door-leaf-qing"></span><span class="duty-door-leaf duty-door-leaf-modern"></span>
+    <b class="duty-handle duty-handle-qing"></b><b class="duty-handle duty-handle-modern"></b>
+    <em class="duty-light duty-light-qing"></em><em class="duty-light duty-light-modern"></em>
+    <span class="duty-breath duty-breath-qing"></span><span class="duty-breath duty-breath-modern"></span>
+    <p class="duty-responsibility-title">把責任交給活著的人</p>
+  </div>`;
   const filmActSequence = document.createElement("div");
   filmActSequence.className = "fm-c-five-act-sequence";
   filmActSequence.setAttribute("aria-hidden", "true");
-  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}${index === 3 ? '<div class="fm-c-responsibility-rig" aria-hidden="true"><i class="duty-thread"></i><i class="duty-paper duty-paper-qing"></i><i class="duty-paper duty-paper-modern"></i><b class="duty-handle duty-handle-qing"></b><b class="duty-handle duty-handle-modern"></b><em class="duty-light duty-light-qing"></em><em class="duty-light duty-light-modern"></em><span class="duty-breath duty-breath-qing"></span><span class="duty-breath duty-breath-modern"></span></div>' : ""}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
+  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}${index === 3 ? fmCResponsibilityRigMarkup(plate) : ""}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
   filmProduction?.prepend(filmActSequence);
   const filmActFrames = $$(".fm-c-act-frame", filmActSequence);
   const filmActShots = $$(".fm-c-act-shot", filmActSequence);
@@ -254,6 +269,16 @@
   const filmDutyHandles = $$(".duty-handle", filmResponsibilityRig);
   const filmDutyLights = $$(".duty-light", filmResponsibilityRig);
   const filmDutyBreaths = $$(".duty-breath", filmResponsibilityRig);
+  const filmDutyFluorescents = $$(".duty-fluorescent", filmResponsibilityRig);
+  const filmDutyShadows = $$(".duty-shadow", filmResponsibilityRig);
+  const filmDutyGrip = $(".duty-grip", filmResponsibilityRig);
+  const filmDutyRelease = $(".duty-release", filmResponsibilityRig);
+  const filmDutyThreadTransfers = $$(".duty-thread-transfer", filmResponsibilityRig);
+  const filmDutyTransferPaths = $$(".duty-transfer-path", filmResponsibilityRig);
+  const filmDutyStamps = $$(".duty-stamp", filmResponsibilityRig);
+  const filmDutyAdults = $$(".duty-adult-focus", filmResponsibilityRig);
+  const filmDutyDoorLeaves = $$(".duty-door-leaf", filmResponsibilityRig);
+  const filmDutyTitle = $(".duty-responsibility-title", filmResponsibilityRig);
   const filmSeparatedPalms = document.createElement("div");
   filmSeparatedPalms.className = "film-separated-palms";
   filmSeparatedPalms.innerHTML = '<i class="palms-child palms-qing"><b></b><span>椅仔姑</span></i><em aria-hidden="true"></em><i class="palms-child palms-modern"><b></b><span>剴剴</span></i>';
@@ -364,6 +389,7 @@
   if (hasGSAP) {
     document.documentElement.classList.add("has-gsap");
     if (window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+    if (window.MotionPathPlugin) window.gsap.registerPlugin(window.MotionPathPlugin);
   }
 
   function stopGateMotion() {
@@ -1102,6 +1128,15 @@
     timeline.set(filmDutyHandles, { autoAlpha: 0, rotation: 0, scale: 1, clearProps: "filter" }, at);
     timeline.set(filmDutyLights, { autoAlpha: 0, scaleX: .12, scaleY: .86, clearProps: "filter" }, at);
     timeline.set(filmDutyBreaths, { autoAlpha: 0, scale: 1, yPercent: 0 }, at);
+    timeline.set(filmDutyFluorescents, { autoAlpha: 0, scaleX: .9, clearProps: "filter" }, at);
+    timeline.set(filmDutyShadows, { autoAlpha: 0, scaleY: .45, yPercent: -8 }, at);
+    timeline.set([filmDutyGrip, filmDutyRelease], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1 }, at);
+    timeline.set(filmDutyThreadTransfers, { autoAlpha: 0, x: 0, y: 0, scale: .7, clearProps: "offsetDistance" }, at);
+    timeline.set(filmDutyTransferPaths, { autoAlpha: 0, strokeDasharray: 160, strokeDashoffset: 160 }, at);
+    timeline.set(filmDutyStamps, { autoAlpha: 0, yPercent: -130, rotation: 0, scale: 1 }, at);
+    timeline.set(filmDutyAdults, { autoAlpha: 0, filter: "blur(12px) brightness(.72)" }, at);
+    timeline.set(filmDutyDoorLeaves, { autoAlpha: 0, xPercent: 0, scaleX: 1 }, at);
+    timeline.set(filmDutyTitle, { autoAlpha: 0, yPercent: 18, clipPath: "inset(0 50% 0 50%)", letterSpacing: ".34em" }, at);
     timeline.set(door, { autoAlpha: 0 }, at);
     timeline.set([$("i", door), $("b", door)], { xPercent: 0 }, at);
   }
@@ -1145,7 +1180,7 @@
         timeline.to(shots[shotIndex - 1], { autoAlpha: 0, duration: transition * .55, ease: "power1.out" }, shotAt + transition * .45);
         timeline.fromTo(fx, { filter: "brightness(1.38)" }, { filter: "brightness(1)", duration: transition * .7, ease: "power2.out", immediateRender: false }, shotAt);
       }
-      timeline.fromTo(image, plan.from, { ...plan.to, duration: motionDuration, ease: plan.kind === "establish" || plan.kind === "resolve" ? "none" : "sine.inOut", immediateRender: false }, shotAt);
+      timeline.fromTo(image, plan.from, { ...plan.to, duration: motionDuration, ease: plan.kind === "establish" || plan.kind === "resolve" || plan.kind === "responsibility-hold" ? "none" : "sine.inOut", immediateRender: false }, shotAt);
     });
 
     particles.forEach((particle, particleIndex) => {
@@ -1284,22 +1319,47 @@
         if (usesFmCActPlate) {
           timeline.set(filmResponsibilityRig, { autoAlpha: 1 }, at);
           timeline.call(() => playFmCFoley("fluorescent"), null, at + .3);
+          timeline.fromTo(filmDutyFluorescents, { autoAlpha: .04, scaleX: .92, filter: "brightness(.55)" }, { autoAlpha: .5, scaleX: 1, filter: "brightness(1.45)", duration: .12, repeat: 7, yoyo: true, stagger: .07, ease: "steps(1)" }, at + .18);
+          timeline.fromTo(filmDutyShadows, { autoAlpha: 0, scaleY: .45, yPercent: -8 }, { autoAlpha: .5, scaleY: 1.28, yPercent: 18, duration: duration * .1, stagger: .08, ease: "power2.inOut" }, at + .35);
+          timeline.to([...filmDutyFluorescents, ...filmDutyShadows], { autoAlpha: 0, duration: .55, ease: "power1.out" }, at + duration * .115);
           timeline.fromTo(filmSeam, { autoAlpha: .28, scaleX: .72 }, { autoAlpha: .92, scaleX: 1.12, duration: 2.4, repeat: 7, yoyo: true, ease: "sine.inOut" }, at + .6);
-          timeline.fromTo(filmDutyBreaths, { autoAlpha: 0, scale: .96, yPercent: 1.2 }, { autoAlpha: .22, scale: 1.04, yPercent: -1.2, duration: 1.65, repeat: 9, yoyo: true, stagger: .18, ease: "sine.inOut" }, at + 1.1);
-          timeline.fromTo(filmDutyThread, { autoAlpha: 0, scaleX: .34, filter: "brightness(.74)" }, { autoAlpha: .82, scaleX: 1, filter: "brightness(1.28)", duration: duration * .12, ease: "power2.inOut" }, at + duration * .36);
-          timeline.fromTo(filmDutyPapers, { autoAlpha: 0, xPercent: (index) => index === 0 ? -155 : 155, yPercent: 28, rotation: (index) => index === 0 ? -8 : 8, scale: .86 }, { autoAlpha: .78, xPercent: 0, yPercent: -4, rotation: 0, scale: 1, duration: duration * .09, stagger: .12, ease: "power3.out" }, at + duration * .42);
+          timeline.fromTo(filmDutyBreaths, { autoAlpha: 0, scale: .96, yPercent: 1.2 }, { autoAlpha: .22, scale: 1.04, yPercent: -1.2, duration: 1.65, repeat: 9, yoyo: true, stagger: .18, ease: "sine.inOut" }, at + duration * .1);
+          timeline.fromTo(filmDutyGrip, { autoAlpha: 0, scale: .88, rotation: -4 }, { autoAlpha: .88, scale: 1.08, rotation: 2, duration: .6, repeat: 3, yoyo: true, ease: "sine.inOut" }, at + duration * .12);
+          timeline.to(filmDutyGrip, { autoAlpha: 0, duration: .45, ease: "power1.out" }, at + duration * .235);
+          timeline.fromTo(filmDutyRelease, { autoAlpha: 0, scaleX: .42, rotation: -8 }, { autoAlpha: .9, scaleX: 1, rotation: 4, duration: duration * .1, ease: "power2.out" }, at + duration * .24);
+          timeline.to($$("i", filmDutyRelease), { rotation: (index) => [-34, 2, 34][index], duration: duration * .08, stagger: .08, ease: "sine.out" }, at + duration * .27);
+          timeline.fromTo(filmDutyThread, { autoAlpha: 0, scaleX: .34, filter: "brightness(.74)" }, { autoAlpha: .82, scaleX: 1, filter: "brightness(1.28)", duration: duration * .12, ease: "power2.inOut" }, at + duration * .28);
+          timeline.fromTo(filmDutyTransferPaths, { autoAlpha: 0, strokeDashoffset: 160 }, { autoAlpha: .72, strokeDashoffset: 0, duration: duration * .12, stagger: .06, ease: "sine.inOut" }, at + duration * .34);
+          filmDutyThreadTransfers.forEach((transfer, index) => {
+            const transferAt = at + duration * (.36 + index * .018);
+            timeline.fromTo(transfer, { autoAlpha: 0, scale: .68 }, { autoAlpha: 1, scale: 1, duration: .28, ease: "power2.out" }, transferAt);
+            if (window.MotionPathPlugin && filmDutyTransferPaths[index]) {
+              timeline.to(transfer, { motionPath: { path: filmDutyTransferPaths[index], align: filmDutyTransferPaths[index], alignOrigin: [.5, .5], start: 0, end: 1 }, duration: duration * .15, ease: "power2.inOut" }, transferAt);
+            } else {
+              timeline.to(transfer, { xPercent: index === 0 ? 900 : -900, yPercent: -620, duration: duration * .15, ease: "power2.inOut" }, transferAt);
+            }
+          });
+          timeline.fromTo(filmDutyPapers, { autoAlpha: 0, xPercent: (index) => index === 0 ? -155 : 155, yPercent: 28, rotation: (index) => index === 0 ? -8 : 8, rotationY: -78, scale: .86 }, { autoAlpha: .84, xPercent: 0, yPercent: -4, rotation: 0, rotationY: 0, scale: 1, duration: duration * .1, stagger: .12, ease: "power3.out" }, at + duration * .36);
+          timeline.fromTo(filmDutyStamps, { autoAlpha: 0, yPercent: -150, rotation: (index) => index === 0 ? -12 : 12, scale: 1.25 }, { autoAlpha: .86, yPercent: 0, rotation: 0, scale: 1, duration: .46, stagger: .12, ease: "back.out(2.4)" }, at + duration * .405);
           timeline.call(() => playFmCFoley("paper"), null, at + duration * .44);
+          timeline.fromTo(filmDutyAdults, { autoAlpha: 0, filter: "blur(14px) brightness(.68)" }, { autoAlpha: .9, filter: "blur(0px) brightness(1.03)", duration: duration * .13, stagger: .1, ease: "power2.inOut" }, at + duration * .44);
           timeline.to(filmDutyThread, { autoAlpha: .18, scaleX: .72, duration: duration * .1, ease: "sine.inOut" }, at + duration * .48);
+          timeline.to([filmDutyRelease, ...filmDutyThreadTransfers, ...filmDutyTransferPaths], { autoAlpha: 0, duration: .65, ease: "power1.out" }, at + duration * .54);
+          timeline.to(filmDutyAdults, { autoAlpha: 0, duration: .62, ease: "power1.out" }, at + duration * .62);
           timeline.fromTo(filmDutyHandles, { autoAlpha: 0, rotation: 0, scale: .86, filter: "brightness(.72)" }, { autoAlpha: .9, rotation: (index) => index === 0 ? 24 : -24, scale: 1.08, filter: "brightness(1.55)", duration: .42, stagger: .08, ease: "back.out(1.6)" }, at + duration * .58);
           timeline.to(filmDutyHandles, { rotation: (index) => index === 0 ? 12 : -12, scale: 1, duration: .55, ease: "power2.out" }, at + duration * .595);
           timeline.call(() => playFmCFoley("latch"), null, at + duration * .58);
+          timeline.fromTo(filmDutyDoorLeaves, { autoAlpha: .28, xPercent: 0, scaleX: 1 }, { autoAlpha: .08, xPercent: (index) => index === 0 ? -10 : 10, scaleX: .92, duration: duration * .17, stagger: .08, ease: "power2.inOut" }, at + duration * .59);
           timeline.fromTo(filmDutyLights, { autoAlpha: 0, scaleX: .12, scaleY: .86 }, { autoAlpha: .44, scaleX: .78, scaleY: 1, duration: duration * .12, stagger: .09, ease: "power2.inOut" }, at + duration * .59);
           timeline.to(filmDutyLights, { autoAlpha: .64, scaleX: 1.6, filter: "brightness(1.4) blur(.2px)", duration: duration * .14, ease: "sine.inOut" }, at + duration * .75);
           timeline.to(filmDutyBreaths, { xPercent: (index) => index === 0 ? -18 : 18, yPercent: 8, autoAlpha: .12, duration: duration * .1, ease: "power2.out" }, at + duration * .76);
           timeline.call(() => playFmCFoley("step"), null, at + duration * .76);
-          timeline.to([filmDutyThread, ...filmDutyPapers], { autoAlpha: 0, duration: .72, ease: "power2.out" }, at + duration * .78);
-          timeline.to(filmDutyHandles, { autoAlpha: .38, duration: .8, ease: "power2.out" }, at + duration * .86);
-          timeline.to(filmDutyLights, { autoAlpha: .3, scaleX: 1.14, duration: duration * .1, ease: "sine.out" }, at + duration * .88);
+          timeline.to([filmDutyThread, ...filmDutyPapers, ...filmDutyStamps], { autoAlpha: 0, duration: .72, ease: "power2.out" }, at + duration * .78);
+          timeline.to(filmDutyHandles, { autoAlpha: 0, duration: .8, ease: "power2.out" }, at + duration * .86);
+          timeline.to(filmDutyDoorLeaves, { autoAlpha: 0, duration: .7, ease: "power2.out" }, at + duration * .875);
+          timeline.to(filmDutyLights, { autoAlpha: .18, scaleX: 1.14, duration: duration * .1, ease: "sine.out" }, at + duration * .88);
+          timeline.fromTo(filmDutyTitle, { autoAlpha: 0, yPercent: 18, clipPath: "inset(0 50% 0 50%)", letterSpacing: ".34em" }, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", letterSpacing: ".22em", duration: 1.2, ease: "power3.out" }, at + duration * .88);
+          timeline.to(filmDutyTitle, { filter: "brightness(1.12)", duration: 1.8, repeat: 1, yoyo: true, ease: "sine.inOut" }, at + duration * .91);
           lineDraw(1.4, duration * .72, 0);
           break;
         }
@@ -1407,6 +1467,7 @@
       gsap.set($$(".fm-c-live-fx", filmActSequence), { autoAlpha: 0, clearProps: "filter" });
       gsap.set(filmResponsibilityRig, { autoAlpha: 0 });
       gsap.set([filmDutyThread, ...filmDutyPapers, ...filmDutyHandles, ...filmDutyLights, ...filmDutyBreaths], { autoAlpha: 0, clearProps: "transform,filter" });
+      gsap.set([...filmDutyFluorescents, ...filmDutyShadows, filmDutyGrip, filmDutyRelease, ...filmDutyThreadTransfers, ...filmDutyTransferPaths, ...filmDutyStamps, ...filmDutyAdults, ...filmDutyDoorLeaves, filmDutyTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,strokeDashoffset" });
       filmProduction.style.setProperty("--split", productionSplitForCue(meta.cue));
       if (usesFmCActPlate) {
         const frame = filmActFrames[meta.actionIndex];
@@ -1426,11 +1487,32 @@
         gsap.set(image, { scale: interpolate("scale"), xPercent: interpolate("xPercent"), yPercent: interpolate("yPercent") });
         if (meta.actionIndex === 3) {
           gsap.set(filmResponsibilityRig, { autoAlpha: 1 });
-          if (progress >= .36 && progress < .8) gsap.set(filmDutyThread, { autoAlpha: progress >= .58 ? .18 : .82, scaleX: progress >= .58 ? .72 : 1 });
-          if (progress >= .42 && progress < .8) gsap.set(filmDutyPapers, { autoAlpha: progress >= .76 ? .22 : .78, xPercent: 0, yPercent: -4, rotation: 0, scale: 1 });
-          if (progress >= .58) gsap.set(filmDutyHandles, { autoAlpha: progress >= .86 ? .38 : .9, rotation: (index) => index === 0 ? 12 : -12, scale: 1 });
-          if (progress >= .59) gsap.set(filmDutyLights, { autoAlpha: progress >= .88 ? .3 : .58, scaleX: progress >= .76 ? 1.6 : .78, scaleY: 1 });
+          if (progress < .12) {
+            gsap.set(filmDutyFluorescents, { autoAlpha: .42, scaleX: 1 });
+            gsap.set(filmDutyShadows, { autoAlpha: .48, scaleY: 1.28, yPercent: 18 });
+          }
+          if (progress >= .12 && progress < .24) gsap.set(filmDutyGrip, { autoAlpha: .88, scale: 1.03 });
+          if (progress >= .24 && progress < .55) gsap.set(filmDutyRelease, { autoAlpha: .88, scaleX: 1, rotation: 4 });
+          if (progress >= .28 && progress < .8) gsap.set(filmDutyThread, { autoAlpha: progress >= .58 ? .18 : .82, scaleX: progress >= .58 ? .72 : 1 });
+          if (progress >= .34 && progress < .58) {
+            gsap.set(filmDutyTransferPaths, { autoAlpha: .7, strokeDashoffset: 0 });
+            const transferProgress = clamp((progress - .34) / .24, 0, 1);
+            filmDutyThreadTransfers.forEach((transfer, index) => {
+              if (window.MotionPathPlugin && filmDutyTransferPaths[index]) {
+                gsap.set(transfer, { autoAlpha: 1, scale: 1, motionPath: { path: filmDutyTransferPaths[index], align: filmDutyTransferPaths[index], alignOrigin: [.5, .5], start: transferProgress, end: transferProgress } });
+              } else {
+                gsap.set(transfer, { autoAlpha: 1, scale: 1, xPercent: (index === 0 ? 900 : -900) * transferProgress, yPercent: -620 * transferProgress });
+              }
+            });
+          }
+          if (progress >= .36 && progress < .8) gsap.set(filmDutyPapers, { autoAlpha: progress >= .76 ? .22 : .84, xPercent: 0, yPercent: -4, rotation: 0, rotationY: 0, scale: 1 });
+          if (progress >= .405 && progress < .8) gsap.set(filmDutyStamps, { autoAlpha: .84, yPercent: 0, rotation: 0, scale: 1 });
+          if (progress >= .44 && progress < .62) gsap.set(filmDutyAdults, { autoAlpha: .9, filter: "blur(0px) brightness(1.03)" });
+          if (progress >= .58 && progress < .88) gsap.set(filmDutyHandles, { autoAlpha: .9, rotation: (index) => index === 0 ? 12 : -12, scale: 1 });
+          if (progress >= .59 && progress < .88) gsap.set(filmDutyDoorLeaves, { autoAlpha: .08, xPercent: (index) => index === 0 ? -10 : 10, scaleX: .92 });
+          if (progress >= .59) gsap.set(filmDutyLights, { autoAlpha: progress >= .88 ? .18 : .58, scaleX: progress >= .76 ? 1.6 : .78, scaleY: 1 });
           if (progress < .76) gsap.set(filmDutyBreaths, { autoAlpha: .18, scale: 1.02 });
+          if (progress >= .88) gsap.set(filmDutyTitle, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", letterSpacing: ".22em" });
         }
       } else {
         gsap.set([bgA, bgB, depthFar, depthMid, depthNear], { backgroundPosition: view.position, backgroundSize: view.size, scale: 1.018 + progress * .037, xPercent: 0, yPercent: 0 });
@@ -1463,6 +1545,7 @@
       const usesFmCActPlate = meta.scene.id === "FM-C" && Boolean(filmActFrames[meta.actionIndex]);
       filmActSequence.style.opacity = usesFmCActPlate ? "1" : "0";
       if (filmResponsibilityRig) filmResponsibilityRig.style.opacity = usesFmCActPlate && meta.actionIndex === 3 ? "1" : "0";
+      const setFallbackOpacity = (elements, visible) => (Array.isArray(elements) ? elements : [elements]).filter(Boolean).forEach((element) => { element.style.opacity = visible ? "1" : "0"; });
       filmActFrames.forEach((frame, index) => { frame.style.opacity = usesFmCActPlate && index === meta.actionIndex ? "1" : "0"; });
       if (usesFmCActPlate) {
         const plans = FM_C_ACT_SHOTS[meta.actionIndex];
@@ -1472,6 +1555,23 @@
         filmActShots.forEach((shot) => { shot.style.opacity = "0"; });
         if (shots[shotIndex]) shots[shotIndex].style.opacity = "1";
         [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => { element.style.opacity = "0"; });
+        if (meta.actionIndex === 3) {
+          setFallbackOpacity(filmDutyFluorescents, progress < .12);
+          setFallbackOpacity(filmDutyShadows, progress < .12);
+          setFallbackOpacity(filmDutyGrip, progress >= .12 && progress < .24);
+          setFallbackOpacity(filmDutyRelease, progress >= .24 && progress < .55);
+          setFallbackOpacity(filmDutyThread, progress >= .28 && progress < .8);
+          setFallbackOpacity(filmDutyTransferPaths, progress >= .34 && progress < .58);
+          setFallbackOpacity(filmDutyThreadTransfers, false);
+          setFallbackOpacity(filmDutyPapers, progress >= .36 && progress < .8);
+          setFallbackOpacity(filmDutyStamps, progress >= .405 && progress < .8);
+          setFallbackOpacity(filmDutyAdults, progress >= .44 && progress < .62);
+          setFallbackOpacity(filmDutyHandles, progress >= .58 && progress < .88);
+          setFallbackOpacity(filmDutyDoorLeaves, progress >= .59 && progress < .88);
+          setFallbackOpacity(filmDutyLights, progress >= .59);
+          setFallbackOpacity(filmDutyBreaths, progress < .76);
+          setFallbackOpacity(filmDutyTitle, progress >= .88);
+        }
       }
       else {
         [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => {

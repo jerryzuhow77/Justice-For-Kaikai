@@ -47,6 +47,7 @@ for (const shotName of ["shot-04-handoff.webp", "shot-04-handle.webp", "shot-04-
   const shot = path.join(root, "assets/img/films/fm-c-act4", shotName);
   if (!fs.existsSync(shot)) errors.push(`第四部第四幕缺少加強動作鏡位：${shotName}`);
 }
+if (!fs.existsSync(path.join(root, "assets/vendor/gsap/MotionPathPlugin.min.js"))) errors.push("第四幕缺少 GSAP MotionPathPlugin 正式資產");
 
 const app = fs.readFileSync(path.join(root, "assets/js/cinematic-revamp-core.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
@@ -68,6 +69,8 @@ if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(4
 if (!app.includes("productionView") || !css.includes('.film-production[data-film="FM-C"]')) errors.push("手機電影構圖或雙世界分割尚未接入");
 if (!app.includes("FM_C_ACT_SHOTS") || !app.includes("data-shot-kind") || !css.includes(".fm-c-live-fx")) errors.push("第四部五幕仍缺多鏡位或動態效果層");
 if (!app.includes("filmResponsibilityRig") || !app.includes("playFmCFoley") || !css.includes(".fm-c-responsibility-rig")) errors.push("第四部第四幕仍缺責任交接、門把或環境聲動態");
+if (!app.includes("filmDutyThreadTransfers") || !app.includes("filmDutyStamps") || !app.includes("filmDutyAdults") || !app.includes("filmDutyTitle") || !app.includes("motionPath: { path:")) errors.push("第四部第四幕仍缺絲線路徑、印章、成人對焦或責任定格");
+if (!html.includes("MotionPathPlugin.min.js") || !css.includes(".duty-responsibility-title")) errors.push("第四部第四幕 MotionPathPlugin 或責任標題未載入正式頁");
 if (!filmRegistry.includes("椅仔姑與剴剴｜兩人合聲")) errors.push("第四部古句尚未改成兩人合聲");
 if (app.includes(".stats-band") || app.includes('trigger: ".stats-band"')) errors.push("播放器仍引用不存在的stats-band動畫目標");
 if (!html.includes('id="cinema-play-overlay"') || !html.includes('id="share-cinema"') || !app.includes("shareCinema")) errors.push("播放器中央播放鍵或單場分享尚未接入");
