@@ -11,6 +11,7 @@
 /* Entry: a wide corridor outside the panel and the vertical chair image
    inside the film frame. Existing GSAP transforms continue to animate both. */
 .gate-backdrop{
+  opacity:.74;
   background:
     linear-gradient(90deg,rgba(4,10,9,.94),rgba(7,14,13,.38) 48%,rgba(4,9,8,.88)),
     var(--kaikai-gate-corridor) 50% 50%/cover no-repeat!important;
@@ -132,40 +133,11 @@
 }
 
 
-/* TWO-WORLDS-MAIN-VISUAL-20260824
-   Restore the Kaikai / red-dressed Chair Maiden artwork as the opening
-   visual and carry it into Film C. */
+/* TWO-WORLDS-FILM-VISUAL-20260824
+   Keep the Kaikai / red-dressed Chair Maiden artwork exclusive to Film C:
+   its card, player backdrop and expanded story description. */
 :root{
   --kaikai-two-worlds-original:url("../img/films/fm-c-two-worlds-v2.webp");
-}
-
-.gate-backdrop{
-  opacity:.76;
-  background:
-    linear-gradient(90deg,rgba(3,9,8,.9),rgba(5,12,11,.28) 48%,rgba(3,9,8,.86)),
-    var(--kaikai-two-worlds-original) 50% 50%/cover no-repeat!important;
-  filter:saturate(.78) contrast(1.06) brightness(.84)!important;
-}
-.gate-film-image{
-  background:
-    linear-gradient(180deg,rgba(2,7,6,.02) 18%,rgba(2,7,6,.14) 54%,rgba(2,7,6,.84) 100%),
-    var(--kaikai-two-worlds-original) 50% 50%/cover no-repeat!important;
-  filter:saturate(.86) contrast(1.04) brightness(.96)!important;
-}
-.hero-layer{
-  background-image:var(--kaikai-two-worlds-original)!important;
-}
-.hero-layer-far{
-  background-position:50% 50%!important;
-  background-size:cover!important;
-}
-.hero-layer-mid{
-  background-position:50% 50%!important;
-  background-size:108% auto!important;
-}
-.hero-layer-near{
-  background-position:50% 54%!important;
-  background-size:118% auto!important;
 }
 
 .film-act-card>div{
@@ -208,32 +180,6 @@
 }
 
 @media(max-width:760px){
-  .gate-backdrop{
-    opacity:.78;
-    background:
-      linear-gradient(180deg,rgba(3,8,7,.28),rgba(3,8,7,.54) 48%,rgba(3,8,7,.9) 100%),
-      var(--kaikai-two-worlds-original) 50% 42%/auto 82% no-repeat!important;
-    background-color:#06100e!important;
-    filter:saturate(.8) contrast(1.04) brightness(.88)!important;
-  }
-  .entry-gate .gate-panel{
-    background:linear-gradient(180deg,rgba(5,12,11,.6),rgba(5,12,11,.74) 52%,rgba(5,12,11,.94))!important;
-  }
-  .hero-layer{
-    background-image:var(--kaikai-two-worlds-original)!important;
-  }
-  .hero-layer-far{
-    background-position:50% 42%!important;
-    background-size:auto 88%!important;
-  }
-  .hero-layer-mid{
-    background-position:50% 44%!important;
-    background-size:auto 94%!important;
-  }
-  .hero-layer-near{
-    background-position:50% 52%!important;
-    background-size:auto 102%!important;
-  }
   .film-act-card[data-scene-id="FM-C"]{
     min-height:430px;
   }
