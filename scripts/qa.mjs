@@ -83,7 +83,9 @@ for (const sex of ["female", "male"]) {
   }
 }
 
-if (/<a\b[^>]*\bdownload\b/i.test(html) || /<a\b[^>]*\bdownload\b/i.test(story)) errors.push("網頁仍存在下載連結");
+const homeDownloads = html.match(/<a\b[^>]*\bdownload\b[^>]*>/gi) || [];
+const unexpectedHomeDownloads = homeDownloads.filter((tag) => !/href="assets\/data\/timeline-115-days\.csv"/i.test(tag));
+if (unexpectedHomeDownloads.length || /<a\b[^>]*\bdownload\b/i.test(story)) errors.push("網頁仍存在未核准的下載連結");
 if (!html.includes('id="full-copy"') || !html.includes('id="inline-story-content"') || !app.includes("loadInlineStory")) errors.push("完整文案尚未整合到主頁");
 if (!html.includes("fm-c-two-worlds-v2.webp") || !registry.includes("淺藍與深藍條紋上衣")) errors.push("剴剴服裝未鎖定淺藍／深藍條紋");
 if (!app.includes("actorPosePlan") || !app.includes("setActorSprites") || !app.includes("SIDE_POSE_ROOT")) errors.push("多姿勢角色切換尚未接入播放器");
