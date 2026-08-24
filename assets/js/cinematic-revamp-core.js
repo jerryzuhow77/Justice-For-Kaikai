@@ -507,8 +507,9 @@
     const copy = document.createElement("div");
     const small = document.createElement("small"); small.textContent = ACT_LABELS[scene.id];
     const heading = document.createElement("h3"); heading.textContent = scene.title;
-    const paragraph = document.createElement("p"); paragraph.textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}｜${production.score.label.split("｜")[0]}` : scene.subtitle;
-    copy.append(small, heading, paragraph); button.append(badge, copy);
+    const paragraph = document.createElement("p"); paragraph.textContent = scene.cardCopy || scene.subtitle;
+    const metadata = document.createElement("small"); metadata.className = "film-card-meta"; metadata.textContent = production ? `五幕 ${formatTime(production.duration)}｜${production.score.label.split("｜")[0]}` : TYPE_LABELS[scene.type];
+    copy.append(small, heading, paragraph, metadata); button.append(badge, copy);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
     return button;
   }
@@ -555,7 +556,7 @@
     const meta = document.createElement("span"); meta.className = "copy-scene-meta";
     const small = document.createElement("small"); small.textContent = `${scene.id} · ${TYPE_LABELS[scene.type]}`;
     const strong = document.createElement("strong"); strong.textContent = scene.title;
-    const description = document.createElement("span"); description.textContent = scene.subtitle;
+    const description = document.createElement("span"); description.textContent = scene.type === "film" ? (scene.cardCopy || scene.subtitle) : scene.subtitle;
     meta.append(small, strong, description); button.append(poster, meta);
     button.addEventListener("click", () => openCinema(scene.id, "single"));
     item.append(button);
@@ -687,6 +688,7 @@
     if (filmProduction) filmProduction.hidden = !production;
     $("#cinema-type").textContent = state.player.mode === "reel" ? `四部連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${scene.id}`;
     $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}` : scene.subtitle; $("#cinema-source").textContent = production?.ethics || scene.source; stageProp.textContent = scene.prop || scene.motif || "";
+    const filmIntro = $("#cinema-film-intro"); if (filmIntro) { filmIntro.textContent = scene.description || ""; filmIntro.hidden = !scene.description; }
     if (changed) { setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); }
   }
 
