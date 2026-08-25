@@ -104,7 +104,7 @@ test("synchronizes four act names and repairs single film cards and the dark fir
     assert.match(registry, new RegExp(title));
   }
   assert.match(app, /grid\.classList\.toggle\("is-single", validScenes\.length === 1\)/);
-  assert.match(html, /assets\/data\/scenes\.js\?v=20260825-fm123-event-motion-2/);
+  assert.match(html, /assets\/data\/scenes\.js\?v=20260825-fm123-event-motion-3/);
   assert.match(css, /\.copy-scene-grid\.is-single/);
   assert.match(css, /data-scene-id="FM-A"/);
 });

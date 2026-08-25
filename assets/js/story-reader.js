@@ -15,8 +15,8 @@
   const getScenes = () => {
     if (scenePromise) return scenePromise;
     scenePromise = (async () => {
-      await loadScript("assets/data/scenes.js?v=20260825-fm123-event-motion-2");
-      await loadScript("assets/data/film-productions.js?v=20260825-fm123-event-motion-2");
+      await loadScript("assets/data/scenes.js?v=20260825-fm123-event-motion-3");
+      await loadScript("assets/data/film-productions.js?v=20260825-fm123-event-motion-3");
       return new Map(Array.from(window.KAIKAI_SCENES || []).map((scene) => [scene.id, scene]));
     })();
     return scenePromise;

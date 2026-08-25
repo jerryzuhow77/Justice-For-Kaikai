@@ -1527,7 +1527,7 @@
         lineDraw(3.2, duration * .64, 115);
         break;
       case "qing-hair":
-        timeline.fromTo(filmHairItems, { autoAlpha: 0, yPercent: -6, backgroundColor: "#161816" }, { autoAlpha: .74, yPercent: 4, duration: 2.4, stagger: .12, ease: "sine.inOut" }, at + .5);
+        timeline.fromTo(filmHairItems, { autoAlpha: 0, yPercent: -6, backgroundColor: "#161816" }, { autoAlpha: (index) => .34 + index % 3 * .045, yPercent: 4, duration: 2.4, stagger: .12, ease: "sine.inOut" }, at + .5);
         timeline.fromTo(filmPassers, { autoAlpha: 0, xPercent: -110, yPercent: 4 }, { autoAlpha: .56, xPercent: (index) => index < 2 ? 124 : 30, yPercent: 0, duration: duration * .52, stagger: .9, ease: "power1.out", immediateRender: false }, at + duration * .08);
         timeline.to(filmPassers[2], { rotationY: -18, xPercent: 18, duration: 1.1, transformOrigin: "center bottom", ease: "power3.inOut" }, at + duration * .62);
         timeline.fromTo(filmTimeThread, { autoAlpha: 0, strokeDashoffset: 1000 }, { autoAlpha: .62, strokeDashoffset: 620, duration: duration * .72, ease: "power1.inOut", immediateRender: false }, at + duration * .18);
@@ -1550,8 +1550,8 @@
         break;
       case "white-hair":
         timeline.set(filmTimeThread, { autoAlpha: .42, strokeDashoffset: 0 }, at);
-        timeline.fromTo(filmHairItems, { autoAlpha: .78, backgroundColor: "#20211f" }, { autoAlpha: .9, backgroundColor: "#d8d8d2", duration: 9.2, stagger: .55, ease: "none" }, at);
-        timeline.fromTo(filmHairWash, { autoAlpha: 0, clipPath: "inset(0 0 100% 0)" }, { autoAlpha: .46, clipPath: "inset(0 0 0% 0)", duration: 15.2, ease: "none", immediateRender: false }, at + .2);
+        timeline.fromTo(filmHairItems, { autoAlpha: .34, backgroundColor: "#20211f" }, { autoAlpha: (index) => .3 + index % 4 * .035, backgroundColor: "#b8bbb5", duration: 9.2, stagger: .55, ease: "none" }, at);
+        timeline.fromTo(filmHairWash, { autoAlpha: 0, clipPath: "inset(0 0 100% 0)" }, { autoAlpha: .34, clipPath: "inset(0 0 0% 0)", duration: 15.2, ease: "none", immediateRender: false }, at + .2);
         timeline.to([atmosphere, mist, rain], { autoAlpha: .04, duration: .25 }, at + 16);
         timeline.to([atmosphere, mist, rain], { autoAlpha: .18, duration: .4 }, at + 19);
         timeline.to([bgA, bgB, depthFar, depthMid, depthNear], { scale: "+=.012", duration: 3, ease: "sine.inOut" }, at + 19);
@@ -1943,7 +1943,7 @@
           gsap.set([filmDossierSheet, ...filmWitnesses], { autoAlpha: .42, scaleX: 1, scale: 1 });
           gsap.set(filmTimeThread, { autoAlpha: .58, strokeDashoffset: 0 });
         } else if (actInfo.effect === "white-hair") {
-          gsap.set(filmHairWash, { autoAlpha: .46, clipPath: "inset(0 0 0% 0)" });
+          gsap.set(filmHairWash, { autoAlpha: .34, clipPath: "inset(0 0 0% 0)" });
           gsap.set(filmTimeThread, { autoAlpha: .42, strokeDashoffset: 0 });
         } else if (actInfo.effect === "empty-court") gsap.set(filmEmptySeat, { autoAlpha: .56, yPercent: 0 });
       }
@@ -1957,7 +1957,7 @@
       }
       if (actInfo.effect === "six-doors" || actInfo.effect === "silence-clothes") gsap.set(filmDoorItems.slice(0, Math.max(1, Math.ceil(progress * 6))), { autoAlpha: .82 });
       if (actInfo.effect === "information") gsap.set(filmInfoItems.slice(0, Math.max(1, Math.ceil(progress * 5))), { autoAlpha: .62 });
-      if (actInfo.effect === "qing-hair" || actInfo.effect === "white-hair") gsap.set(filmHairItems, { autoAlpha: .82, backgroundColor: actInfo.effect === "white-hair" ? "#d8d8d2" : "#20211f" });
+      if (actInfo.effect === "qing-hair" || actInfo.effect === "white-hair") gsap.set(filmHairItems, { autoAlpha: actInfo.effect === "white-hair" ? .38 : .44, backgroundColor: actInfo.effect === "white-hair" ? "#b8bbb5" : "#20211f" });
       if (actInfo.effect === "verdict" && meta.localStart >= 96) gsap.set(filmStamp, { autoAlpha: .86, rotation: -3 });
       if (meta.cue?.visual === "source" || meta.cue?.visual === "testimony") gsap.set(filmSourceTag, { autoAlpha: 1, y: 0 });
       if (actInfo.effect === "night-door" || actInfo.effect === "phone-door" || actInfo.effect === "one-inch") {

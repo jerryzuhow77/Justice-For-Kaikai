@@ -44,7 +44,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
 
-  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fm123-event-motion-2/);
+  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fm123-event-motion-3/);
   assert.equal((html.match(/data-score="FM-[ADBC]"/g) ?? []).length, 4);
   assert.doesNotMatch(html, /id="cinema-audio"[^>]*\bloop\b/);
   assert.doesNotMatch(html, /id="ambient-audio"[^>]*\bloop\b/);
@@ -167,7 +167,7 @@ test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async ()
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(html, /assets\/vendor\/gsap\/MotionPathPlugin\.min\.js/);
-  assert.match(html, /rev=20260825-fm123-event-motion-2/);
+  assert.match(html, /rev=20260825-fm123-event-motion-3/);
   assert.match(css, /\.fm-c-five-act-sequence/);
   assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
   assert.match(css, /\.fm-c-act-shot\{/);
