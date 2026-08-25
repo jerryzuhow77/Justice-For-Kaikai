@@ -197,9 +197,30 @@
   const stageProp = $("#cinema-prop");
   const filmProduction = $("#film-production");
   const FM_C_ACT_PLATES = [
-    { src: "assets/img/films/fm-c-act4/shot-01-object.webp", actionSrc: "assets/img/films/fm-c-act4/shot-01-action.webp", label: "第一幕｜兩個孩子走向同一條門縫" },
-    { src: "assets/img/films/fm-c-act4/shot-02-theatre.webp", actionSrc: "assets/img/films/fm-c-act4/shot-02-action.webp", label: "第二幕｜資訊走得更快，保護仍可能遲到" },
-    { src: "assets/img/films/fm-c-act4/shot-03-corridor.webp", actionSrc: "assets/img/films/fm-c-act4/shot-03-action.webp", label: "第三幕｜沉默只是換了衣裳" },
+    {
+      src: "assets/img/films/fm-c-act4/shot-01-object.webp",
+      actionSrc: "assets/img/films/fm-c-act4/shot-01-action.webp",
+      approachSrc: "assets/img/films/fm-c-act4/shot-01-approach.webp",
+      shadowSrc: "assets/img/films/fm-c-act4/shot-01-shadow-contact.webp",
+      handsSrc: "assets/img/films/fm-c-act4/shot-01-hands-law.webp",
+      label: "第一幕｜兩個孩子走向同一條門縫"
+    },
+    {
+      src: "assets/img/films/fm-c-act4/shot-02-theatre.webp",
+      actionSrc: "assets/img/films/fm-c-act4/shot-02-action.webp",
+      routeSrc: "assets/img/films/fm-c-act4/shot-02-route.webp",
+      relaySrc: "assets/img/films/fm-c-act4/shot-02-handoff-chain.webp",
+      emptySrc: "assets/img/films/fm-c-act4/shot-02-empty-chair.webp",
+      label: "第二幕｜資訊走得更快，保護仍可能遲到"
+    },
+    {
+      src: "assets/img/films/fm-c-act4/shot-03-corridor.webp",
+      actionSrc: "assets/img/films/fm-c-act4/shot-03-action.webp",
+      clothSrc: "assets/img/films/fm-c-act4/shot-03-cloth-form.webp",
+      signalsSrc: "assets/img/films/fm-c-act4/shot-03-signals.webp",
+      adultSrc: "assets/img/films/fm-c-act4/shot-03-adult-page.webp",
+      label: "第三幕｜沉默只是換了衣裳"
+    },
     {
       src: "assets/img/films/fm-c-act4/shot-04-doors.webp",
       actionSrc: "assets/img/films/fm-c-act4/shot-04-action.webp",
@@ -220,6 +241,41 @@
   const fmCShotPlan = (actIndex) => {
     const plate = FM_C_ACT_PLATES[actIndex];
     const camera = FM_C_ACT_CAMERA[actIndex];
+    if (actIndex === 0) {
+      return [
+        { src: plate.src, kind: "establish", start: 0, reveal: "full", origin: "50% 50%", from: { scale: 1.07, xPercent: 0, yPercent: .4 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } },
+        { src: plate.src, kind: "kaikai-close", start: .11, reveal: "right", origin: camera.modern, from: { scale: camera.detail * .93, xPercent: 0, yPercent: .1 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.2 } },
+        { src: plate.src, kind: "qing-close", start: .25, reveal: "left", origin: camera.qing, from: { scale: camera.detail * .93, xPercent: 0, yPercent: .1 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.2 } },
+        { src: plate.approachSrc, kind: "approach", start: .39, reveal: "vertical", origin: "50% 62%", from: { scale: 1.1, xPercent: 0, yPercent: .4 }, to: { scale: 1.035, xPercent: 0, yPercent: 0 } },
+        { src: plate.shadowSrc, kind: "shadow-contact", start: .55, reveal: "horizontal", origin: "50% 72%", from: { scale: 1.08, xPercent: 0, yPercent: .3 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } },
+        { src: plate.actionSrc, kind: "reach", start: .7, reveal: "seam", origin: "50% 51%", from: { scale: 1.03, xPercent: 0, yPercent: .2 }, to: { scale: 1.085, xPercent: 0, yPercent: -.1 } },
+        { src: plate.handsSrc, kind: "law-peel", start: .84, reveal: "iris", origin: "50% 42%", from: { scale: 1.09, xPercent: 0, yPercent: .15 }, to: { scale: 1.16, xPercent: 0, yPercent: -.15 } }
+      ];
+    }
+    if (actIndex === 1) {
+      return [
+        { src: plate.src, kind: "establish", start: 0, reveal: "full", origin: "50% 50%", from: { scale: 1.065, xPercent: 0, yPercent: .35 }, to: { scale: 1.02, xPercent: 0, yPercent: 0 } },
+        { src: plate.src, kind: "kaikai-close", start: .1, reveal: "right", origin: camera.modern, from: { scale: camera.detail * .9, xPercent: 0, yPercent: .1 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.2 } },
+        { src: plate.src, kind: "qing-close", start: .21, reveal: "left", origin: camera.qing, from: { scale: camera.detail * .9, xPercent: 0, yPercent: .1 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.2 } },
+        { src: plate.routeSrc, kind: "information-route", start: .33, reveal: "seam", origin: "50% 34%", from: { scale: 1.025, xPercent: 0, yPercent: .2 }, to: { scale: 1.075, xPercent: 0, yPercent: -.1 } },
+        { src: plate.actionSrc, kind: "form-cascade", start: .45, reveal: "vertical", origin: "50% 48%", from: { scale: 1.03, xPercent: 0, yPercent: .25 }, to: { scale: 1.075, xPercent: 0, yPercent: 0 } },
+        { src: plate.relaySrc, kind: "relay", start: .57, reveal: "horizontal", origin: "50% 31%", from: { scale: 1.04, xPercent: 0, yPercent: .15 }, to: { scale: 1.11, xPercent: 0, yPercent: -.12 } },
+        { src: plate.relaySrc, kind: "unseen-child", start: .7, reveal: "iris", origin: "50% 76%", from: { scale: 1.13, xPercent: 0, yPercent: -.12 }, to: { scale: 1.22, xPercent: 0, yPercent: .08 } },
+        { src: plate.emptySrc, kind: "empty-chair", start: .84, reveal: "seam", origin: "50% 50%", from: { scale: 1.085, xPercent: 0, yPercent: .1 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } }
+      ];
+    }
+    if (actIndex === 2) {
+      return [
+        { src: plate.src, kind: "establish", start: 0, reveal: "full", origin: "50% 50%", from: { scale: 1.065, xPercent: 0, yPercent: .35 }, to: { scale: 1.02, xPercent: 0, yPercent: 0 } },
+        { src: plate.src, kind: "qing-close", start: .11, reveal: "left", origin: camera.qing, from: { scale: camera.detail * .92, xPercent: 0, yPercent: .1 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.2 } },
+        { src: plate.src, kind: "kaikai-close", start: .22, reveal: "right", origin: camera.modern, from: { scale: camera.detail * .92, xPercent: 0, yPercent: .1 }, to: { scale: camera.detail, xPercent: 0, yPercent: -.2 } },
+        { src: plate.clothSrc, kind: "cloth-form", start: .34, reveal: "seam", origin: "50% 42%", from: { scale: 1.035, xPercent: 0, yPercent: .15 }, to: { scale: 1.095, xPercent: 0, yPercent: -.12 } },
+        { src: plate.signalsSrc, kind: "quiet-signals", start: .46, reveal: "vertical", origin: "50% 65%", from: { scale: 1.065, xPercent: 0, yPercent: .12 }, to: { scale: 1.02, xPercent: 0, yPercent: 0 } },
+        { src: plate.signalsSrc, kind: "signals-close", start: .58, reveal: "horizontal", origin: "50% 72%", from: { scale: 1.1, xPercent: 0, yPercent: .04 }, to: { scale: 1.2, xPercent: 0, yPercent: .12 } },
+        { src: plate.actionSrc, kind: "paper-drift", start: .71, reveal: "iris", origin: "50% 50%", from: { scale: 1.04, xPercent: 0, yPercent: .2 }, to: { scale: 1.09, xPercent: 0, yPercent: -.1 } },
+        { src: plate.adultSrc, kind: "adult-page", start: .84, reveal: "seam", origin: "50% 52%", from: { scale: 1.08, xPercent: 0, yPercent: .1 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } }
+      ];
+    }
     if (actIndex === 3) {
       return [
         { src: plate.src, kind: "establish", start: 0, reveal: "full", origin: "50% 50%", from: { scale: 1.075, xPercent: 0, yPercent: .5 }, to: { scale: 1.025, xPercent: 0, yPercent: 0 } },
@@ -256,13 +312,75 @@
     <span class="duty-breath duty-breath-qing"></span><span class="duty-breath duty-breath-modern"></span>
     <p class="duty-responsibility-title">把責任交給活著的人</p>
   </div>`;
+  const fmCEncounterRigMarkup = () => `<div class="fm-c-encounter-rig" aria-hidden="true">
+    <span class="encounter-seam"></span><em class="encounter-floor-light"></em>
+    <span class="encounter-breath encounter-breath-qing"></span><span class="encounter-breath encounter-breath-modern"></span>
+    <span class="encounter-shadow encounter-shadow-qing"></span><span class="encounter-shadow encounter-shadow-modern"></span>
+    <i class="encounter-step encounter-step-qing-one"></i><i class="encounter-step encounter-step-qing-two"></i>
+    <i class="encounter-step encounter-step-modern-one"></i><i class="encounter-step encounter-step-modern-two"></i>
+    <p class="encounter-law"><strong class="encounter-law-copy">家法</strong><i></i><i></i><i></i><i></i><i></i></p>
+  </div>`;
+  const fmCInformationRigMarkup = () => `<div class="fm-c-information-rig" aria-hidden="true">
+    <svg class="information-route" viewBox="0 0 1000 562" preserveAspectRatio="none"><path d="M92 148 C190 96 248 186 348 126 S525 96 620 144 S790 92 908 164"></path></svg>
+    <b class="information-packet"></b>
+    <i class="information-node" data-label="口信" style="--node-x:10%;--node-y:23%"></i>
+    <i class="information-node" data-label="油燈" style="--node-x:24%;--node-y:18%"></i>
+    <i class="information-node" data-label="電話" style="--node-x:43%;--node-y:24%"></i>
+    <i class="information-node" data-label="訊息" style="--node-x:58%;--node-y:18%"></i>
+    <i class="information-node" data-label="訪視" style="--node-x:75%;--node-y:23%"></i>
+    <i class="information-node" data-label="卷宗" style="--node-x:90%;--node-y:29%"></i>
+    <span class="information-file"></span><span class="information-stamp">已收件</span>
+    <em class="information-empty-pulse information-empty-pulse-qing"></em><em class="information-empty-pulse information-empty-pulse-modern"></em>
+    <p class="information-stall">下一個人會處理</p>
+  </div>`;
+  const fmCSilenceRigMarkup = () => `<div class="fm-c-silence-rig" aria-hidden="true">
+    <span class="silence-lamp"></span><span class="silence-fluorescent"></span>
+    <span class="silence-curtain"></span><span class="silence-form-grid"></span>
+    <i class="silence-page silence-page-one"></i><i class="silence-page silence-page-two"></i><i class="silence-page silence-page-three"></i>
+    <b class="silence-check silence-check-one"></b><b class="silence-check silence-check-two"></b><b class="silence-check silence-check-three"></b><b class="silence-check silence-check-four"></b>
+    <em class="silence-child-void"></em>
+    <p class="silence-title">紙上文字愈多，孩子愈看不見</p>
+  </div>`;
+  const fmCActRigMarkup = (index, plate) => {
+    if (index === 0) return fmCEncounterRigMarkup();
+    if (index === 1) return fmCInformationRigMarkup();
+    if (index === 2) return fmCSilenceRigMarkup();
+    if (index === 3) return fmCResponsibilityRigMarkup(plate);
+    return "";
+  };
   const filmActSequence = document.createElement("div");
   filmActSequence.className = "fm-c-five-act-sequence";
   filmActSequence.setAttribute("aria-hidden", "true");
-  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}${index === 3 ? fmCResponsibilityRigMarkup(plate) : ""}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
+  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}${fmCActRigMarkup(index, plate)}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
   filmProduction?.prepend(filmActSequence);
   const filmActFrames = $$(".fm-c-act-frame", filmActSequence);
   const filmActShots = $$(".fm-c-act-shot", filmActSequence);
+  const filmEncounterRig = $(".fm-c-encounter-rig", filmActSequence);
+  const filmEncounterSeam = $(".encounter-seam", filmEncounterRig);
+  const filmEncounterFloorLight = $(".encounter-floor-light", filmEncounterRig);
+  const filmEncounterBreaths = $$(".encounter-breath", filmEncounterRig);
+  const filmEncounterShadows = $$(".encounter-shadow", filmEncounterRig);
+  const filmEncounterSteps = $$(".encounter-step", filmEncounterRig);
+  const filmEncounterLaw = $(".encounter-law", filmEncounterRig);
+  const filmEncounterLawCopy = $(".encounter-law-copy", filmEncounterRig);
+  const filmEncounterLawFragments = $$(".encounter-law i", filmEncounterRig);
+  const filmInformationRig = $(".fm-c-information-rig", filmActSequence);
+  const filmInformationPath = $(".information-route path", filmInformationRig);
+  const filmInformationPacket = $(".information-packet", filmInformationRig);
+  const filmInformationNodes = $$(".information-node", filmInformationRig);
+  const filmInformationFile = $(".information-file", filmInformationRig);
+  const filmInformationStamp = $(".information-stamp", filmInformationRig);
+  const filmInformationEmptyPulses = $$(".information-empty-pulse", filmInformationRig);
+  const filmInformationStall = $(".information-stall", filmInformationRig);
+  const filmSilenceRig = $(".fm-c-silence-rig", filmActSequence);
+  const filmSilenceLamp = $(".silence-lamp", filmSilenceRig);
+  const filmSilenceFluorescent = $(".silence-fluorescent", filmSilenceRig);
+  const filmSilenceCurtain = $(".silence-curtain", filmSilenceRig);
+  const filmSilenceForm = $(".silence-form-grid", filmSilenceRig);
+  const filmSilencePages = $$(".silence-page", filmSilenceRig);
+  const filmSilenceChecks = $$(".silence-check", filmSilenceRig);
+  const filmSilenceVoid = $(".silence-child-void", filmSilenceRig);
+  const filmSilenceTitle = $(".silence-title", filmSilenceRig);
   const filmResponsibilityRig = $(".fm-c-responsibility-rig", filmActSequence);
   const filmDutyThread = $(".duty-thread", filmResponsibilityRig);
   const filmDutyPapers = $$(".duty-paper", filmResponsibilityRig);
@@ -383,6 +501,15 @@
       addFoleyTone(context, { frequency: 94, endFrequency: 48, duration: .17, gain: .026, type: "sine" });
       addFoleyNoise(context, { duration: .2, gain: .011, frequency: 420, type: "lowpass", delay: .02 });
       addFoleyTone(context, { frequency: 86, endFrequency: 45, duration: .16, gain: .021, type: "sine", delay: .23 });
+    } else if (kind === "wood") {
+      addFoleyNoise(context, { duration: .28, gain: .011, frequency: 520, type: "bandpass" });
+      addFoleyTone(context, { frequency: 122, endFrequency: 76, duration: .3, gain: .012, type: "triangle", delay: .03 });
+    } else if (kind === "notice") {
+      addFoleyTone(context, { frequency: 620, endFrequency: 760, duration: .11, gain: .012, type: "sine" });
+      addFoleyTone(context, { frequency: 760, endFrequency: 690, duration: .12, gain: .009, type: "sine", delay: .13 });
+    } else if (kind === "stamp") {
+      addFoleyTone(context, { frequency: 112, endFrequency: 58, duration: .12, gain: .02, type: "triangle" });
+      addFoleyNoise(context, { duration: .14, gain: .014, frequency: 680, type: "lowpass", delay: .018 });
     }
   }
 
@@ -1122,6 +1249,11 @@
     timeline.set($$(".fm-c-act-shot img", filmActSequence), { clearProps: "transform" }, at);
     timeline.set($$(".fm-c-live-fx", filmActSequence), { autoAlpha: 0, clearProps: "filter" }, at);
     timeline.set($$(".fm-c-live-fx b,.fm-c-live-fx em,.fm-c-live-fx i", filmActSequence), { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1, clearProps: "filter" }, at);
+    timeline.set([filmEncounterRig, filmInformationRig, filmSilenceRig], { autoAlpha: 0 }, at);
+    timeline.set([filmEncounterSeam, filmEncounterFloorLight, ...filmEncounterBreaths, ...filmEncounterShadows, ...filmEncounterSteps, filmEncounterLaw, filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath" }, at);
+    timeline.set(filmInformationPath, { autoAlpha: 0, strokeDasharray: 980, strokeDashoffset: 980 }, at);
+    timeline.set([filmInformationPacket, ...filmInformationNodes, filmInformationFile, filmInformationStamp, ...filmInformationEmptyPulses, filmInformationStall], { autoAlpha: 0, x: 0, y: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, clearProps: "filter,clipPath,offsetDistance" }, at);
+    timeline.set([filmSilenceRig, filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath,letterSpacing" }, at);
     timeline.set(filmResponsibilityRig, { autoAlpha: 0 }, at);
     timeline.set(filmDutyThread, { autoAlpha: 0, scaleX: .35, xPercent: 0, clearProps: "filter" }, at);
     timeline.set(filmDutyPapers, { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1 }, at);
@@ -1150,6 +1282,7 @@
     const fxPulse = $("b", fx);
     const fxBeam = $("em", fx);
     const particles = $$("i", fx);
+    const usesSemanticRig = meta.actionIndex <= 2;
     const transition = Math.min(.82, Math.max(.48, duration * .026));
     const revealClips = {
       left: ["inset(0 100% 0 0)", "inset(0 0 0 0)"],
@@ -1162,8 +1295,8 @@
     timeline.set(filmActSequence, { autoAlpha: 1 }, at);
     timeline.fromTo(frame, { autoAlpha: 0, filter: "brightness(.72)" }, { autoAlpha: 1, filter: "brightness(1)", duration: transition, ease: "power2.inOut", immediateRender: false }, at);
     timeline.set(fx, { autoAlpha: 1 }, at);
-    timeline.fromTo(fxPulse, { autoAlpha: .18, xPercent: -50, scaleX: .62, scaleY: .76 }, { autoAlpha: .72, xPercent: -50, scaleX: 1.14, scaleY: 1.08, duration: duration / 8, repeat: 7, yoyo: true, ease: "sine.inOut", immediateRender: false }, at);
-    timeline.fromTo(fxBeam, { autoAlpha: 0, xPercent: -135 }, { autoAlpha: .34, xPercent: 135, duration, ease: "sine.inOut", immediateRender: false }, at);
+    timeline.fromTo(fxPulse, { autoAlpha: .08, xPercent: -50, scaleX: .62, scaleY: .76 }, { autoAlpha: usesSemanticRig ? .26 : .72, xPercent: -50, scaleX: 1.14, scaleY: 1.08, duration: duration / 8, repeat: 7, yoyo: true, ease: "sine.inOut", immediateRender: false }, at);
+    timeline.fromTo(fxBeam, { autoAlpha: 0, xPercent: -135 }, { autoAlpha: usesSemanticRig ? .1 : .34, xPercent: 135, duration, ease: "sine.inOut", immediateRender: false }, at);
 
     plans.forEach((plan, shotIndex) => {
       const shot = shots[shotIndex];
@@ -1183,12 +1316,14 @@
       timeline.fromTo(image, plan.from, { ...plan.to, duration: motionDuration, ease: plan.kind === "establish" || plan.kind === "resolve" || plan.kind === "responsibility-hold" ? "none" : "sine.inOut", immediateRender: false }, shotAt);
     });
 
-    particles.forEach((particle, particleIndex) => {
-      const particleAt = at + duration * (.05 + particleIndex * .075);
-      const direction = particleIndex % 2 === 0 ? 1 : -1;
-      timeline.fromTo(particle, { autoAlpha: 0, xPercent: direction * -160, yPercent: 120 + particleIndex * 12, rotation: direction * -18, scale: .72 + particleIndex * .035 }, { autoAlpha: .5, xPercent: direction * 210, yPercent: -170 - particleIndex * 8, rotation: direction * 70, scale: 1, duration: duration * .34, ease: "sine.out", immediateRender: false }, particleAt);
-      timeline.to(particle, { autoAlpha: 0, duration: .5, ease: "power1.out" }, particleAt + duration * .3);
-    });
+    if (!usesSemanticRig) {
+      particles.forEach((particle, particleIndex) => {
+        const particleAt = at + duration * (.05 + particleIndex * .075);
+        const direction = particleIndex % 2 === 0 ? 1 : -1;
+        timeline.fromTo(particle, { autoAlpha: 0, xPercent: direction * -160, yPercent: 120 + particleIndex * 12, rotation: direction * -18, scale: .72 + particleIndex * .035 }, { autoAlpha: .5, xPercent: direction * 210, yPercent: -170 - particleIndex * 8, rotation: direction * 70, scale: 1, duration: duration * .34, ease: "sine.out", immediateRender: false }, particleAt);
+        timeline.to(particle, { autoAlpha: 0, duration: .5, ease: "power1.out" }, particleAt + duration * .3);
+      });
+    }
   }
 
   function addProductionAct(timeline, meta, at) {
@@ -1295,6 +1430,22 @@
         break;
       case "split-shadow":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        if (usesFmCActPlate) {
+          timeline.set(filmEncounterRig, { autoAlpha: 1 }, at);
+          timeline.fromTo(filmEncounterSeam, { autoAlpha: .16, scaleY: .72, filter: "brightness(.72)" }, { autoAlpha: .76, scaleY: 1.08, filter: "brightness(1.35)", duration: 2.4, repeat: 5, yoyo: true, ease: "sine.inOut" }, at + .2);
+          timeline.fromTo(filmEncounterBreaths, { autoAlpha: 0, scale: .94, yPercent: 1.4 }, { autoAlpha: .2, scale: 1.05, yPercent: -1.4, duration: 1.55, repeat: 8, yoyo: true, stagger: .16, ease: "sine.inOut" }, at + duration * .08);
+          timeline.fromTo(filmEncounterSteps, { autoAlpha: 0, scale: .68, yPercent: 16 }, { autoAlpha: .62, scale: 1, yPercent: 0, duration: .34, stagger: .28, ease: "power2.out" }, at + duration * .37);
+          timeline.call(() => playFmCFoley("step"), null, at + duration * .39);
+          timeline.fromTo(filmEncounterShadows, { autoAlpha: 0, scaleY: .45, xPercent: 0 }, { autoAlpha: .58, scaleY: 1.18, xPercent: (index) => index === 0 ? 68 : -68, duration: duration * .16, stagger: .08, ease: "power2.inOut" }, at + duration * .52);
+          timeline.fromTo(filmEncounterFloorLight, { autoAlpha: 0, scaleX: .08 }, { autoAlpha: .62, scaleX: 1, duration: duration * .18, ease: "sine.inOut" }, at + duration * .66);
+          timeline.fromTo(filmEncounterLaw, { autoAlpha: 0, yPercent: -18, clipPath: "inset(0 48% 0 48%)" }, { autoAlpha: .9, yPercent: 0, clipPath: "inset(0 0% 0 0%)", duration: .75, ease: "power3.out" }, at + duration * .82);
+          timeline.set([filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 1 }, at + duration * .84);
+          timeline.to(filmEncounterLawCopy, { autoAlpha: .24, filter: "blur(1.2px)", duration: duration * .13, ease: "power2.in" }, at + duration * .86);
+          timeline.to(filmEncounterLawFragments, { autoAlpha: 0, xPercent: (index) => [-190, -88, 42, 118, 210][index], yPercent: (index) => 120 + index * 26, rotation: (index) => [-38, 24, -18, 42, -31][index], duration: duration * .14, stagger: .045, ease: "power1.in" }, at + duration * .86);
+          timeline.call(() => playFmCFoley("wood"), null, at + duration * .84);
+          lineDraw(.8, duration * .7, 430);
+          break;
+        }
         timeline.fromTo(filmSeparatedPalms, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2 }, at + .25);
         timeline.fromTo(filmQingChild, { xPercent: -12 }, { xPercent: 0, duration: 3.2, ease: "power2.out" }, at + .25);
         timeline.fromTo(filmModernChild, { xPercent: 12 }, { xPercent: 0, duration: 3.2, ease: "power2.out" }, at + .25);
@@ -1303,6 +1454,27 @@
         break;
       case "information":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        if (usesFmCActPlate) {
+          timeline.set(filmInformationRig, { autoAlpha: 1 }, at);
+          timeline.fromTo(filmInformationPath, { autoAlpha: 0, strokeDashoffset: 980 }, { autoAlpha: .78, strokeDashoffset: 0, duration: duration * .36, ease: "power1.inOut" }, at + duration * .08);
+          timeline.fromTo(filmInformationNodes, { autoAlpha: 0, scale: .72, filter: "brightness(.65)" }, { autoAlpha: .88, scale: 1, filter: "brightness(1.28)", duration: .5, stagger: duration * .035, ease: "back.out(1.55)" }, at + duration * .09);
+          timeline.call(() => playFmCFoley("notice"), null, at + duration * .1);
+          timeline.fromTo(filmInformationPacket, { autoAlpha: 0, scale: .58 }, { autoAlpha: 1, scale: 1, duration: .3, ease: "power2.out" }, at + duration * .11);
+          if (window.MotionPathPlugin && filmInformationPath) {
+            timeline.to(filmInformationPacket, { motionPath: { path: filmInformationPath, align: filmInformationPath, alignOrigin: [.5, .5], start: 0, end: 1 }, duration: duration * .58, ease: "power1.inOut" }, at + duration * .12);
+          } else {
+            timeline.to(filmInformationPacket, { xPercent: 2500, yPercent: 90, duration: duration * .58, ease: "power1.inOut" }, at + duration * .12);
+          }
+          timeline.fromTo(filmInformationFile, { autoAlpha: 0, yPercent: -55, rotationY: -76, scale: .82 }, { autoAlpha: .9, yPercent: 0, rotationY: 0, scale: 1, duration: duration * .09, ease: "power3.out" }, at + duration * .43);
+          timeline.call(() => playFmCFoley("paper"), null, at + duration * .44);
+          timeline.fromTo(filmInformationStamp, { autoAlpha: 0, yPercent: -145, rotation: -9, scale: 1.28 }, { autoAlpha: .9, yPercent: 0, rotation: -3, scale: 1, duration: .42, ease: "back.out(2.2)" }, at + duration * .48);
+          timeline.call(() => playFmCFoley("stamp"), null, at + duration * .49);
+          timeline.fromTo(filmInformationEmptyPulses, { autoAlpha: 0, scale: .35 }, { autoAlpha: .48, scale: 1.35, duration: 1.4, repeat: 3, yoyo: true, stagger: .12, ease: "sine.inOut" }, at + duration * .7);
+          timeline.to([filmInformationPath, ...filmInformationNodes, filmInformationPacket, filmInformationFile, filmInformationStamp], { autoAlpha: .24, filter: "brightness(.72)", duration: 1.15, ease: "power2.out" }, at + duration * .82);
+          timeline.fromTo(filmInformationStall, { autoAlpha: 0, yPercent: 20, clipPath: "inset(0 50% 0 50%)" }, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", duration: .8, ease: "power3.out" }, at + duration * .84);
+          lineDraw(.7, duration * .72, 210);
+          break;
+        }
         timeline.set([filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 }, at);
         timeline.to([filmQingChild, filmModernChild], { y: -3, duration: 2.8, repeat: 3, yoyo: true, ease: "sine.inOut" }, at + .4);
         timeline.fromTo(filmInfoItems, { autoAlpha: 0, y: 18, rotation: -4 }, { autoAlpha: .76, y: 0, rotation: 0, duration: .65, stagger: 1, ease: "power2.out" }, at + .8);
@@ -1310,6 +1482,23 @@
         break;
       case "silence-clothes":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
+        if (usesFmCActPlate) {
+          timeline.set(filmSilenceRig, { autoAlpha: 1 }, at);
+          timeline.fromTo(filmSilenceLamp, { autoAlpha: .08, scale: .86, filter: "brightness(.58)" }, { autoAlpha: .62, scale: 1.08, filter: "brightness(1.32)", duration: .16, repeat: 5, yoyo: true, ease: "steps(1)" }, at + .18);
+          timeline.fromTo(filmSilenceFluorescent, { autoAlpha: .04, scaleX: .88, filter: "brightness(.5)" }, { autoAlpha: .58, scaleX: 1, filter: "brightness(1.42)", duration: .12, repeat: 7, yoyo: true, ease: "steps(1)" }, at + .35);
+          timeline.call(() => playFmCFoley("fluorescent"), null, at + .34);
+          timeline.fromTo(filmSilenceCurtain, { autoAlpha: 0, xPercent: -24, clipPath: "inset(0 100% 0 0)" }, { autoAlpha: .72, xPercent: 0, clipPath: "inset(0 0% 0 0)", duration: duration * .2, ease: "power2.inOut" }, at + duration * .18);
+          timeline.fromTo(filmSilenceForm, { autoAlpha: 0, xPercent: 24, clipPath: "inset(0 0 0 100%)" }, { autoAlpha: .72, xPercent: 0, clipPath: "inset(0 0 0 0%)", duration: duration * .2, ease: "power2.inOut" }, at + duration * .29);
+          timeline.to(filmSilenceCurtain, { autoAlpha: .26, xPercent: 28, filter: "grayscale(.45)" , duration: duration * .2, ease: "sine.inOut" }, at + duration * .45);
+          timeline.fromTo(filmSilencePages, { autoAlpha: 0, yPercent: 32, rotationY: -82, rotation: -4 }, { autoAlpha: .76, yPercent: 0, rotationY: 0, rotation: 0, duration: .72, stagger: duration * .045, ease: "power3.out" }, at + duration * .56);
+          timeline.call(() => playFmCFoley("paper"), null, at + duration * .58);
+          timeline.fromTo(filmSilenceChecks, { autoAlpha: 0, scale: .35, rotation: -18 }, { autoAlpha: .86, scale: 1, rotation: 0, duration: .28, stagger: duration * .035, ease: "back.out(1.9)" }, at + duration * .62);
+          timeline.fromTo(filmSilenceVoid, { autoAlpha: 0, scale: .7, filter: "blur(10px)" }, { autoAlpha: .72, scale: 1.18, filter: "blur(1px)", duration: duration * .18, ease: "power2.inOut" }, at + duration * .69);
+          timeline.to([...filmSilencePages, ...filmSilenceChecks, filmSilenceCurtain, filmSilenceForm], { autoAlpha: .24, filter: "brightness(.68)", duration: 1, ease: "power2.out" }, at + duration * .83);
+          timeline.fromTo(filmSilenceTitle, { autoAlpha: 0, yPercent: 18, clipPath: "inset(0 50% 0 50%)", letterSpacing: ".28em" }, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", letterSpacing: ".18em", duration: .9, ease: "power3.out" }, at + duration * .84);
+          lineDraw(.9, duration * .7, 120);
+          break;
+        }
         timeline.set([filmSeparatedPalms, filmTimeRift], { autoAlpha: 1 }, at);
         timeline.fromTo(filmDoorItems, { autoAlpha: 0, filter: "brightness(.65)" }, { autoAlpha: .32, filter: "brightness(1)", duration: .7, stagger: .7 }, at + .5);
         timeline.fromTo(filmInfoItems.slice(1, 4), { autoAlpha: .18, rotation: -4 }, { autoAlpha: .45, rotation: 5, duration: duration * .74, stagger: .6, ease: "sine.inOut" }, at + 1.4);
@@ -1454,7 +1643,9 @@
     if (!production || !filmProduction) return;
     const actInfo = production.acts[meta.actionIndex];
     const view = productionView(actInfo);
-    const progress = clamp((meta.localStart - actInfo.start) / Math.max(.1, actInfo.end - actInfo.start), 0, 1);
+    const sourceProgress = clamp((meta.localStart - actInfo.start) / Math.max(.1, actInfo.end - actInfo.start), 0, 1);
+    const reducedActProgress = [.9, .9, .9, .82, .9];
+    const progress = state.reduced && meta.scene.id === "FM-C" ? reducedActProgress[meta.actionIndex] : sourceProgress;
     setProductionState(meta);
     if (hasGSAP) {
       const { gsap } = window;
@@ -1465,6 +1656,10 @@
       gsap.set(filmActFrames, { autoAlpha: 0, filter: "brightness(1)" });
       gsap.set(filmActShots, { autoAlpha: 0, clipPath: "inset(0 0 0 0)", zIndex: 0 });
       gsap.set($$(".fm-c-live-fx", filmActSequence), { autoAlpha: 0, clearProps: "filter" });
+      gsap.set([filmEncounterRig, filmInformationRig, filmSilenceRig], { autoAlpha: 0 });
+      gsap.set([filmEncounterSeam, filmEncounterFloorLight, ...filmEncounterBreaths, ...filmEncounterShadows, ...filmEncounterSteps, filmEncounterLaw, filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 0, clearProps: "transform,filter,clipPath" });
+      gsap.set([filmInformationPath, filmInformationPacket, ...filmInformationNodes, filmInformationFile, filmInformationStamp, ...filmInformationEmptyPulses, filmInformationStall], { autoAlpha: 0, clearProps: "transform,filter,clipPath,strokeDashoffset" });
+      gsap.set([filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing" });
       gsap.set(filmResponsibilityRig, { autoAlpha: 0 });
       gsap.set([filmDutyThread, ...filmDutyPapers, ...filmDutyHandles, ...filmDutyLights, ...filmDutyBreaths], { autoAlpha: 0, clearProps: "transform,filter" });
       gsap.set([...filmDutyFluorescents, ...filmDutyShadows, filmDutyGrip, filmDutyRelease, ...filmDutyThreadTransfers, ...filmDutyTransferPaths, ...filmDutyStamps, ...filmDutyAdults, ...filmDutyDoorLeaves, filmDutyTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,strokeDashoffset" });
@@ -1485,7 +1680,36 @@
         gsap.set(frame, { autoAlpha: 1, filter: "brightness(1)" });
         gsap.set(shot, { autoAlpha: 1, clipPath: "inset(0 0 0 0)", zIndex: shotIndex + 1 });
         gsap.set(image, { scale: interpolate("scale"), xPercent: interpolate("xPercent"), yPercent: interpolate("yPercent") });
-        if (meta.actionIndex === 3) {
+        if (meta.actionIndex === 0) {
+          gsap.set(filmEncounterRig, { autoAlpha: 1 });
+          gsap.set([filmEncounterSeam, ...filmEncounterBreaths], { autoAlpha: .5 });
+          if (progress >= .39) gsap.set(filmEncounterSteps, { autoAlpha: .62, scale: 1 });
+          if (progress >= .55) gsap.set(filmEncounterShadows, { autoAlpha: .58, scaleY: 1.18, xPercent: (index) => index === 0 ? 68 : -68 });
+          if (progress >= .7) gsap.set(filmEncounterFloorLight, { autoAlpha: .62, scaleX: 1 });
+          if (progress >= .84) {
+            const peelProgress = clamp((progress - .84) / .16, 0, 1);
+            gsap.set(filmEncounterLaw, { autoAlpha: .9, yPercent: 0, clipPath: "inset(0 0% 0 0%)" });
+            gsap.set(filmEncounterLawCopy, { autoAlpha: 1 - peelProgress * .76, filter: `blur(${peelProgress * 1.2}px)` });
+            gsap.set(filmEncounterLawFragments, { autoAlpha: 1 - peelProgress, xPercent: (index) => [-190, -88, 42, 118, 210][index] * peelProgress, yPercent: (index) => (120 + index * 26) * peelProgress, rotation: (index) => [-38, 24, -18, 42, -31][index] * peelProgress });
+          }
+        } else if (meta.actionIndex === 1) {
+          gsap.set(filmInformationRig, { autoAlpha: 1 });
+          gsap.set(filmInformationPath, { autoAlpha: .72, strokeDashoffset: 0 });
+          gsap.set(filmInformationNodes, { autoAlpha: progress >= .82 ? .24 : .82, scale: 1 });
+          if (progress >= .43) gsap.set(filmInformationFile, { autoAlpha: progress >= .82 ? .24 : .88, yPercent: 0, rotationY: 0 });
+          if (progress >= .48) gsap.set(filmInformationStamp, { autoAlpha: progress >= .82 ? .24 : .88, yPercent: 0, scale: 1 });
+          if (progress >= .7) gsap.set(filmInformationEmptyPulses, { autoAlpha: .44, scale: 1.25 });
+          if (progress >= .84) gsap.set(filmInformationStall, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)" });
+        } else if (meta.actionIndex === 2) {
+          gsap.set(filmSilenceRig, { autoAlpha: 1 });
+          gsap.set([filmSilenceLamp, filmSilenceFluorescent], { autoAlpha: .52 });
+          if (progress >= .18) gsap.set(filmSilenceCurtain, { autoAlpha: progress >= .83 ? .24 : .68, xPercent: progress >= .45 ? 28 : 0 });
+          if (progress >= .29) gsap.set(filmSilenceForm, { autoAlpha: progress >= .83 ? .24 : .68, xPercent: 0 });
+          if (progress >= .56) gsap.set(filmSilencePages, { autoAlpha: progress >= .83 ? .24 : .72, yPercent: 0, rotationY: 0 });
+          if (progress >= .62) gsap.set(filmSilenceChecks, { autoAlpha: progress >= .83 ? .24 : .82, scale: 1 });
+          if (progress >= .69) gsap.set(filmSilenceVoid, { autoAlpha: .72, scale: 1.18, filter: "blur(1px)" });
+          if (progress >= .84) gsap.set(filmSilenceTitle, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", letterSpacing: ".18em" });
+        } else if (meta.actionIndex === 3) {
           gsap.set(filmResponsibilityRig, { autoAlpha: 1 });
           if (progress < .12) {
             gsap.set(filmDutyFluorescents, { autoAlpha: .42, scaleX: 1 });
@@ -1544,8 +1768,11 @@
       filmProduction.style.setProperty("--split", productionSplitForCue(meta.cue));
       const usesFmCActPlate = meta.scene.id === "FM-C" && Boolean(filmActFrames[meta.actionIndex]);
       filmActSequence.style.opacity = usesFmCActPlate ? "1" : "0";
-      if (filmResponsibilityRig) filmResponsibilityRig.style.opacity = usesFmCActPlate && meta.actionIndex === 3 ? "1" : "0";
       const setFallbackOpacity = (elements, visible) => (Array.isArray(elements) ? elements : [elements]).filter(Boolean).forEach((element) => { element.style.opacity = visible ? "1" : "0"; });
+      setFallbackOpacity(filmEncounterRig, usesFmCActPlate && meta.actionIndex === 0);
+      setFallbackOpacity(filmInformationRig, usesFmCActPlate && meta.actionIndex === 1);
+      setFallbackOpacity(filmSilenceRig, usesFmCActPlate && meta.actionIndex === 2);
+      setFallbackOpacity(filmResponsibilityRig, usesFmCActPlate && meta.actionIndex === 3);
       filmActFrames.forEach((frame, index) => { frame.style.opacity = usesFmCActPlate && index === meta.actionIndex ? "1" : "0"; });
       if (usesFmCActPlate) {
         const plans = FM_C_ACT_SHOTS[meta.actionIndex];
@@ -1555,7 +1782,27 @@
         filmActShots.forEach((shot) => { shot.style.opacity = "0"; });
         if (shots[shotIndex]) shots[shotIndex].style.opacity = "1";
         [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => { element.style.opacity = "0"; });
-        if (meta.actionIndex === 3) {
+        if (meta.actionIndex === 0) {
+          setFallbackOpacity([filmEncounterSeam, ...filmEncounterBreaths], true);
+          setFallbackOpacity(filmEncounterSteps, progress >= .39);
+          setFallbackOpacity(filmEncounterShadows, progress >= .55);
+          setFallbackOpacity(filmEncounterFloorLight, progress >= .7);
+          setFallbackOpacity(filmEncounterLaw, progress >= .84);
+        } else if (meta.actionIndex === 1) {
+          setFallbackOpacity([filmInformationPath, ...filmInformationNodes], true);
+          setFallbackOpacity(filmInformationFile, progress >= .43);
+          setFallbackOpacity(filmInformationStamp, progress >= .48);
+          setFallbackOpacity(filmInformationEmptyPulses, progress >= .7);
+          setFallbackOpacity(filmInformationStall, progress >= .84);
+        } else if (meta.actionIndex === 2) {
+          setFallbackOpacity([filmSilenceLamp, filmSilenceFluorescent], true);
+          setFallbackOpacity(filmSilenceCurtain, progress >= .18);
+          setFallbackOpacity(filmSilenceForm, progress >= .29);
+          setFallbackOpacity(filmSilencePages, progress >= .56);
+          setFallbackOpacity(filmSilenceChecks, progress >= .62);
+          setFallbackOpacity(filmSilenceVoid, progress >= .69);
+          setFallbackOpacity(filmSilenceTitle, progress >= .84);
+        } else if (meta.actionIndex === 3) {
           setFallbackOpacity(filmDutyFluorescents, progress < .12);
           setFallbackOpacity(filmDutyShadows, progress < .12);
           setFallbackOpacity(filmDutyGrip, progress >= .12 && progress < .24);
