@@ -340,7 +340,7 @@
   const fmCSilenceRigMarkup = () => `<div class="fm-c-silence-rig fm-c-witness-rig" aria-hidden="true">
     <span class="silence-lamp witness-door-qing"></span><span class="silence-fluorescent witness-door-modern"></span>
     <span class="silence-curtain witness-group-qing">
-      <i class="witness-person qing-woman qing-woman-one"><img src="assets/img/films/fm-c-characters/qing-woman-maroon.webp" alt="" loading="eager" decoding="async"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
+      <i class="witness-person qing-woman qing-woman-one"><img src="assets/img/films/fm-c-characters/qing-woman-maroon-clean-mobile.png" alt="" loading="eager" decoding="async"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
       <i class="witness-person qing-woman qing-woman-two"><img src="assets/img/films/fm-c-characters/qing-woman-brown.webp" alt="" loading="eager" decoding="async"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
       <i class="witness-person qing-woman qing-woman-turn"><img src="assets/img/films/fm-c-characters/qing-woman-teal-turn.webp" alt="" loading="eager" decoding="async"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
     </span><span class="silence-form-grid witness-group-modern">

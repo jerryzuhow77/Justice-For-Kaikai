@@ -1,7 +1,7 @@
 (function(){
   "use strict";
   const version="20260824-prologue-audio-1";
-  const coreVersion="20260825-fmc-act123-motion-1-home-2-ambient-1-characters-d4191895";
+  const coreVersion="20260825-fmc-act123-motion-1-home-2-ambient-1-characters-clean-alpha-1";
   const directVersion="20260824-fmc-act4-direct-2-prologue-audio-1";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
