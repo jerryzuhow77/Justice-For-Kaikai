@@ -1,4 +1,5 @@
 name: Validate Chapter 1 closeout
+# Temporary remote self-check; this PR will not be merged.
 
 on:
   push:
