@@ -29,6 +29,7 @@ on:
       - assets/data/film-productions.js
       - docs/V8.0-animation-closeout.md
       - docs/films/**
+      - .github/workflows/validate-chapter1-closeout.yml
 
 permissions:
   contents: read
