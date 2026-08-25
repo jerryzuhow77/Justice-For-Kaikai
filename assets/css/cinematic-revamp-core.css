@@ -46,9 +46,18 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; color-scheme: dark; }
+html {
+  max-width: 100%;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+@supports not (overflow: clip) {
+  html { overflow-x: hidden; }
+}
 body {
   position: relative;
+  max-width: 100%;
   margin: 0;
   min-width: 320px;
   color: var(--yuebai);
@@ -92,7 +101,7 @@ button, a, input { outline-offset: 4px; }
 }
 .skip-link:focus { transform: none; }
 
-.page-atmosphere { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
+.page-atmosphere { position: fixed; z-index: 0; inset: 0; overflow: hidden; contain: paint; pointer-events: none; }
 .page-light { position: absolute; width: 48vw; aspect-ratio: 1; border-radius: 50%; filter: blur(90px); opacity: .12; }
 .page-light-a { left: -20vw; top: 18vh; background: var(--tianshui); }
 .page-light-b { right: -24vw; top: 52vh; background: var(--zhusha); }
@@ -462,7 +471,7 @@ body:not(.is-gated) .entry-gate { opacity: 0; visibility: hidden; pointer-events
 .copy-scene-grid.is-single { grid-template-columns: minmax(0, 1fr); }
 .copy-scene-grid.is-single .copy-scene-card { min-height: clamp(340px, 42vw, 510px); }
 .copy-scene-item { min-width: 0; overflow: hidden; border: 1px solid rgba(229, 236, 229, .14); border-radius: 16px; background: #16221f; box-shadow: 0 16px 38px rgba(0, 0, 0, .2); }
-.copy-scene-card { position: relative; width: 100%; min-height: 260px; overflow: hidden; padding: 0; border: 0; border-radius: 0; background: #16221f; text-align: left; cursor: pointer; }
+.copy-scene-card { position: relative; width: 100%; min-height: 260px; overflow: hidden; contain: paint; padding: 0; border: 0; border-radius: 0; background: #16221f; text-align: left; cursor: pointer; }
 .copy-scene-poster { position: absolute; inset: 0; background: var(--poster, radial-gradient(circle at 50% 45%, #675a3f, #17130f 72%)) center / cover no-repeat; filter: saturate(.6) brightness(.7); transition: transform .55s ease, filter .35s ease; }
 .copy-scene-card:hover .copy-scene-poster { transform: scale(1.055); filter: saturate(.76) brightness(.82); }
 .copy-scene-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 15%, rgba(6, 12, 11, .92)); }
@@ -573,7 +582,7 @@ footer { padding-block: 2rem; border-top: 1px solid var(--line); background: rgb
 .cinema-audio-bar[data-available="false"] { opacity: .58; }
 .cinema-audio-bar button:disabled { cursor: default; opacity: .6; }
 .cinema-stage { position: relative; max-width: 1500px; margin: auto; border: 1px solid rgba(229, 236, 229, .18); border-radius: 20px; background: #111817; box-shadow: 0 36px 110px rgba(0,0,0,.68); overflow: hidden; isolation: isolate; }
-.cinema-visual { position: relative; aspect-ratio: 16 / 8.6; min-height: 380px; overflow: hidden; background: #101716; isolation: isolate; }
+.cinema-visual { position: relative; aspect-ratio: 16 / 8.6; min-height: 380px; overflow: hidden; contain: paint; background: #101716; isolation: isolate; }
 .cinema-bg, .cinema-depth { position: absolute; inset: -5%; background-image: var(--cinema-image, none); background-repeat: no-repeat; background-color: #111817; }
 .cinema-bg { z-index: -5; background-position: 50% 50%; background-size: cover; filter: saturate(.66) contrast(1.05) brightness(.73); transform-origin: center; }
 .cinema-bg-b { opacity: 0; }
@@ -986,6 +995,9 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 /* 第三幕角色骨架：以清代婦女與現代護士取代無特徵的紅／藍人形。 */
 .fm-c-witness-rig .witness-group-qing .witness-person,.fm-c-witness-rig .witness-group-modern .witness-person{overflow:visible;border:0;border-radius:0;background:none;box-shadow:none;will-change:transform,opacity;transform-style:preserve-3d}
 .fm-c-witness-rig .witness-person>img{position:absolute;z-index:12;left:50%;bottom:0;display:block;width:auto;max-width:none;height:112%;object-fit:contain;filter:brightness(.88) saturate(.78) contrast(1.04) drop-shadow(0 12px 12px rgba(0,0,0,.58));transform:translateX(-50%);transform-origin:50% 72%;backface-visibility:hidden;will-change:transform,filter,opacity}
+.fm-c-witness-rig .witness-fabric-motion{position:absolute;z-index:13;display:block;pointer-events:none;opacity:0;mix-blend-mode:screen;filter:blur(.15px) drop-shadow(0 2px 3px rgba(0,0,0,.34));will-change:transform,opacity}
+.fm-c-witness-rig .witness-fabric-sleeve{left:30%;top:35%;width:27%;height:16%;border-left:1px solid rgba(157,184,174,.32);border-radius:72% 24% 66% 32%;background:linear-gradient(112deg,rgba(39,74,69,.12),rgba(111,145,133,.44) 52%,rgba(19,40,38,.06));clip-path:polygon(20% 0,100% 12%,78% 100%,0 76%);transform-origin:86% 38%}
+.fm-c-witness-rig .witness-fabric-arm{left:35%;top:43%;width:12%;height:25%;border-left:1px solid rgba(220,232,226,.42);border-radius:44% 56% 68% 32%;background:linear-gradient(180deg,rgba(218,231,225,.4),rgba(111,143,139,.3) 58%,rgba(30,64,62,.05));clip-path:polygon(15% 0,100% 6%,72% 100%,0 88%);transform-origin:62% 6%}
 .fm-c-silence-rig{z-index:20}
 .fm-c-witness-rig .witness-person::before,.fm-c-witness-rig .witness-person::after,.fm-c-witness-rig .witness-person>.witness-head,.fm-c-witness-rig .witness-person>.witness-sleeve,.fm-c-witness-rig .witness-person>.witness-skirt,.fm-c-witness-rig .witness-person>.witness-arm,.fm-c-witness-rig .witness-person>.nurse-apron{display:none!important}
 .fm-c-witness-rig .witness-person:has(>img)::before,.fm-c-witness-rig .witness-person:has(>img)::after,.fm-c-witness-rig .witness-person:has(>img)>.witness-head,.fm-c-witness-rig .witness-person:has(>img)>.witness-sleeve,.fm-c-witness-rig .witness-person:has(>img)>.witness-skirt,.fm-c-witness-rig .witness-person:has(>img)>.witness-arm,.fm-c-witness-rig .witness-person:has(>img)>.nurse-apron{display:none}

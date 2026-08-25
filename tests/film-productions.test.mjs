@@ -67,6 +67,18 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /\.fm123-event-rig/);
   assert.match(css, /\.fm123-dossier-sheet/);
   assert.match(css, /\.fm123-empty-seat/);
+  assert.match(app, /witness-fabric-motion witness-fabric-sleeve/);
+  assert.match(app, /witness-fabric-motion witness-fabric-arm/);
+  assert.match(app, /if \(filmQingSleeve\) timeline\.to\(filmQingSleeve/);
+  assert.match(app, /if \(filmNurseArm\) timeline\.to\(filmNurseArm/);
+  assert.match(app, /if \(filmFabricMotions\.length\) timeline\.fromTo\(filmFabricMotions/);
+  assert.doesNotMatch(app, /filmWitnessLimbs/);
+  assert.doesNotMatch(app, /timeline\.to\(\$\("\.qing-woman-turn \.witness-sleeve"/);
+  assert.doesNotMatch(app, /timeline\.to\(\$\("\.modern-nurse-turn \.witness-arm"/);
+  assert.match(css, /html\s*\{[^}]*overflow-x:\s*clip;/s);
+  assert.match(css, /\.page-atmosphere\s*\{[^}]*contain:\s*paint;/s);
+  assert.match(css, /\.copy-scene-card\s*\{[^}]*contain:\s*paint;/s);
+  assert.match(css, /\.cinema-visual\s*\{[^}]*contain:\s*paint;/s);
 });
 
 test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async () => {
@@ -167,7 +179,7 @@ test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async ()
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(html, /assets\/vendor\/gsap\/MotionPathPlugin\.min\.js/);
-  assert.match(html, /rev=20260825-fm123-event-motion-3/);
+  assert.match(html, /rev=20260826-fm123-runtime-clean-1/);
   assert.match(css, /\.fm-c-five-act-sequence/);
   assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
   assert.match(css, /\.fm-c-act-shot\{/);

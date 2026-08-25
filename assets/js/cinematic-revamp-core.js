@@ -342,10 +342,10 @@
     <span class="silence-curtain witness-group-qing">
       <i class="witness-person qing-woman qing-woman-one has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-maroon-clean-mobile.png" alt="" loading="eager" decoding="async"></i>
       <i class="witness-person qing-woman qing-woman-two has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-brown.webp" alt="" loading="eager" decoding="async"></i>
-      <i class="witness-person qing-woman qing-woman-turn has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-teal-turn.webp" alt="" loading="eager" decoding="async"></i>
+      <i class="witness-person qing-woman qing-woman-turn has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-teal-turn.webp" alt="" loading="eager" decoding="async"><span class="witness-fabric-motion witness-fabric-sleeve" aria-hidden="true"></span></i>
     </span><span class="silence-form-grid witness-group-modern">
       <i class="witness-person modern-nurse modern-nurse-walk has-character-art"><img src="assets/img/films/fm-c-characters/nurse-cart.webp" alt="" loading="eager" decoding="async"></i>
-      <i class="witness-person modern-nurse modern-nurse-turn has-character-art"><img src="assets/img/films/fm-c-characters/nurse-turn.webp" alt="" loading="eager" decoding="async"></i>
+      <i class="witness-person modern-nurse modern-nurse-turn has-character-art"><img src="assets/img/films/fm-c-characters/nurse-turn.webp" alt="" loading="eager" decoding="async"><span class="witness-fabric-motion witness-fabric-arm" aria-hidden="true"></span></i>
     </span>
     <i class="silence-page silence-page-one witness-cart"></i><i class="silence-page silence-page-two witness-chair"></i><i class="silence-page silence-page-three witness-rail"></i>
     <b class="silence-check silence-check-one witness-hand witness-hand-qing"></b><b class="silence-check silence-check-two witness-hand witness-hand-modern"></b><b class="silence-check silence-check-three witness-look witness-look-qing"></b><b class="silence-check silence-check-four witness-look witness-look-modern"></b>
@@ -436,7 +436,9 @@
   const filmQingWomen = $$(".qing-woman", filmSilenceRig);
   const filmNurses = $$(".modern-nurse", filmSilenceRig);
   const filmWitnessHeads = $$(".witness-head", filmSilenceRig);
-  const filmWitnessLimbs = $$(".witness-sleeve,.witness-arm", filmSilenceRig);
+  const filmQingSleeve = $(".witness-fabric-sleeve", filmSilenceRig);
+  const filmNurseArm = $(".witness-fabric-arm", filmSilenceRig);
+  const filmFabricMotions = [filmQingSleeve, filmNurseArm].filter(Boolean);
   const filmWitnessImages = $$(".witness-person img", filmSilenceRig);
   const filmSilencePages = $$(".silence-page", filmSilenceRig);
   const filmSilenceChecks = $$(".silence-check", filmSilenceRig);
@@ -1327,7 +1329,7 @@
     timeline.set([filmEncounterSeam, filmEncounterFloorLight, ...filmEncounterBreaths, ...filmEncounterShadows, ...filmEncounterSteps, filmEncounterLaw, filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath" }, at);
     timeline.set(filmInformationPath, { autoAlpha: 0, strokeDasharray: 980, strokeDashoffset: 980 }, at);
     timeline.set([filmInformationPacket, ...filmInformationNodes, filmInformationFile, filmInformationStamp, ...filmInformationEmptyPulses, filmInformationStall], { autoAlpha: 0, x: 0, y: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, clearProps: "filter,clipPath,offsetDistance" }, at);
-    timeline.set([filmSilenceRig, filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses, ...filmWitnessHeads, ...filmWitnessLimbs, ...filmWitnessImages, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath,letterSpacing,transformOrigin" }, at);
+    timeline.set([filmSilenceRig, filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses, ...filmWitnessHeads, ...filmFabricMotions, ...filmWitnessImages, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath,letterSpacing,transformOrigin" }, at);
     timeline.set(filmResponsibilityRig, { autoAlpha: 0 }, at);
     timeline.set(filmDutyThread, { autoAlpha: 0, scaleX: .35, xPercent: 0, clearProps: "filter" }, at);
     timeline.set(filmDutyPapers, { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1 }, at);
@@ -1627,14 +1629,14 @@
           timeline.to(filmQingWomen.slice(0, 2), { xPercent: 96, autoAlpha: .32, duration: duration * .22, stagger: duration * .035, ease: "none" }, at + duration * .39);
           timeline.to(filmQingWomen[2], { xPercent: 38, duration: duration * .11, ease: "power1.out" }, at + duration * .42);
           timeline.to($(".qing-woman-turn img", filmSilenceRig), { rotationY: -9, xPercent: -3, scale: 1.035, duration: .82, ease: "power3.inOut" }, at + duration * .52);
-          timeline.to($(".qing-woman-turn .witness-sleeve", filmSilenceRig), { rotation: -18, duration: .72, ease: "power2.out" }, at + duration * .55);
+          if (filmQingSleeve) timeline.to(filmQingSleeve, { autoAlpha: .38, rotation: -18, xPercent: 5, duration: .72, ease: "power2.out" }, at + duration * .55);
           timeline.fromTo(filmNurses, { autoAlpha: 0, xPercent: 38, yPercent: 2 }, { autoAlpha: .96, xPercent: 0, yPercent: 0, duration: duration * .17, stagger: duration * .04, ease: "power2.out" }, at + duration * .34);
           timeline.to(filmNurses[0], { xPercent: -92, autoAlpha: .34, duration: duration * .21, ease: "none" }, at + duration * .5);
           timeline.to(filmNurses[1], { xPercent: -34, duration: duration * .1, ease: "power1.out" }, at + duration * .51);
           timeline.to($(".modern-nurse-turn img", filmSilenceRig), { rotationY: 9, xPercent: 3, scale: 1.035, duration: .82, ease: "power3.inOut" }, at + duration * .6);
-          timeline.to($(".modern-nurse-turn .witness-arm", filmSilenceRig), { rotation: 14, duration: .72, ease: "power2.out" }, at + duration * .62);
+          if (filmNurseArm) timeline.to(filmNurseArm, { autoAlpha: .34, rotation: 14, xPercent: -5, duration: .72, ease: "power2.out" }, at + duration * .62);
           timeline.to([...filmQingWomen, ...filmNurses], { yPercent: -1.8, duration: .46, repeat: 3, yoyo: true, stagger: .08, ease: "sine.inOut" }, at + duration * .31);
-          timeline.to(filmWitnessLimbs, { rotation: (index) => index % 2 ? 7 : -7, duration: .38, repeat: 5, yoyo: true, stagger: .05, ease: "sine.inOut" }, at + duration * .32);
+          if (filmFabricMotions.length) timeline.fromTo(filmFabricMotions, { autoAlpha: 0, rotation: 0 }, { autoAlpha: .2, rotation: (index) => index % 2 ? 5 : -5, duration: .38, repeat: 5, yoyo: true, stagger: .05, ease: "sine.inOut", immediateRender: false }, at + duration * .32);
           timeline.to(filmSilenceCurtain, { xPercent: 7, scaleX: .92, transformOrigin: "0% 50%", duration: duration * .13, ease: "power2.inOut" }, at + duration * .58);
           timeline.fromTo(filmSilencePages, { autoAlpha: 0, yPercent: 24, rotationY: -68, rotation: -3 }, { autoAlpha: .78, yPercent: 0, rotationY: 0, rotation: 0, duration: .72, stagger: duration * .04, ease: "power3.out" }, at + duration * .51);
           timeline.call(() => playFmCFoley("step"), null, at + duration * .38);
@@ -1824,7 +1826,7 @@
       gsap.set([filmEncounterRig, filmInformationRig, filmSilenceRig, filmFinaleRig], { autoAlpha: 0 });
       gsap.set([filmEncounterSeam, filmEncounterFloorLight, ...filmEncounterBreaths, ...filmEncounterShadows, ...filmEncounterSteps, filmEncounterLaw, filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 0, clearProps: "transform,filter,clipPath" });
       gsap.set([filmInformationPath, filmInformationPacket, ...filmInformationNodes, filmInformationFile, filmInformationStamp, ...filmInformationEmptyPulses, filmInformationStall], { autoAlpha: 0, clearProps: "transform,filter,clipPath,strokeDashoffset" });
-      gsap.set([filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses, ...filmWitnessHeads, ...filmWitnessLimbs, ...filmWitnessImages, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,transformOrigin" });
+      gsap.set([filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses, ...filmWitnessHeads, ...filmFabricMotions, ...filmWitnessImages, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,transformOrigin" });
       gsap.set(filmResponsibilityRig, { autoAlpha: 0 });
       gsap.set([filmDutyThread, ...filmDutyPapers, ...filmDutyHandles, ...filmDutyLights, ...filmDutyBreaths], { autoAlpha: 0, clearProps: "transform,filter" });
       gsap.set([...filmDutyFluorescents, ...filmDutyShadows, filmDutyGrip, filmDutyRelease, ...filmDutyThreadTransfers, ...filmDutyTransferPaths, ...filmDutyStamps, ...filmDutyAdults, ...filmDutyDoorLeaves, filmDutyTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,strokeDashoffset" });
