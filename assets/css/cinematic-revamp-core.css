@@ -967,6 +967,8 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
 /* 第三幕角色骨架：以清代婦女與現代護士取代無特徵的紅／藍人形。 */
 .fm-c-witness-rig .witness-group-qing .witness-person,.fm-c-witness-rig .witness-group-modern .witness-person{overflow:visible;border:0;border-radius:0;background:none;box-shadow:none;will-change:transform,opacity;transform-style:preserve-3d}
 .fm-c-witness-rig .witness-person>img{position:absolute;z-index:12;left:50%;bottom:0;display:block;width:auto;max-width:none;height:112%;object-fit:contain;filter:brightness(.88) saturate(.78) contrast(1.04) drop-shadow(0 12px 12px rgba(0,0,0,.58));transform:translateX(-50%);transform-origin:50% 72%;backface-visibility:hidden;will-change:transform,filter,opacity}
+.fm-c-silence-rig{z-index:20}
+.fm-c-witness-rig .witness-person::before,.fm-c-witness-rig .witness-person::after,.fm-c-witness-rig .witness-person>.witness-head,.fm-c-witness-rig .witness-person>.witness-sleeve,.fm-c-witness-rig .witness-person>.witness-skirt,.fm-c-witness-rig .witness-person>.witness-arm,.fm-c-witness-rig .witness-person>.nurse-apron{display:none!important}
 .fm-c-witness-rig .witness-person:has(>img)::before,.fm-c-witness-rig .witness-person:has(>img)::after,.fm-c-witness-rig .witness-person:has(>img)>.witness-head,.fm-c-witness-rig .witness-person:has(>img)>.witness-sleeve,.fm-c-witness-rig .witness-person:has(>img)>.witness-skirt,.fm-c-witness-rig .witness-person:has(>img)>.witness-arm,.fm-c-witness-rig .witness-person:has(>img)>.nurse-apron{display:none}
 .fm-c-witness-rig .qing-woman{width:24%!important;height:76%!important}
 .fm-c-witness-rig .modern-nurse{width:31%!important;height:78%!important}

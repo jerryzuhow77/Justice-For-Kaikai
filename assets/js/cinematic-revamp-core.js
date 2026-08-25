@@ -1523,7 +1523,7 @@
           timeline.fromTo(filmSilenceCurtain, { autoAlpha: 0, xPercent: -24, clipPath: "inset(0 100% 0 0)" }, { autoAlpha: .72, xPercent: 0, clipPath: "inset(0 0% 0 0)", duration: duration * .2, ease: "power2.inOut" }, at + duration * .18);
           timeline.fromTo(filmSilenceForm, { autoAlpha: 0, xPercent: 24, clipPath: "inset(0 0 0 100%)" }, { autoAlpha: .72, xPercent: 0, clipPath: "inset(0 0 0 0%)", duration: duration * .2, ease: "power2.inOut" }, at + duration * .29);
           timeline.fromTo(filmQingWomen, { autoAlpha: 0, xPercent: -34, yPercent: 3 }, { autoAlpha: .94, xPercent: 0, yPercent: 0, duration: duration * .18, stagger: duration * .035, ease: "power2.out" }, at + duration * .22);
-          timeline.fromTo(filmWitnessImages, { filter: "brightness(.55) saturate(.62)", scale: .96 }, { filter: "brightness(1.08) saturate(.88)", scale: 1, duration: 1.2, stagger: .12, ease: "power2.out" }, at + duration * .23);
+          timeline.fromTo(filmWitnessImages, { autoAlpha: 0, filter: "brightness(.55) saturate(.62)", scale: .96 }, { autoAlpha: 1, filter: "brightness(1.08) saturate(.88)", scale: 1, duration: 1.2, stagger: .12, ease: "power2.out" }, at + duration * .23);
           timeline.to(filmQingWomen.slice(0, 2), { xPercent: 96, autoAlpha: .32, duration: duration * .22, stagger: duration * .035, ease: "none" }, at + duration * .39);
           timeline.to(filmQingWomen[2], { xPercent: 38, duration: duration * .11, ease: "power1.out" }, at + duration * .42);
           timeline.to($(".qing-woman-turn img", filmSilenceRig), { rotationY: -9, xPercent: -3, scale: 1.035, duration: .82, ease: "power3.inOut" }, at + duration * .52);
@@ -1542,7 +1542,8 @@
           timeline.fromTo(filmSilenceChecks, { autoAlpha: 0, scale: .55, rotation: -10 }, { autoAlpha: .88, scale: 1, rotation: 0, duration: .38, stagger: duration * .055, ease: "back.out(1.6)" }, at + duration * .58);
           timeline.to(filmSilenceChecks.slice(2), { xPercent: (index) => index === 0 ? 16 : -16, rotation: (index) => index === 0 ? 9 : -9, duration: .65, ease: "power2.out" }, at + duration * .67);
           timeline.fromTo(filmSilenceVoid, { autoAlpha: 0, scaleX: .35, filter: "blur(10px)" }, { autoAlpha: .7, scaleX: 1.18, filter: "blur(1px)", duration: duration * .15, ease: "power2.inOut" }, at + duration * .72);
-          timeline.to([...filmSilencePages, ...filmSilenceChecks, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses], { autoAlpha: .24, filter: "brightness(.68)", duration: 1, ease: "power2.out" }, at + duration * .83);
+          timeline.to([...filmSilencePages, ...filmSilenceChecks, filmSilenceCurtain, filmSilenceForm], { autoAlpha: .24, filter: "brightness(.68)", duration: 1, ease: "power2.out" }, at + duration * .83);
+          timeline.to([...filmQingWomen, ...filmNurses], { autoAlpha: .68, filter: "brightness(.82)", duration: 1, ease: "power2.out" }, at + duration * .83);
           timeline.fromTo(filmSilenceTitle, { autoAlpha: 0, yPercent: 18, clipPath: "inset(0 50% 0 50%)", letterSpacing: ".28em" }, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", letterSpacing: ".18em", duration: .9, ease: "power3.out" }, at + duration * .84);
           lineDraw(.9, duration * .7, 120);
           break;
@@ -1768,8 +1769,9 @@
           gsap.set([filmSilenceLamp, filmSilenceFluorescent], { autoAlpha: .52 });
           if (progress >= .18) gsap.set(filmSilenceCurtain, { autoAlpha: progress >= .83 ? .24 : .68, xPercent: progress >= .45 ? 28 : 0 });
           if (progress >= .29) gsap.set(filmSilenceForm, { autoAlpha: progress >= .83 ? .24 : .68, xPercent: 0 });
-          if (progress >= .22) gsap.set(filmQingWomen, { autoAlpha: progress >= .83 ? .24 : .92, xPercent: (index) => index < 2 && progress >= .56 ? 96 : index === 2 && progress >= .42 ? 38 : 0 });
-          if (progress >= .34) gsap.set(filmNurses, { autoAlpha: progress >= .83 ? .24 : .94, xPercent: (index) => index === 0 && progress >= .68 ? -92 : index === 1 && progress >= .51 ? -34 : 0 });
+          if (progress >= .22) gsap.set(filmWitnessImages, { autoAlpha: 1, filter: progress >= .83 ? "brightness(.82)" : "brightness(1.08) saturate(.88)" });
+          if (progress >= .22) gsap.set(filmQingWomen, { autoAlpha: progress >= .83 ? .68 : .92, xPercent: (index) => index < 2 && progress >= .56 ? 96 : index === 2 && progress >= .42 ? 38 : 0 });
+          if (progress >= .34) gsap.set(filmNurses, { autoAlpha: progress >= .83 ? .68 : .94, xPercent: (index) => index === 0 && progress >= .68 ? -92 : index === 1 && progress >= .51 ? -34 : 0 });
           if (progress >= .52) gsap.set($(".qing-woman-turn img", filmSilenceRig), { rotationY: -9, xPercent: -3, scale: 1.035 });
           if (progress >= .6) gsap.set($(".modern-nurse-turn img", filmSilenceRig), { rotationY: 9, xPercent: 3, scale: 1.035 });
           if (progress >= .56) gsap.set(filmSilencePages, { autoAlpha: progress >= .83 ? .24 : .72, yPercent: 0, rotationY: 0 });
