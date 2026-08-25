@@ -16,7 +16,7 @@
   const SCORE_TRACKS = {
     "FM-A": { src: "public/media/film-stamped-in-marble.m4a", label: "Stamped in Marble｜土掩埋不住的清朝民間傳說" },
     "FM-D": { src: "public/media/film-late-question.m4a", label: "來不及的追問｜無法再相見▪︎天涯各自分" },
-    "FM-B": { src: "public/media/film-one-year-old.m4a", label: "他才一歲多｜青絲變白髮" },
+    "FM-B": { src: "public/media/film-one-year-old-extended.m4a", label: "他才一歲多｜青絲變白髮" },
     "FM-C": { src: "public/media/film-who-opens-door.m4a", label: "誰肯先開門｜兩個朝代▪︎不同世界▪︎同一扇門" },
     "00": { src: "public/media/chapter-00.m4a", label: "序問｜石階雨滴" },
     ...Object.fromEntries(Array.from({ length: 6 }, (_, index) => {
@@ -370,6 +370,45 @@
   filmActSequence.setAttribute("aria-hidden", "true");
   filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}${fmCActRigMarkup(index, plate)}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
   filmProduction?.prepend(filmActSequence);
+  const filmEventRig = document.createElement("div");
+  filmEventRig.className = "fm123-event-rig";
+  filmEventRig.setAttribute("aria-hidden", "true");
+  filmEventRig.innerHTML = `<section class="fm123-event fm123-event-a">
+    <div class="fm123-soil">${Array.from({ length: 12 }, (_, index) => `<i style="--soil:${index}"></i>`).join("")}</div>
+    <span class="fm123-chair-reveal"></span><span class="fm123-red-hem"></span>
+    <span class="fm123-paper-sheet"></span><span class="fm123-ink-bleed"></span>
+  </section><section class="fm123-event fm123-event-d">
+    <span class="fm123-bundle"><i></i></span><span class="fm123-hand fm123-hand-left"></span><span class="fm123-hand fm123-hand-right"></span>
+    <span class="fm123-handoff-thread"></span><span class="fm123-door-gap"></span>
+    <span class="fm123-corridor-lamps">${Array.from({ length: 6 }, () => "<i></i>").join("")}</span><span class="fm123-empty-handle"></span>
+  </section><section class="fm123-event fm123-event-b">
+    <svg class="fm123-time-thread" viewBox="0 0 1000 500" preserveAspectRatio="none"><path d="M32 352 C205 330 226 118 390 170 C520 212 542 374 690 310 C812 258 867 122 968 152" pathLength="1000"></path></svg>
+    <span class="fm123-passers"><i></i><i></i><i></i></span><span class="fm123-curtain-edge"></span><span class="fm123-dossier-sheet"></span>
+    <span class="fm123-witnesses"><i></i><i></i><i></i><i></i></span><span class="fm123-hair-wash"></span><span class="fm123-empty-seat"></span>
+  </section>`;
+  filmProduction?.prepend(filmEventRig);
+  const filmEventGroups = $$(".fm123-event", filmEventRig);
+  const filmEventA = $(".fm123-event-a", filmEventRig);
+  const filmSoilItems = $$(".fm123-soil i", filmEventRig);
+  const filmChairReveal = $(".fm123-chair-reveal", filmEventRig);
+  const filmRedHem = $(".fm123-red-hem", filmEventRig);
+  const filmPaperSheet = $(".fm123-paper-sheet", filmEventRig);
+  const filmInkBleed = $(".fm123-ink-bleed", filmEventRig);
+  const filmEventD = $(".fm123-event-d", filmEventRig);
+  const filmBundle = $(".fm123-bundle", filmEventRig);
+  const filmHandoffHands = $$(".fm123-hand", filmEventRig);
+  const filmHandoffThread = $(".fm123-handoff-thread", filmEventRig);
+  const filmDoorGap = $(".fm123-door-gap", filmEventRig);
+  const filmCorridorLamps = $$(".fm123-corridor-lamps i", filmEventRig);
+  const filmEmptyHandle = $(".fm123-empty-handle", filmEventRig);
+  const filmEventB = $(".fm123-event-b", filmEventRig);
+  const filmTimeThread = $(".fm123-time-thread path", filmEventRig);
+  const filmPassers = $$(".fm123-passers i", filmEventRig);
+  const filmCurtainEdge = $(".fm123-curtain-edge", filmEventRig);
+  const filmDossierSheet = $(".fm123-dossier-sheet", filmEventRig);
+  const filmWitnesses = $$(".fm123-witnesses i", filmEventRig);
+  const filmHairWash = $(".fm123-hair-wash", filmEventRig);
+  const filmEmptySeat = $(".fm123-empty-seat", filmEventRig);
   const filmActFrames = $$(".fm-c-act-frame", filmActSequence);
   const filmActShots = $$(".fm-c-act-shot", filmActSequence);
   const filmEncounterRig = $(".fm-c-encounter-rig", filmActSequence);
@@ -1275,6 +1314,9 @@
     timeline.set(filmSeparatedPalms, { autoAlpha: 0 }, at);
     timeline.set([filmQingChild, filmModernChild], { xPercent: 0, y: 0, scale: 1 }, at);
     timeline.set(filmTimeRift, { scaleY: .82, autoAlpha: 0 }, at);
+    timeline.set([filmEventRig, ...filmEventGroups], { autoAlpha: 0 }, at);
+    timeline.set([...filmSoilItems, filmChairReveal, filmRedHem, filmPaperSheet, filmInkBleed, filmBundle, ...filmHandoffHands, filmHandoffThread, filmDoorGap, ...filmCorridorLamps, filmEmptyHandle, ...filmPassers, filmCurtainEdge, filmDossierSheet, ...filmWitnesses, filmHairWash, filmEmptySeat], { autoAlpha: 0, x: 0, y: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath,backgroundColor,motionPath" }, at);
+    timeline.set(filmTimeThread, { autoAlpha: 0, strokeDasharray: 1000, strokeDashoffset: 1000 }, at);
     timeline.set(filmActSequence, { autoAlpha: 0 }, at);
     timeline.set(filmActFrames, { autoAlpha: 0, filter: "brightness(.72)" }, at);
     timeline.set(filmActShots, { autoAlpha: 0, clipPath: "inset(0 0 0 0)", zIndex: 0 }, at);
@@ -1365,7 +1407,7 @@
     const duration = actInfo.end - actInfo.start;
     const view = productionView(actInfo);
     const travel = Math.min(2.2, duration * .16);
-    const backgroundDuration = actInfo.effect === "white-hair" ? 9.5 : duration;
+    const backgroundDuration = actInfo.effect === "white-hair" ? 15.5 : duration;
     const usesFmCActPlate = meta.scene.id === "FM-C" && Boolean(filmActFrames[meta.actionIndex]);
     timeline.call(() => setProductionState(meta), null, at);
     resetProductionLayers(timeline, at);
@@ -1389,21 +1431,45 @@
     };
     const doorLeft = $("i", door);
     const doorRight = $("b", door);
+    const eventGroup = meta.scene.id === "FM-A" ? filmEventA : meta.scene.id === "FM-D" ? filmEventD : meta.scene.id === "FM-B" ? filmEventB : null;
+    if (eventGroup) timeline.set([filmEventRig, eventGroup], { autoAlpha: 1 }, at);
 
     switch (actInfo.effect) {
       case "mud-thread":
-      case "bundle":
-        lineDraw(.5, duration * .78, actInfo.effect === "bundle" ? 230 : 0);
+        lineDraw(.5, duration * .78, 0);
         timeline.fromTo(mist, { autoAlpha: .08, xPercent: -5 }, { autoAlpha: .38, xPercent: 4, duration, ease: "sine.inOut" }, at);
+        timeline.fromTo(filmChairReveal, { autoAlpha: 0, scale: .7, clipPath: "inset(68% 18% 0 18%)" }, { autoAlpha: .42, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: duration * .72, ease: "power1.inOut", immediateRender: false }, at + duration * .18);
+        filmSoilItems.forEach((flake, index) => {
+          const flakeAt = at + .3 + index * .32;
+          const flakeDuration = 4.6 + index % 4 * .55;
+          const direction = index % 2 === 0 ? 1 : -1;
+          const from = { autoAlpha: 0, x: direction * (18 + index * 3), y: -70 - index * 4, rotation: direction * -18, scale: .72 + index * .018 };
+          const to = { autoAlpha: .46, rotation: direction * (38 + index * 4), scale: 1, duration: flakeDuration, ease: "sine.in", immediateRender: false };
+          if (window.MotionPathPlugin) to.motionPath = { path: [{ x: direction * -8, y: 10 }, { x: direction * 18, y: 78 }, { x: direction * -5, y: 164 }], curviness: 1.35 };
+          else Object.assign(to, { x: direction * -5, y: 164 });
+          timeline.fromTo(flake, from, to, flakeAt);
+          timeline.to(flake, { autoAlpha: .12, duration: .8, ease: "power1.out" }, flakeAt + flakeDuration - .4);
+        });
+        break;
+      case "bundle":
+        lineDraw(.5, duration * .78, 230);
+        timeline.fromTo(mist, { autoAlpha: .08, xPercent: -5 }, { autoAlpha: .28, xPercent: 3, duration, ease: "sine.inOut" }, at);
+        timeline.fromTo(filmBundle, { autoAlpha: 0, xPercent: -38, rotation: -7, scale: .9 }, { autoAlpha: .64, xPercent: 0, rotation: 0, scale: 1, duration: duration * .34, ease: "power2.out", immediateRender: false }, at + .4);
+        timeline.fromTo(filmHandoffHands[0], { autoAlpha: 0, xPercent: -42 }, { autoAlpha: .46, xPercent: -12, duration: duration * .28, ease: "power2.out", immediateRender: false }, at + duration * .34);
+        timeline.fromTo(filmHandoffThread, { autoAlpha: 0, scaleX: .12 }, { autoAlpha: .58, scaleX: .78, duration: duration * .34, transformOrigin: "left center", ease: "power1.inOut", immediateRender: false }, at + duration * .46);
         break;
       case "night-door":
         timeline.set(door, { autoAlpha: .68 }, at + 1.2);
-        timeline.to(doorLeft, { xPercent: -82, duration: duration * .56, ease: "power1.inOut" }, at + 2);
-        timeline.to(doorRight, { xPercent: 82, duration: duration * .56, ease: "power1.inOut" }, at + 2);
+        timeline.fromTo(door, { xPercent: -.35 }, { xPercent: .35, duration: .24, repeat: 5, yoyo: true, ease: "sine.inOut", immediateRender: false }, at + 1.6);
+        timeline.to(doorLeft, { xPercent: -82, duration: duration * .52, ease: "power1.inOut" }, at + 3.2);
+        timeline.to(doorRight, { xPercent: 82, duration: duration * .52, ease: "power1.inOut" }, at + 3.2);
+        timeline.fromTo(filmRedHem, { autoAlpha: 0, xPercent: -64, scaleY: .82 }, { autoAlpha: .52, xPercent: 0, scaleY: 1, duration: duration * .28, ease: "power2.out", immediateRender: false }, at + duration * .32);
         timeline.fromTo(filmCurtain, { autoAlpha: 0, scaleY: .82, skewX: -2 }, { autoAlpha: .72, scaleY: 1.06, skewX: 2, duration: duration * .44, ease: "sine.inOut" }, at + duration * .42);
         break;
       case "match-cut":
         timeline.fromTo(filmCurtain, { autoAlpha: .86, clipPath: "inset(0 48% 0 48%)" }, { autoAlpha: .1, clipPath: "inset(0 0% 0 0%)", duration: Math.min(2.2, duration * .3), ease: "power2.inOut" }, at);
+        timeline.fromTo(filmRedHem, { autoAlpha: .62, clipPath: "inset(0 0 0 0)" }, { autoAlpha: .2, clipPath: "inset(0 0 78% 0)", duration: duration * .38, ease: "power2.inOut", immediateRender: false }, at);
+        timeline.fromTo(filmPaperSheet, { autoAlpha: 0, scaleY: .08, yPercent: 36 }, { autoAlpha: .46, scaleY: 1, yPercent: 0, duration: duration * .58, transformOrigin: "center bottom", ease: "power2.inOut", immediateRender: false }, at + duration * .22);
         timeline.to([bgA, bgB], { filter: "saturate(.62) contrast(1.04) brightness(.8)", duration: duration * .72, ease: "sine.inOut" }, at + .4);
         timeline.set(door, { autoAlpha: .4 }, at + duration * .48);
         timeline.to(doorLeft, { xPercent: -96, duration: 2.2, ease: "power2.inOut" }, at + duration * .55);
@@ -1411,10 +1477,15 @@
         break;
       case "verdict":
         lineDraw(1.2, duration * .7, 0);
-        timeline.fromTo(filmStamp, { autoAlpha: 0, y: -18, scale: 1.18, rotation: -7 }, { autoAlpha: .86, y: 0, scale: 1, rotation: -3, duration: .34, ease: "back.out(1.7)" }, at + duration * .28);
+        timeline.fromTo(filmPaperSheet, { autoAlpha: 0, scale: .94, yPercent: 4 }, { autoAlpha: .52, scale: 1, yPercent: 0, duration: 1.4, ease: "power2.out", immediateRender: false }, at + .4);
+        timeline.fromTo(filmStamp, { autoAlpha: 0, y: -22, scaleX: 1.14, scaleY: 1.3, rotation: -7 }, { autoAlpha: .72, y: 0, scaleX: 1, scaleY: .92, rotation: -3, duration: .28, ease: "power3.in" }, at + duration * .28);
+        timeline.to(filmStamp, { scaleY: 1, duration: .18, ease: "power2.out" }, at + duration * .28 + .28);
+        timeline.fromTo(filmInkBleed, { autoAlpha: 0, scale: .36, filter: "blur(0px)" }, { autoAlpha: .34, scale: 1.5, filter: "blur(7px)", duration: 2.8, ease: "sine.out", immediateRender: false }, at + duration * .28 + .2);
+        timeline.fromTo(filmPaperSheet, { xPercent: -.18 }, { xPercent: .18, duration: .08, repeat: 3, yoyo: true, ease: "none", immediateRender: false }, at + duration * .28);
         timeline.to(focusLight, { xPercent: 28, autoAlpha: .34, duration: travel, ease: "sine.inOut" }, at);
         break;
       case "safe-flash":
+        timeline.set(filmInkBleed, { autoAlpha: .16, scale: 1.25 }, at);
         filmFlashItems.forEach((flash, index) => {
           const first = at + 4 + index * 1.28;
           timeline.fromTo(flash, { autoAlpha: 0 }, { autoAlpha: .16, duration: .08, repeat: 1, yoyo: true, ease: "none" }, first);
@@ -1423,43 +1494,72 @@
         break;
       case "phone-door":
         timeline.set(door, { autoAlpha: .46 }, at + 1);
+        timeline.fromTo(filmDoorGap, { autoAlpha: 0, scaleX: .05 }, { autoAlpha: .54, scaleX: .2, duration: 2.4, transformOrigin: "center", ease: "sine.inOut", immediateRender: false }, at + duration * .38);
+        timeline.fromTo(filmEmptyHandle, { autoAlpha: 0, rotation: -14 }, { autoAlpha: .58, rotation: 0, duration: .7, ease: "power2.out", immediateRender: false }, at + duration * .31);
         timeline.to([doorLeft, doorRight], { xPercent: (index, target) => target === doorLeft ? -5 : 5, duration: 2.4, ease: "sine.inOut" }, at + duration * .42);
         timeline.to([doorLeft, doorRight], { xPercent: 0, duration: 1.5, ease: "sine.inOut" }, at + duration * .68);
+        timeline.to(filmDoorGap, { autoAlpha: .08, scaleX: .04, duration: 1.5, ease: "sine.inOut" }, at + duration * .68);
         timeline.fromTo(focusLight, { xPercent: -18, autoAlpha: .12 }, { xPercent: 24, autoAlpha: .3, duration, ease: "sine.inOut" }, at);
         break;
       case "trust-corridor":
         timeline.fromTo(filmSourceTag, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .55 }, at + duration * .34);
         lineDraw(.6, duration * .74, 170);
+        timeline.fromTo(filmHandoffHands, { autoAlpha: 0, xPercent: (index) => index === 0 ? -62 : 62 }, { autoAlpha: .64, xPercent: (index) => index === 0 ? -5 : 5, duration: duration * .32, stagger: .55, ease: "power2.out", immediateRender: false }, at + duration * .16);
+        timeline.fromTo(filmHandoffThread, { autoAlpha: 0, scaleX: .08 }, { autoAlpha: .72, scaleX: 1, duration: duration * .26, transformOrigin: "left center", ease: "power1.inOut", immediateRender: false }, at + duration * .39);
+        timeline.to(filmHandoffHands[0], { xPercent: -18, duration: duration * .18, ease: "power2.inOut" }, at + duration * .61);
+        timeline.to(filmHandoffHands[1], { xPercent: 68, autoAlpha: .18, duration: duration * .24, ease: "power2.inOut" }, at + duration * .66);
         break;
       case "six-doors":
         timeline.fromTo(filmDoorItems, { autoAlpha: 0, y: 16, rotationY: -12 }, { autoAlpha: .9, y: 0, rotationY: 0, duration: .7, stagger: 1.2, ease: "power2.out" }, at + .8);
+        timeline.fromTo(filmCorridorLamps, { autoAlpha: 0, scaleY: .65 }, { autoAlpha: .7, scaleY: 1, duration: .38, stagger: .36, ease: "power2.out", immediateRender: false }, at + .5);
+        [...filmCorridorLamps].reverse().forEach((lamp, index) => timeline.to(lamp, { autoAlpha: .08, filter: "brightness(.4)", duration: .34, ease: "power1.out" }, at + duration * .48 + index * 1.15));
+        timeline.set(filmHandoffThread, { autoAlpha: .6, scaleX: .12 }, at + .7);
+        timeline.to(filmHandoffThread, { scaleX: .84, duration: duration * .55, transformOrigin: "left center", ease: "power1.inOut" }, at + 1);
         lineDraw(1.1, 8.1, 145);
         timeline.to(filmDoorItems[5], { autoAlpha: .48, filter: "brightness(.72)", duration: .45 }, at + 8.9);
         break;
       case "testimony":
         timeline.fromTo(filmSourceTag, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .5 }, at + .4);
+        timeline.fromTo(filmEmptyHandle, { autoAlpha: 0, yPercent: 16, rotation: -10 }, { autoAlpha: .62, yPercent: 0, rotation: 0, duration: 1.2, ease: "power2.out", immediateRender: false }, at + .8);
+        timeline.set(filmHandoffThread, { autoAlpha: .5, scaleX: .84 }, at + .6);
+        timeline.to(filmHandoffThread, { autoAlpha: .2, scaleX: 1, duration: duration * .74, transformOrigin: "left center", ease: "sine.out" }, at + .6);
         timeline.fromTo(focusLight, { xPercent: -24, autoAlpha: .1 }, { xPercent: 14, autoAlpha: .28, duration: 5, ease: "sine.inOut" }, at);
         lineDraw(3.2, duration * .64, 115);
         break;
       case "qing-hair":
         timeline.fromTo(filmHairItems, { autoAlpha: 0, yPercent: -6, backgroundColor: "#161816" }, { autoAlpha: .74, yPercent: 4, duration: 2.4, stagger: .12, ease: "sine.inOut" }, at + .5);
+        timeline.fromTo(filmPassers, { autoAlpha: 0, xPercent: -110, yPercent: 4 }, { autoAlpha: .56, xPercent: (index) => index < 2 ? 124 : 30, yPercent: 0, duration: duration * .52, stagger: .9, ease: "power1.out", immediateRender: false }, at + duration * .08);
+        timeline.to(filmPassers[2], { rotationY: -18, xPercent: 18, duration: 1.1, transformOrigin: "center bottom", ease: "power3.inOut" }, at + duration * .62);
+        timeline.fromTo(filmTimeThread, { autoAlpha: 0, strokeDashoffset: 1000 }, { autoAlpha: .62, strokeDashoffset: 620, duration: duration * .72, ease: "power1.inOut", immediateRender: false }, at + duration * .18);
         break;
       case "medical-curtain":
         timeline.fromTo(filmCurtain, { autoAlpha: .1, scaleX: .72 }, { autoAlpha: .62, scaleX: 1.08, duration: 4.6, ease: "sine.inOut" }, at);
+        timeline.fromTo(filmTimeThread, { autoAlpha: .42, strokeDashoffset: 620 }, { autoAlpha: .62, strokeDashoffset: 260, duration: duration * .58, ease: "power1.inOut", immediateRender: false }, at);
+        timeline.fromTo(filmCurtainEdge, { autoAlpha: 0, scaleY: .18, xPercent: -18 }, { autoAlpha: .58, scaleY: 1, xPercent: 0, duration: duration * .3, transformOrigin: "top center", ease: "power2.out", immediateRender: false }, at + duration * .16);
+        timeline.fromTo(filmWitnesses.slice(0, 2), { autoAlpha: 0, xPercent: 48 }, { autoAlpha: .44, xPercent: (index) => index === 0 ? -44 : -12, duration: duration * .28, stagger: 1.1, ease: "power2.out", immediateRender: false }, at + duration * .32);
+        timeline.to(filmWitnesses[1], { rotationY: 16, xPercent: -18, duration: 1.1, transformOrigin: "center bottom", ease: "power3.inOut" }, at + duration * .68);
         timeline.fromTo(rain, { autoAlpha: 0, yPercent: -7 }, { autoAlpha: .19, yPercent: 7, duration, ease: "none" }, at);
         break;
       case "dossier":
         timeline.fromTo(filmCurtain, { autoAlpha: .65, clipPath: "inset(0 0 0 0)" }, { autoAlpha: .08, clipPath: "inset(0 45% 0 45%)", duration: 3.2, ease: "power2.inOut" }, at);
+        timeline.set(filmTimeThread, { autoAlpha: .56, strokeDashoffset: 260 }, at);
+        timeline.to(filmTimeThread, { strokeDashoffset: 0, duration: duration * .58, ease: "power1.inOut" }, at + .2);
+        timeline.fromTo(filmDossierSheet, { autoAlpha: 0, scaleX: .12 }, { autoAlpha: .34, scaleX: 1, duration: duration * .34, transformOrigin: "left center", ease: "power2.inOut", immediateRender: false }, at + duration * .16);
+        timeline.fromTo(filmWitnesses, { autoAlpha: 0, yPercent: 12, scale: .86 }, { autoAlpha: .5, yPercent: 0, scale: 1, duration: .55, stagger: .52, ease: "power2.out", immediateRender: false }, at + duration * .36);
         timeline.fromTo(papers, { autoAlpha: 0 }, { autoAlpha: .46, duration: 1.4 }, at + 2.2);
         break;
       case "white-hair":
-        timeline.fromTo(filmHairItems, { autoAlpha: .78, backgroundColor: "#20211f" }, { autoAlpha: .9, backgroundColor: "#d8d8d2", duration: 5.4, stagger: .28, ease: "none" }, at);
-        timeline.to([atmosphere, mist, rain], { autoAlpha: .06, duration: .25 }, at + 10);
-        timeline.to([atmosphere, mist, rain], { autoAlpha: .2, duration: .4 }, at + 13);
-        timeline.to([bgA, bgB, depthFar, depthMid, depthNear], { scale: "+=.012", duration: 3, ease: "sine.inOut" }, at + 13);
+        timeline.set(filmTimeThread, { autoAlpha: .42, strokeDashoffset: 0 }, at);
+        timeline.fromTo(filmHairItems, { autoAlpha: .78, backgroundColor: "#20211f" }, { autoAlpha: .9, backgroundColor: "#d8d8d2", duration: 9.2, stagger: .55, ease: "none" }, at);
+        timeline.fromTo(filmHairWash, { autoAlpha: 0, clipPath: "inset(0 0 100% 0)" }, { autoAlpha: .46, clipPath: "inset(0 0 0% 0)", duration: 15.2, ease: "none", immediateRender: false }, at + .2);
+        timeline.to([atmosphere, mist, rain], { autoAlpha: .04, duration: .25 }, at + 16);
+        timeline.to([atmosphere, mist, rain], { autoAlpha: .18, duration: .4 }, at + 19);
+        timeline.to([bgA, bgB, depthFar, depthMid, depthNear], { scale: "+=.012", duration: 3, ease: "sine.inOut" }, at + 19);
         break;
       case "empty-court":
-        timeline.to([atmosphere, focusLight, thread], { autoAlpha: .05, duration: duration * .72, ease: "sine.out" }, at);
+        timeline.fromTo(filmEmptySeat, { autoAlpha: 0, yPercent: 8 }, { autoAlpha: .56, yPercent: 0, duration: 1.2, ease: "power2.out", immediateRender: false }, at + .2);
+        timeline.to([atmosphere, focusLight, thread, filmTimeThread, filmHairWash], { autoAlpha: .05, duration: 4.6, ease: "sine.out" }, at);
+        timeline.to(filmWitnesses, { autoAlpha: 0, xPercent: (index) => index % 2 ? 38 : -38, duration: 3.8, stagger: .2, ease: "power1.in" }, at + .4);
         break;
       case "split-shadow":
         timeline.set([filmWorldQing, filmWorldModern, filmSeam], { autoAlpha: 1 }, at);
@@ -1715,6 +1815,8 @@
       const clearTargets = [filmCurtain, filmStamp, filmSourceTag, ...filmInfoItems, ...filmDoorItems, ...filmHairItems, ...filmKeywordItems, ...filmFlashItems, filmWorldQing, filmWorldModern, filmSeam];
       const usesFmCActPlate = meta.scene.id === "FM-C" && Boolean(filmActFrames[meta.actionIndex]);
       gsap.set(clearTargets, { clearProps: "opacity,visibility,transform,filter,clipPath,backgroundColor" });
+      gsap.set([filmEventRig, ...filmEventGroups, ...filmSoilItems, filmChairReveal, filmRedHem, filmPaperSheet, filmInkBleed, filmBundle, ...filmHandoffHands, filmHandoffThread, filmDoorGap, ...filmCorridorLamps, filmEmptyHandle, ...filmPassers, filmCurtainEdge, filmDossierSheet, ...filmWitnesses, filmHairWash, filmEmptySeat], { autoAlpha: 0, clearProps: "transform,filter,clipPath,backgroundColor" });
+      gsap.set(filmTimeThread, { autoAlpha: 0, strokeDasharray: 1000, strokeDashoffset: 1000 });
       gsap.set(filmActSequence, { autoAlpha: 0 });
       gsap.set(filmActFrames, { autoAlpha: 0, filter: "brightness(1)" });
       gsap.set(filmActShots, { autoAlpha: 0, clipPath: "inset(0 0 0 0)", zIndex: 0 });
@@ -1817,6 +1919,33 @@
         }
       } else {
         gsap.set([bgA, bgB, depthFar, depthMid, depthNear], { backgroundPosition: view.position, backgroundSize: view.size, scale: 1.018 + progress * .037, xPercent: 0, yPercent: 0 });
+        const staticEventGroup = meta.scene.id === "FM-A" ? filmEventA : meta.scene.id === "FM-D" ? filmEventD : meta.scene.id === "FM-B" ? filmEventB : null;
+        if (staticEventGroup) gsap.set([filmEventRig, staticEventGroup], { autoAlpha: 1 });
+        if (actInfo.effect === "mud-thread") {
+          gsap.set(filmChairReveal, { autoAlpha: .42, scale: 1, clipPath: "inset(0% 0% 0% 0%)" });
+          gsap.set(filmSoilItems.slice(0, Math.max(1, Math.ceil(progress * filmSoilItems.length))), { autoAlpha: .3, y: 110, rotation: 28 });
+        } else if (actInfo.effect === "night-door") gsap.set(filmRedHem, { autoAlpha: .52, xPercent: 0, scaleY: 1 });
+        else if (actInfo.effect === "match-cut") gsap.set([filmRedHem, filmPaperSheet], { autoAlpha: .34, scaleY: 1, clipPath: "inset(0 0 0 0)" });
+        else if (actInfo.effect === "verdict") gsap.set([filmPaperSheet, filmInkBleed], { autoAlpha: .4, scale: 1 });
+        else if (actInfo.effect === "safe-flash") gsap.set(filmInkBleed, { autoAlpha: .16, scale: 1.25 });
+        else if (actInfo.effect === "bundle") gsap.set([filmBundle, filmHandoffHands[0], filmHandoffThread], { autoAlpha: .52, xPercent: 0, scaleX: 1 });
+        else if (actInfo.effect === "phone-door") gsap.set([filmDoorGap, filmEmptyHandle], { autoAlpha: .46, scaleX: .18, rotation: 0 });
+        else if (actInfo.effect === "trust-corridor") gsap.set([...filmHandoffHands, filmHandoffThread], { autoAlpha: .58, xPercent: 0, scaleX: 1 });
+        else if (actInfo.effect === "six-doors") gsap.set([...filmCorridorLamps, filmHandoffThread], { autoAlpha: .5, scaleX: .84, filter: "brightness(.74)" });
+        else if (actInfo.effect === "testimony") gsap.set([filmEmptyHandle, filmHandoffThread], { autoAlpha: .46, scaleX: 1, rotation: 0 });
+        else if (actInfo.effect === "qing-hair") {
+          gsap.set(filmPassers, { autoAlpha: .5, xPercent: (index) => index < 2 ? 124 : 18, rotationY: (index) => index === 2 ? -18 : 0 });
+          gsap.set(filmTimeThread, { autoAlpha: .58, strokeDashoffset: 620 });
+        } else if (actInfo.effect === "medical-curtain") {
+          gsap.set([filmCurtainEdge, ...filmWitnesses.slice(0, 2)], { autoAlpha: .48, scaleY: 1 });
+          gsap.set(filmTimeThread, { autoAlpha: .58, strokeDashoffset: 260 });
+        } else if (actInfo.effect === "dossier") {
+          gsap.set([filmDossierSheet, ...filmWitnesses], { autoAlpha: .42, scaleX: 1, scale: 1 });
+          gsap.set(filmTimeThread, { autoAlpha: .58, strokeDashoffset: 0 });
+        } else if (actInfo.effect === "white-hair") {
+          gsap.set(filmHairWash, { autoAlpha: .46, clipPath: "inset(0 0 0% 0)" });
+          gsap.set(filmTimeThread, { autoAlpha: .42, strokeDashoffset: 0 });
+        } else if (actInfo.effect === "empty-court") gsap.set(filmEmptySeat, { autoAlpha: .56, yPercent: 0 });
       }
       gsap.set(filmActSlate, { autoAlpha: 1, y: 0 });
       gsap.set(filmLinePath, { clearProps: "opacity,visibility", strokeDasharray: 1000, strokeDashoffset: 1000 - progress * 1000 });
@@ -1846,6 +1975,23 @@
       const usesFmCActPlate = meta.scene.id === "FM-C" && Boolean(filmActFrames[meta.actionIndex]);
       filmActSequence.style.opacity = usesFmCActPlate ? "1" : "0";
       const setFallbackOpacity = (elements, visible) => (Array.isArray(elements) ? elements : [elements]).filter(Boolean).forEach((element) => { element.style.opacity = visible ? "1" : "0"; });
+      const fallbackEventGroup = meta.scene.id === "FM-A" ? filmEventA : meta.scene.id === "FM-D" ? filmEventD : meta.scene.id === "FM-B" ? filmEventB : null;
+      setFallbackOpacity([filmEventRig, fallbackEventGroup], Boolean(fallbackEventGroup));
+      setFallbackOpacity(filmChairReveal, actInfo.effect === "mud-thread");
+      setFallbackOpacity(filmRedHem, actInfo.effect === "night-door" || actInfo.effect === "match-cut");
+      setFallbackOpacity([filmPaperSheet, filmInkBleed], actInfo.effect === "verdict");
+      setFallbackOpacity([filmBundle, filmHandoffThread], actInfo.effect === "bundle" || actInfo.effect === "trust-corridor");
+      setFallbackOpacity(filmHandoffHands, actInfo.effect === "trust-corridor");
+      setFallbackOpacity(filmDoorGap, actInfo.effect === "phone-door");
+      setFallbackOpacity(filmCorridorLamps, actInfo.effect === "six-doors");
+      setFallbackOpacity(filmEmptyHandle, actInfo.effect === "testimony");
+      setFallbackOpacity(filmPassers, actInfo.effect === "qing-hair");
+      setFallbackOpacity(filmCurtainEdge, actInfo.effect === "medical-curtain");
+      setFallbackOpacity(filmDossierSheet, actInfo.effect === "dossier");
+      setFallbackOpacity(filmWitnesses, actInfo.effect === "dossier");
+      setFallbackOpacity(filmHairWash, actInfo.effect === "white-hair");
+      setFallbackOpacity(filmEmptySeat, actInfo.effect === "empty-court");
+      setFallbackOpacity(filmTimeThread, meta.scene.id === "FM-B");
       setFallbackOpacity(filmEncounterRig, usesFmCActPlate && meta.actionIndex === 0);
       setFallbackOpacity(filmInformationRig, usesFmCActPlate && meta.actionIndex === 1);
       setFallbackOpacity(filmSilenceRig, usesFmCActPlate && meta.actionIndex === 2);

@@ -18,7 +18,7 @@ test("four films ship exact five-act clocks and non-looping score masters", asyn
   const expected = {
     "FM-A": { duration: 155, starts: [0, 36, 85, 96, 129], scoreDuration: 153.167, duckDb: 8, file: "film-stamped-in-marble.m4a" },
     "FM-D": { duration: 144, starts: [0, 24, 52, 82, 116], scoreDuration: 141.433, duckDb: 8, file: "film-late-question.m4a" },
-    "FM-B": { duration: 73, starts: [0, 14, 36, 49, 65], scoreDuration: 68.733, duckDb: 8, file: "film-one-year-old.m4a" },
+    "FM-B": { duration: 105, starts: [0, 20, 50, 70, 96], scoreDuration: 104.731, duckDb: 8, file: "film-one-year-old-extended.m4a" },
     "FM-C": { duration: 195, starts: [0, 28, 75, 120, 170], scoreDuration: 177.533, duckDb: 6, file: "film-who-opens-door.m4a" },
   };
 
@@ -44,7 +44,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
 
-  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fmc-act123-motion-1/);
+  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fm123-event-motion-2/);
   assert.equal((html.match(/data-score="FM-[ADBC]"/g) ?? []).length, 4);
   assert.doesNotMatch(html, /id="cinema-audio"[^>]*\bloop\b/);
   assert.doesNotMatch(html, /id="ambient-audio"[^>]*\bloop\b/);
@@ -59,6 +59,14 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /\.storyboard\[data-beats="5"\]/);
   assert.match(css, /\.film-production\[data-film="FM-C"\]/);
   assert.match(css, /body\.is-reduced \.film-local-flash/);
+  assert.match(app, /className = "fm123-event-rig"/);
+  assert.match(app, /window\.MotionPathPlugin/);
+  assert.match(app, /filmSoilItems\.forEach/);
+  assert.match(app, /filmHandoffHands/);
+  assert.match(app, /filmTimeThread/);
+  assert.match(css, /\.fm123-event-rig/);
+  assert.match(css, /\.fm123-dossier-sheet/);
+  assert.match(css, /\.fm123-empty-seat/);
 });
 
 test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async () => {
@@ -159,7 +167,7 @@ test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async ()
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(html, /assets\/vendor\/gsap\/MotionPathPlugin\.min\.js/);
-  assert.match(html, /rev=20260825-fmc-act123-motion-1/);
+  assert.match(html, /rev=20260825-fm123-event-motion-2/);
   assert.match(css, /\.fm-c-five-act-sequence/);
   assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
   assert.match(css, /\.fm-c-act-shot\{/);

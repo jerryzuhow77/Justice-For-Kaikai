@@ -26,11 +26,11 @@
     },
     "FM-B": {
       "title": "青絲變白髮",
-      "duration_seconds": 73,
-      "act_starts": [0, 14, 36, 49, 65],
-      "score": "public/media/film-one-year-old.m4a",
-      "score_duration_seconds": 68.733,
-      "score_transport_pause": [59, 62]
+      "duration_seconds": 105,
+      "act_starts": [0, 20, 50, 70, 96],
+      "score": "public/media/film-one-year-old-extended.m4a",
+      "score_duration_seconds": 104.731,
+      "score_transport_pause": [86, 89]
     },
     "FM-C": {
       "title": "兩個朝代▪︎不同世界▪︎同一扇門",
