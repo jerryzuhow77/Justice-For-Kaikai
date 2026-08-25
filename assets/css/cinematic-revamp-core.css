@@ -26,6 +26,25 @@
   --radius: 28px;
 }
 
+/* FM-C production character sprites: permanently suppress the retired CSS mannequin. */
+.fm-c-witness-rig i.witness-person.has-character-art{
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.fm-c-witness-rig i.witness-person.has-character-art::before,
+.fm-c-witness-rig i.witness-person.has-character-art::after{
+  content:none!important;
+  display:none!important;
+  width:0!important;
+  height:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  clip-path:none!important;
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; color-scheme: dark; }
 body {
