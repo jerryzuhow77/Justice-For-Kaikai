@@ -339,7 +339,14 @@
   </div>`;
   const fmCSilenceRigMarkup = () => `<div class="fm-c-silence-rig fm-c-witness-rig" aria-hidden="true">
     <span class="silence-lamp witness-door-qing"></span><span class="silence-fluorescent witness-door-modern"></span>
-    <span class="silence-curtain witness-group-qing"><i></i><i></i><i></i></span><span class="silence-form-grid witness-group-modern"><i></i><i></i></span>
+    <span class="silence-curtain witness-group-qing">
+      <i class="witness-person qing-woman qing-woman-one"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
+      <i class="witness-person qing-woman qing-woman-two"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
+      <i class="witness-person qing-woman qing-woman-turn"><b class="witness-head"></b><em class="witness-sleeve"></em><span class="witness-skirt"></span></i>
+    </span><span class="silence-form-grid witness-group-modern">
+      <i class="witness-person modern-nurse modern-nurse-walk"><b class="witness-head"></b><em class="witness-arm"></em><span class="nurse-apron"></span></i>
+      <i class="witness-person modern-nurse modern-nurse-turn"><b class="witness-head"></b><em class="witness-arm"></em><span class="nurse-apron"></span></i>
+    </span>
     <i class="silence-page silence-page-one witness-cart"></i><i class="silence-page silence-page-two witness-chair"></i><i class="silence-page silence-page-three witness-rail"></i>
     <b class="silence-check silence-check-one witness-hand witness-hand-qing"></b><b class="silence-check silence-check-two witness-hand witness-hand-modern"></b><b class="silence-check silence-check-three witness-look witness-look-qing"></b><b class="silence-check silence-check-four witness-look witness-look-modern"></b>
     <em class="silence-child-void witness-shadows"></em>
@@ -387,6 +394,10 @@
   const filmSilenceFluorescent = $(".silence-fluorescent", filmSilenceRig);
   const filmSilenceCurtain = $(".silence-curtain", filmSilenceRig);
   const filmSilenceForm = $(".silence-form-grid", filmSilenceRig);
+  const filmQingWomen = $$(".qing-woman", filmSilenceRig);
+  const filmNurses = $$(".modern-nurse", filmSilenceRig);
+  const filmWitnessHeads = $$(".witness-head", filmSilenceRig);
+  const filmWitnessLimbs = $$(".witness-sleeve,.witness-arm", filmSilenceRig);
   const filmSilencePages = $$(".silence-page", filmSilenceRig);
   const filmSilenceChecks = $$(".silence-check", filmSilenceRig);
   const filmSilenceVoid = $(".silence-child-void", filmSilenceRig);
@@ -1273,7 +1284,7 @@
     timeline.set([filmEncounterSeam, filmEncounterFloorLight, ...filmEncounterBreaths, ...filmEncounterShadows, ...filmEncounterSteps, filmEncounterLaw, filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath" }, at);
     timeline.set(filmInformationPath, { autoAlpha: 0, strokeDasharray: 980, strokeDashoffset: 980 }, at);
     timeline.set([filmInformationPacket, ...filmInformationNodes, filmInformationFile, filmInformationStamp, ...filmInformationEmptyPulses, filmInformationStall], { autoAlpha: 0, x: 0, y: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, clearProps: "filter,clipPath,offsetDistance" }, at);
-    timeline.set([filmSilenceRig, filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath,letterSpacing" }, at);
+    timeline.set([filmSilenceRig, filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses, ...filmWitnessHeads, ...filmWitnessLimbs, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, rotationY: 0, scale: 1, scaleX: 1, scaleY: 1, clearProps: "filter,clipPath,letterSpacing,transformOrigin" }, at);
     timeline.set(filmResponsibilityRig, { autoAlpha: 0 }, at);
     timeline.set(filmDutyThread, { autoAlpha: 0, scaleX: .35, xPercent: 0, clearProps: "filter" }, at);
     timeline.set(filmDutyPapers, { autoAlpha: 0, xPercent: 0, yPercent: 0, rotation: 0, scale: 1 }, at);
@@ -1510,15 +1521,26 @@
           timeline.call(() => playFmCFoley("fluorescent"), null, at + .34);
           timeline.fromTo(filmSilenceCurtain, { autoAlpha: 0, xPercent: -24, clipPath: "inset(0 100% 0 0)" }, { autoAlpha: .72, xPercent: 0, clipPath: "inset(0 0% 0 0)", duration: duration * .2, ease: "power2.inOut" }, at + duration * .18);
           timeline.fromTo(filmSilenceForm, { autoAlpha: 0, xPercent: 24, clipPath: "inset(0 0 0 100%)" }, { autoAlpha: .72, xPercent: 0, clipPath: "inset(0 0 0 0%)", duration: duration * .2, ease: "power2.inOut" }, at + duration * .29);
-          timeline.to(filmSilenceCurtain, { xPercent: 20, duration: duration * .16, ease: "none" }, at + duration * .36);
-          timeline.to(filmSilenceForm, { xPercent: -18, duration: duration * .16, ease: "none" }, at + duration * .45);
+          timeline.fromTo(filmQingWomen, { autoAlpha: 0, xPercent: -34, yPercent: 3 }, { autoAlpha: .94, xPercent: 0, yPercent: 0, duration: duration * .18, stagger: duration * .035, ease: "power2.out" }, at + duration * .22);
+          timeline.to(filmQingWomen.slice(0, 2), { xPercent: 96, autoAlpha: .32, duration: duration * .22, stagger: duration * .035, ease: "none" }, at + duration * .39);
+          timeline.to(filmQingWomen[2], { xPercent: 38, duration: duration * .11, ease: "power1.out" }, at + duration * .42);
+          timeline.to($(".qing-woman-turn .witness-head", filmSilenceRig), { rotationY: -148, xPercent: -18, duration: .82, ease: "power3.inOut" }, at + duration * .52);
+          timeline.to($(".qing-woman-turn .witness-sleeve", filmSilenceRig), { rotation: -18, duration: .72, ease: "power2.out" }, at + duration * .55);
+          timeline.fromTo(filmNurses, { autoAlpha: 0, xPercent: 38, yPercent: 2 }, { autoAlpha: .96, xPercent: 0, yPercent: 0, duration: duration * .17, stagger: duration * .04, ease: "power2.out" }, at + duration * .34);
+          timeline.to(filmNurses[0], { xPercent: -92, autoAlpha: .34, duration: duration * .21, ease: "none" }, at + duration * .5);
+          timeline.to(filmNurses[1], { xPercent: -34, duration: duration * .1, ease: "power1.out" }, at + duration * .51);
+          timeline.to($(".modern-nurse-turn .witness-head", filmSilenceRig), { rotationY: 142, xPercent: 18, duration: .82, ease: "power3.inOut" }, at + duration * .6);
+          timeline.to($(".modern-nurse-turn .witness-arm", filmSilenceRig), { rotation: 14, duration: .72, ease: "power2.out" }, at + duration * .62);
+          timeline.to([...filmQingWomen, ...filmNurses], { yPercent: -1.8, duration: .46, repeat: 3, yoyo: true, stagger: .08, ease: "sine.inOut" }, at + duration * .31);
+          timeline.to(filmWitnessLimbs, { rotation: (index) => index % 2 ? 7 : -7, duration: .38, repeat: 5, yoyo: true, stagger: .05, ease: "sine.inOut" }, at + duration * .32);
+          timeline.to(filmSilenceCurtain, { xPercent: 7, scaleX: .92, transformOrigin: "0% 50%", duration: duration * .13, ease: "power2.inOut" }, at + duration * .58);
           timeline.fromTo(filmSilencePages, { autoAlpha: 0, yPercent: 24, rotationY: -68, rotation: -3 }, { autoAlpha: .78, yPercent: 0, rotationY: 0, rotation: 0, duration: .72, stagger: duration * .04, ease: "power3.out" }, at + duration * .51);
           timeline.call(() => playFmCFoley("step"), null, at + duration * .38);
           timeline.call(() => playFmCFoley("cart"), null, at + duration * .52);
           timeline.fromTo(filmSilenceChecks, { autoAlpha: 0, scale: .55, rotation: -10 }, { autoAlpha: .88, scale: 1, rotation: 0, duration: .38, stagger: duration * .055, ease: "back.out(1.6)" }, at + duration * .58);
           timeline.to(filmSilenceChecks.slice(2), { xPercent: (index) => index === 0 ? 16 : -16, rotation: (index) => index === 0 ? 9 : -9, duration: .65, ease: "power2.out" }, at + duration * .67);
           timeline.fromTo(filmSilenceVoid, { autoAlpha: 0, scaleX: .35, filter: "blur(10px)" }, { autoAlpha: .7, scaleX: 1.18, filter: "blur(1px)", duration: duration * .15, ease: "power2.inOut" }, at + duration * .72);
-          timeline.to([...filmSilencePages, ...filmSilenceChecks, filmSilenceCurtain, filmSilenceForm], { autoAlpha: .24, filter: "brightness(.68)", duration: 1, ease: "power2.out" }, at + duration * .83);
+          timeline.to([...filmSilencePages, ...filmSilenceChecks, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses], { autoAlpha: .24, filter: "brightness(.68)", duration: 1, ease: "power2.out" }, at + duration * .83);
           timeline.fromTo(filmSilenceTitle, { autoAlpha: 0, yPercent: 18, clipPath: "inset(0 50% 0 50%)", letterSpacing: ".28em" }, { autoAlpha: 1, yPercent: 0, clipPath: "inset(0 0% 0 0%)", letterSpacing: ".18em", duration: .9, ease: "power3.out" }, at + duration * .84);
           lineDraw(.9, duration * .7, 120);
           break;
@@ -1697,7 +1719,7 @@
       gsap.set([filmEncounterRig, filmInformationRig, filmSilenceRig, filmFinaleRig], { autoAlpha: 0 });
       gsap.set([filmEncounterSeam, filmEncounterFloorLight, ...filmEncounterBreaths, ...filmEncounterShadows, ...filmEncounterSteps, filmEncounterLaw, filmEncounterLawCopy, ...filmEncounterLawFragments], { autoAlpha: 0, clearProps: "transform,filter,clipPath" });
       gsap.set([filmInformationPath, filmInformationPacket, ...filmInformationNodes, filmInformationFile, filmInformationStamp, ...filmInformationEmptyPulses, filmInformationStall], { autoAlpha: 0, clearProps: "transform,filter,clipPath,strokeDashoffset" });
-      gsap.set([filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing" });
+      gsap.set([filmSilenceLamp, filmSilenceFluorescent, filmSilenceCurtain, filmSilenceForm, ...filmQingWomen, ...filmNurses, ...filmWitnessHeads, ...filmWitnessLimbs, ...filmSilencePages, ...filmSilenceChecks, filmSilenceVoid, filmSilenceTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,transformOrigin" });
       gsap.set(filmResponsibilityRig, { autoAlpha: 0 });
       gsap.set([filmDutyThread, ...filmDutyPapers, ...filmDutyHandles, ...filmDutyLights, ...filmDutyBreaths], { autoAlpha: 0, clearProps: "transform,filter" });
       gsap.set([...filmDutyFluorescents, ...filmDutyShadows, filmDutyGrip, filmDutyRelease, ...filmDutyThreadTransfers, ...filmDutyTransferPaths, ...filmDutyStamps, ...filmDutyAdults, ...filmDutyDoorLeaves, filmDutyTitle], { autoAlpha: 0, clearProps: "transform,filter,clipPath,letterSpacing,strokeDashoffset" });
@@ -1744,6 +1766,10 @@
           gsap.set([filmSilenceLamp, filmSilenceFluorescent], { autoAlpha: .52 });
           if (progress >= .18) gsap.set(filmSilenceCurtain, { autoAlpha: progress >= .83 ? .24 : .68, xPercent: progress >= .45 ? 28 : 0 });
           if (progress >= .29) gsap.set(filmSilenceForm, { autoAlpha: progress >= .83 ? .24 : .68, xPercent: 0 });
+          if (progress >= .22) gsap.set(filmQingWomen, { autoAlpha: progress >= .83 ? .24 : .92, xPercent: (index) => index < 2 && progress >= .56 ? 96 : index === 2 && progress >= .42 ? 38 : 0 });
+          if (progress >= .34) gsap.set(filmNurses, { autoAlpha: progress >= .83 ? .24 : .94, xPercent: (index) => index === 0 && progress >= .68 ? -92 : index === 1 && progress >= .51 ? -34 : 0 });
+          if (progress >= .52) gsap.set($(".qing-woman-turn .witness-head", filmSilenceRig), { rotationY: -148, xPercent: -18 });
+          if (progress >= .6) gsap.set($(".modern-nurse-turn .witness-head", filmSilenceRig), { rotationY: 142, xPercent: 18 });
           if (progress >= .56) gsap.set(filmSilencePages, { autoAlpha: progress >= .83 ? .24 : .72, yPercent: 0, rotationY: 0 });
           if (progress >= .62) gsap.set(filmSilenceChecks, { autoAlpha: progress >= .83 ? .24 : .82, scale: 1 });
           if (progress >= .69) gsap.set(filmSilenceVoid, { autoAlpha: .72, scale: 1.18, filter: "blur(1px)" });
