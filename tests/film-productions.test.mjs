@@ -61,7 +61,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /body\.is-reduced \.film-local-flash/);
 });
 
-test("FM-C maps twenty-two concept plates into 7/8/8/8/5 moving GSAP storyboards", async () => {
+test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
@@ -106,7 +106,7 @@ test("FM-C maps twenty-two concept plates into 7/8/8/8/5 moving GSAP storyboards
     countShots("if (actIndex === 2)", "if (actIndex === 3)"),
     countShots("if (actIndex === 3)", "\n    }\n    return ["),
   ], [7, 8, 8, 8]);
-  for (const kind of ["approach", "shadow-contact", "law-peel", "information-route", "form-cascade", "relay", "unseen-child", "empty-chair", "cloth-form", "quiet-signals", "signals-close", "adult-page"]) {
+  for (const kind of ["approach", "shadow-contact", "law-peel", "information-route", "form-cascade", "relay", "unseen-child", "empty-chair", "qing-women-pass", "qing-woman-turn", "bamboo-door-close", "nurses-pass", "nurse-turn", "chair-rail-match", "two-hands-stop", "handles-turn", "doors-open", "shared-corridor", "children-remain", "record-sheet", "six-actions", "memory-objects"]) {
     assert.match(app, new RegExp(`kind: "${kind}"`));
   }
   assert.match(app, /actIndex === 3/);
@@ -123,6 +123,10 @@ test("FM-C maps twenty-two concept plates into 7/8/8/8/5 moving GSAP storyboards
   assert.match(app, /filmDutyStamps/);
   assert.match(app, /filmDutyAdults/);
   assert.match(app, /filmDutyTitle/);
+  assert.match(app, /filmFinaleRig/);
+  assert.match(app, /filmFinaleActions/);
+  assert.match(css, /\.fm-c-witness-rig/);
+  assert.match(css, /\.fm-c-finale-rig/);
   assert.match(app, /filmEncounterRig/);
   assert.match(app, /filmInformationRig/);
   assert.match(app, /filmSilenceRig/);
@@ -187,6 +191,6 @@ test("FM-C maps twenty-two concept plates into 7/8/8/8/5 moving GSAP storyboards
   assert.equal(ancientLine?.speaker, "椅仔姑與剴剴｜兩人合聲");
   assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[0].action, /影子先在中央相觸/);
   assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[1].action, /文件在成人手中交接並停在空椅/);
-  assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[2].action, /清代布簾轉為現代表格/);
+  assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[2].action, /兩名護士推車經過對稱長廊/);
   assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[3].action, /文件、印章與紅線移向成人/);
 });

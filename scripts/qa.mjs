@@ -77,7 +77,7 @@ if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(4
 if (!app.includes("productionView") || !css.includes('.film-production[data-film="FM-C"]')) errors.push("手機電影構圖或雙世界分割尚未接入");
 if (!app.includes("FM_C_ACT_SHOTS") || !app.includes("data-shot-kind") || !css.includes(".fm-c-live-fx")) errors.push("第四部五幕仍缺多鏡位或動態效果層");
 if (!app.includes("filmEncounterRig") || !app.includes("filmInformationRig") || !app.includes("filmSilenceRig")) errors.push("第四部前三幕仍缺靠近、延誤或制度遮蔽的專屬動態層");
-if (!app.includes('kind: "shadow-contact"') || !app.includes('kind: "empty-chair"') || !app.includes('kind: "adult-page"')) errors.push("第四部前三幕仍缺關鍵語意鏡位");
+if (!app.includes('kind: "shadow-contact"') || !app.includes('kind: "empty-chair"') || !app.includes('kind: "nurse-turn"')) errors.push("第四部前三幕仍缺關鍵語意鏡位");
 if (!css.includes(".encounter-shadow") || !css.includes(".information-route") || !css.includes(".silence-form-grid")) errors.push("第四部前三幕專屬 GSAP 視覺層樣式不完整");
 if (!app.includes('playFmCFoley("wood")') || !app.includes('playFmCFoley("notice")') || !app.includes('playFmCFoley("stamp")')) errors.push("第四部前三幕木門、通知或印章環境聲未接入");
 if (!app.includes("filmResponsibilityRig") || !app.includes("playFmCFoley") || !css.includes(".fm-c-responsibility-rig")) errors.push("第四部第四幕仍缺責任交接、門把或環境聲動態");
