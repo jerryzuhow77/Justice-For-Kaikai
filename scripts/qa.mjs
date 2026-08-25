@@ -47,6 +47,14 @@ for (const shotName of ["shot-04-handoff.webp", "shot-04-handle.webp", "shot-04-
   const shot = path.join(root, "assets/img/films/fm-c-act4", shotName);
   if (!fs.existsSync(shot)) errors.push(`第四部第四幕缺少加強動作鏡位：${shotName}`);
 }
+for (const shotName of [
+  "shot-01-approach.webp", "shot-01-shadow-contact.webp", "shot-01-hands-law.webp",
+  "shot-02-route.webp", "shot-02-handoff-chain.webp", "shot-02-empty-chair.webp",
+  "shot-03-cloth-form.webp", "shot-03-signals.webp", "shot-03-adult-page.webp",
+]) {
+  const shot = path.join(root, "assets/img/films/fm-c-act4", shotName);
+  if (!fs.existsSync(shot)) errors.push(`第四部前三幕缺少語意動作鏡位：${shotName}`);
+}
 if (!fs.existsSync(path.join(root, "assets/vendor/gsap/MotionPathPlugin.min.js"))) errors.push("第四幕缺少 GSAP MotionPathPlugin 正式資產");
 
 const app = fs.readFileSync(path.join(root, "assets/js/cinematic-revamp-core.js"), "utf8");
@@ -68,6 +76,10 @@ if (!html.includes('id="source-guide"') || !story.includes('id="source-index"'))
 if (!css.includes("@media (max-width: 760px)") || !css.includes("height: clamp(410px, 112vw, 690px)") || !css.includes('.cinema-stage[data-type="side"] .cinema-actor img')) errors.push("手機舞臺比例或全身角色構圖尚未重構");
 if (!app.includes("productionView") || !css.includes('.film-production[data-film="FM-C"]')) errors.push("手機電影構圖或雙世界分割尚未接入");
 if (!app.includes("FM_C_ACT_SHOTS") || !app.includes("data-shot-kind") || !css.includes(".fm-c-live-fx")) errors.push("第四部五幕仍缺多鏡位或動態效果層");
+if (!app.includes("filmEncounterRig") || !app.includes("filmInformationRig") || !app.includes("filmSilenceRig")) errors.push("第四部前三幕仍缺靠近、延誤或制度遮蔽的專屬動態層");
+if (!app.includes('kind: "shadow-contact"') || !app.includes('kind: "empty-chair"') || !app.includes('kind: "adult-page"')) errors.push("第四部前三幕仍缺關鍵語意鏡位");
+if (!css.includes(".encounter-shadow") || !css.includes(".information-route") || !css.includes(".silence-form-grid")) errors.push("第四部前三幕專屬 GSAP 視覺層樣式不完整");
+if (!app.includes('playFmCFoley("wood")') || !app.includes('playFmCFoley("notice")') || !app.includes('playFmCFoley("stamp")')) errors.push("第四部前三幕木門、通知或印章環境聲未接入");
 if (!app.includes("filmResponsibilityRig") || !app.includes("playFmCFoley") || !css.includes(".fm-c-responsibility-rig")) errors.push("第四部第四幕仍缺責任交接、門把或環境聲動態");
 if (!app.includes("filmDutyThreadTransfers") || !app.includes("filmDutyStamps") || !app.includes("filmDutyAdults") || !app.includes("filmDutyTitle") || !app.includes("motionPath: { path:")) errors.push("第四部第四幕仍缺絲線路徑、印章、成人對焦或責任定格");
 if (!html.includes("MotionPathPlugin.min.js") || !css.includes(".duty-responsibility-title")) errors.push("第四部第四幕 MotionPathPlugin 或責任標題未載入正式頁");

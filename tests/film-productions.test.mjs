@@ -44,7 +44,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
 
-  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fmc-act4-handoff-2/);
+  assert.match(html, /assets\/data\/film-productions\.js\?v=20260825-fmc-act123-motion-1/);
   assert.equal((html.match(/data-score="FM-[ADBC]"/g) ?? []).length, 4);
   assert.doesNotMatch(html, /id="cinema-audio"[^>]*\bloop\b/);
   assert.doesNotMatch(html, /id="ambient-audio"[^>]*\bloop\b/);
@@ -61,7 +61,7 @@ test("film player exposes script-specific GSAP, audio sync, transcripts, and red
   assert.match(css, /body\.is-reduced \.film-local-flash/);
 });
 
-test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an eight-shot responsibility act", async () => {
+test("FM-C maps twenty-two concept plates into 7/8/8/8/5 moving GSAP storyboards", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
@@ -76,14 +76,39 @@ test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an
   ];
   const actionShots = Array.from({ length: 5 }, (_, index) => `shot-${String(index + 1).padStart(2, "0")}-action.webp`);
   const responsibilityShots = ["shot-04-handoff.webp", "shot-04-handle.webp", "shot-04-stepback.webp"];
+  const act123Shots = [
+    "shot-01-approach.webp",
+    "shot-01-shadow-contact.webp",
+    "shot-01-hands-law.webp",
+    "shot-02-route.webp",
+    "shot-02-handoff-chain.webp",
+    "shot-02-empty-chair.webp",
+    "shot-03-cloth-form.webp",
+    "shot-03-signals.webp",
+    "shot-03-adult-page.webp",
+  ];
 
-  for (const shot of [...baseShots, ...actionShots, ...responsibilityShots]) {
+  for (const shot of [...baseShots, ...actionShots, ...responsibilityShots, ...act123Shots]) {
     await access(new URL(`assets/img/films/fm-c-act4/${shot}`, root));
     assert.match(app, new RegExp(shot.replaceAll(".", "\\.")));
   }
   assert.match(app, /const FM_C_ACT_PLATES = \[/);
   assert.equal((app.match(/actionSrc:/g) ?? []).length, 5);
   assert.match(app, /const FM_C_ACT_SHOTS =/);
+  const countShots = (from, to) => {
+    const start = app.indexOf(from);
+    const end = app.indexOf(to, start + from.length);
+    return (app.slice(start, end).match(/kind: "/g) ?? []).length;
+  };
+  assert.deepEqual([
+    countShots("if (actIndex === 0)", "if (actIndex === 1)"),
+    countShots("if (actIndex === 1)", "if (actIndex === 2)"),
+    countShots("if (actIndex === 2)", "if (actIndex === 3)"),
+    countShots("if (actIndex === 3)", "\n    }\n    return ["),
+  ], [7, 8, 8, 8]);
+  for (const kind of ["approach", "shadow-contact", "law-peel", "information-route", "form-cascade", "relay", "unseen-child", "empty-chair", "cloth-form", "quiet-signals", "signals-close", "adult-page"]) {
+    assert.match(app, new RegExp(`kind: "${kind}"`));
+  }
   assert.match(app, /actIndex === 3/);
   assert.match(app, /kind: "kaikai-close"/);
   assert.match(app, /kind: "qing-release-close"/);
@@ -98,6 +123,13 @@ test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an
   assert.match(app, /filmDutyStamps/);
   assert.match(app, /filmDutyAdults/);
   assert.match(app, /filmDutyTitle/);
+  assert.match(app, /filmEncounterRig/);
+  assert.match(app, /filmInformationRig/);
+  assert.match(app, /filmSilenceRig/);
+  assert.match(app, /filmEncounterLawCopy/);
+  assert.match(app, /filmInformationPacket/);
+  assert.match(app, /filmSilenceVoid/);
+  assert.match(app, /const usesSemanticRig = meta\.actionIndex <= 2/);
   assert.match(app, /window\.MotionPathPlugin/);
   assert.match(app, /motionPath: \{ path:/);
   assert.match(app, /setFallbackOpacity/);
@@ -105,6 +137,9 @@ test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an
   assert.match(app, /playFmCFoley\("paper"\)/);
   assert.match(app, /playFmCFoley\("latch"\)/);
   assert.match(app, /playFmCFoley\("step"\)/);
+  assert.match(app, /playFmCFoley\("wood"\)/);
+  assert.match(app, /playFmCFoley\("notice"\)/);
+  assert.match(app, /playFmCFoley\("stamp"\)/);
   assert.match(app, /data-shot-kind=/);
   assert.match(app, /\.fm-c-live-fx/);
   assert.equal((app.match(/data-act-plate=/g) ?? []).length, 1);
@@ -120,12 +155,18 @@ test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(html, /assets\/vendor\/gsap\/MotionPathPlugin\.min\.js/);
-  assert.match(html, /rev=20260825-fmc-act4-handoff-2/);
+  assert.match(html, /rev=20260825-fmc-act123-motion-1/);
   assert.match(css, /\.fm-c-five-act-sequence/);
   assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
   assert.match(css, /\.fm-c-act-shot\{/);
   assert.match(css, /\.fm-c-live-fx\{/);
   assert.match(css, /\.fm-c-responsibility-rig\{/);
+  assert.match(css, /\.fm-c-encounter-rig/);
+  assert.match(css, /\.fm-c-information-rig/);
+  assert.match(css, /\.fm-c-silence-rig/);
+  assert.match(css, /\.encounter-shadow/);
+  assert.match(css, /\.information-route/);
+  assert.match(css, /\.silence-form-grid/);
   assert.match(css, /\.duty-fluorescent/);
   assert.match(css, /\.duty-grip/);
   assert.match(css, /\.duty-release/);
@@ -144,5 +185,8 @@ test("FM-C maps thirteen concept plates into five moving GSAP storyboards and an
   const registry = await loadRegistry();
   const ancientLine = registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].cues.find((cue) => cue.text.startsWith("花有重開日"));
   assert.equal(ancientLine?.speaker, "椅仔姑與剴剴｜兩人合聲");
+  assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[0].action, /影子先在中央相觸/);
+  assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[1].action, /文件在成人手中交接並停在空椅/);
+  assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[2].action, /清代布簾轉為現代表格/);
   assert.match(registry.KAIKAI_FILM_PRODUCTIONS["FM-C"].acts[3].action, /文件、印章與紅線移向成人/);
 });
