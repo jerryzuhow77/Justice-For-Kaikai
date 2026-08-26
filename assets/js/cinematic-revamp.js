@@ -1,8 +1,8 @@
 (function(){
   "use strict";
-  const version="20260824-prologue-audio-1";
-  const coreVersion="20260826-fm123-runtime-clean-1-home-2-ambient-1-character-art-clean-2";
-  const directVersion="20260824-fmc-act4-direct-2-prologue-audio-1";
+  const version="20260826-directors-cut-1";
+  const coreVersion="20260826-directors-cut-1-fm123-runtime-clean-1-character-art-clean-2";
+  const directVersion="20260826-directors-cut-1-fmc-act4-direct-2";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",

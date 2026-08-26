@@ -11,6 +11,7 @@
   const hasGSAP = Boolean(window.gsap);
   const FILM_ORDER = ["FM-A", "FM-D", "FM-B", "FM-C"];
   const TYPE_LABELS = { film: "主線電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
+  const TYPE_PURPOSES = { film: "推動事件與情感轉折｜五幕", shadow: "提出記憶與倫理問題｜六句內", side: "拆解制度接縫｜一個未完成行動" };
   const ACT_LABELS = { "FM-A": "第一部", "FM-D": "第二部", "FM-B": "第三部", "FM-C": "第四部" };
   const FILM_POSITIONS = { "FM-A": "22% 50%", "FM-D": "36% 50%", "FM-B": "70% 50%", "FM-C": "50% 50%" };
   const SCORE_TRACKS = {
@@ -143,6 +144,8 @@
   let actorCalibrationFrame = 0;
   let gateMotionContext = null;
   let pageIntroPlayed = false;
+  let inlineStoryLoaded = false;
+  let gateHideTimer = 0;
 
   const state = {
     reduced: localStorage.getItem("kk-reduced-v8") === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -163,6 +166,7 @@
       stepIndex: 0,
       timeline: null,
       playing: false,
+      captions: true,
       currentScene: null,
       currentBackdrop: 0,
       audioPlayPending: false,
@@ -629,15 +633,19 @@
   }
 
   function setPageGate(locked) {
+    window.clearTimeout(gateHideTimer);
+    if (locked && entryGate) entryGate.hidden = false;
     if (!locked) stopGateMotion();
     document.body.classList.toggle("is-gated", locked);
     if (header) header.inert = locked;
     if (main) main.inert = locked;
     entryGate?.setAttribute("aria-hidden", String(!locked));
+    if (!locked && entryGate) gateHideTimer = window.setTimeout(() => { entryGate.hidden = true; }, 220);
   }
 
   function enterSite(target = "#top") {
     const startWithMusic = $("#gate-music")?.checked === true;
+    if (target === "#full-copy") { $(".full-copy-details")?.setAttribute("open", ""); loadInlineStory(); }
     setPageGate(false);
     sessionStorage.setItem("kk-entered-v8", "true");
     if (startWithMusic) playAmbient(); else pauseAmbient(true);
@@ -645,8 +653,9 @@
     window.setTimeout(() => {
       const targetElement = $(target);
       if (target !== "#top") targetElement?.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
+      (target === "#top" ? main : targetElement)?.focus?.({ preventScroll: true });
       window.ScrollTrigger?.refresh();
-    }, 120);
+    }, 220);
   }
 
   function refreshMotionUi() {
@@ -915,7 +924,7 @@
       ["female", "male"].forEach((sex) => { const pose = actorPosePlan(scene, sex)[4]; const image = document.createElement("img"); image.className = `copy-scene-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, pose); configurePreviewActor(image, scene, sex, pose); poster.append(image); });
     }
     const meta = document.createElement("span"); meta.className = "copy-scene-meta";
-    const small = document.createElement("small"); small.textContent = `${scene.id} · ${TYPE_LABELS[scene.type]}`;
+    const small = document.createElement("small"); small.textContent = `${scene.id} · ${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]}`;
     const strong = document.createElement("strong"); strong.textContent = scene.title;
     const description = document.createElement("span"); description.textContent = scene.type === "film" ? (scene.cardCopy || scene.subtitle) : scene.subtitle;
     meta.append(small, strong, description); button.append(poster, meta);
@@ -963,7 +972,8 @@
 
   async function loadInlineStory() {
     const target = $("#inline-story-content"); const navRoot = $("#copy-chapter-nav");
-    if (!target || !navRoot) return;
+    if (!target || !navRoot || inlineStoryLoaded) return;
+    inlineStoryLoaded = true;
     try {
       const response = await fetch("story.html", { cache: "no-cache" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -977,6 +987,7 @@
       if (!headings.length) navRoot.textContent = "完整正文"; else setupCopyNavigation(headings, navRoot);
       animateNewContent(target); window.ScrollTrigger?.refresh();
     } catch (error) {
+      inlineStoryLoaded = false;
       target.removeAttribute("aria-busy");
       const paragraph = document.createElement("p"); paragraph.append("完整文案暫時無法嵌入本頁。請改用 ");
       const link = document.createElement("a"); link.href = "story.html"; link.textContent = "純文字閱讀模式"; paragraph.append(link, "。");
@@ -984,10 +995,33 @@
     }
   }
 
-  function totalSteps(scene) { return productionFor(scene)?.cues.length || Math.max(10, scene.dialogue.length); }
-  function actionIndexFor(scene, localStep) { return Math.min(9, Math.floor((localStep / totalSteps(scene)) * 10)); }
+  function setupFullCopy() {
+    const details = $(".full-copy-details");
+    if (!details) { loadInlineStory(); return; }
+    const openAndLoad = () => { details.open = true; loadInlineStory(); };
+    details.addEventListener("toggle", () => { if (details.open) loadInlineStory(); });
+    $$('a[href="#full-copy"]').forEach((link) => link.addEventListener("click", openAndLoad));
+    if (window.location.hash === "#full-copy") openAndLoad();
+  }
+
+  function totalSteps(scene) {
+    if (productionFor(scene)) return productionFor(scene).cues.length;
+    if (scene.type === "shadow") return Math.max(6, scene.dialogue.length);
+    if (scene.type === "side") return Math.max(4, scene.dialogue.length);
+    return Math.max(10, scene.dialogue.length);
+  }
+  function actionIndexFor(scene, localStep) {
+    const total = totalSteps(scene);
+    const actionCount = Math.max(1, scene.actions.length);
+    if (total <= 1 || actionCount <= 1) return 0;
+    return Math.min(actionCount - 1, Math.round((localStep / (total - 1)) * (actionCount - 1)));
+  }
   function dialogueIndexFor(scene, localStep) { return Math.min(scene.dialogue.length - 1, Math.floor((localStep / totalSteps(scene)) * scene.dialogue.length)); }
-  function stepDuration(scene, localStep) { const line = scene.dialogue[dialogueIndexFor(scene, localStep)]; return clamp(2.9 + String(line?.text || "").length * .025, 3.6, 6.5); }
+  function stepDuration(scene, localStep) {
+    const line = scene.dialogue[dialogueIndexFor(scene, localStep)];
+    const base = scene.type === "side" ? 4.35 : scene.type === "shadow" ? 3.75 : 2.9;
+    return clamp(base + String(line?.text || "").length * .025, scene.type === "side" ? 5 : 4.1, 6.8);
+  }
 
   function createStepMeta(sequence) {
     const result = [];
@@ -1048,10 +1082,17 @@
     const production = productionFor(scene);
     state.player.currentScene = scene; stage.dataset.type = scene.type; stage.dataset.scene = scene.id; stage.dataset.production = String(Boolean(production));
     if (filmProduction) filmProduction.hidden = !production;
-    $("#cinema-type").textContent = state.player.mode === "reel" ? `四部連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${scene.id}`;
+    $("#cinema-type").textContent = state.player.mode === "reel" ? `四部連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]} · ${scene.id}`;
     $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}` : scene.subtitle; $("#cinema-source").textContent = production?.ethics || scene.source; stageProp.textContent = scene.prop || scene.motif || "";
     const filmIntro = $("#cinema-film-intro"); if (filmIntro) { filmIntro.textContent = scene.description || ""; filmIntro.hidden = !scene.description; }
-    if (changed) { setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); }
+    if (changed) {
+      setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene);
+      const productionControls = Boolean(production);
+      const previous = $("#prev-beat"); const next = $("#next-beat"); const replay = $("#replay-act");
+      if (previous) previous.textContent = productionControls ? "上一幕" : "上一拍";
+      if (next) next.textContent = productionControls ? "下一幕" : "下一拍";
+      if (replay) replay.textContent = productionControls ? "重播本幕" : "重播本場";
+    }
   }
 
   function scoreKeyForScene(scene) {
@@ -2137,6 +2178,11 @@
     timeline.to(stageProp, { x: (meta.actionIndex - 4.5) * 5, y: ((meta.actionIndex % 3) - 1) * 5, rotation: (meta.actionIndex % 2 ? 1 : -1) * 1.2, duration: travel, ease: "sine.inOut" }, at);
     timeline.to(thread, { scaleX: .1 + meta.actionIndex * .1, autoAlpha: meta.actionIndex === 9 ? .72 : .42, duration: travel, ease: "power2.out" }, at);
     timeline.to(focusLight, { xPercent: (meta.actionIndex - 4.5) * 8, autoAlpha: .18 + (meta.actionIndex % 3) * .05, duration: travel, ease: "sine.inOut" }, at);
+    if (meta.scene.type === "shadow") {
+      const wristTurn = meta.actionIndex % 2 ? 1.15 : -1.15;
+      timeline.to(actorFemaleImage, { rotation: wristTurn, transformOrigin: "48% 78%", duration: .42, ease: "sine.inOut", yoyo: true, repeat: 1 }, at + Math.min(.58, duration * .14));
+      timeline.to(actorMaleImage, { rotation: -wristTurn * .72, transformOrigin: "52% 76%", duration: .46, ease: "sine.inOut", yoyo: true, repeat: 1 }, at + Math.min(.72, duration * .18));
+    }
     animateEffect(timeline, meta, at, duration);
   }
 
@@ -2145,7 +2191,8 @@
     if (productionFor(meta.scene)) addProductionCue(timeline, meta, at);
     else if (meta.scene.type === "film") addFilmBeat(timeline, meta, at, duration);
     else addActorBeat(timeline, meta, at, duration);
-    timeline.fromTo(dialogueBox, { autoAlpha: .52, y: 10 }, { autoAlpha: 1, y: 0, duration: .45, ease: "power2.out", immediateRender: false }, at);
+    const dialogueAt = meta.scene.type === "shadow" ? at + Math.min(.8, duration * .2) : meta.scene.type === "side" ? at + Math.min(.28, duration * .08) : at;
+    timeline.fromTo(dialogueBox, { autoAlpha: .52, y: 10 }, { autoAlpha: 1, y: 0, duration: .45, ease: "power2.out", immediateRender: false }, dialogueAt);
     timeline.fromTo($("#frame-counter"), { scale: .86, autoAlpha: .5 }, { scale: 1, autoAlpha: 1, duration: .34, immediateRender: false }, at);
   }
 
@@ -2160,15 +2207,20 @@
       $("#frame-counter").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 / 五幕`;
       $("#shot-number").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 · ${formatTime(meta.localStart)}`;
       $("#shot-action").textContent = actInfo.action;
+      const status = $("#current-act-status"); if (status) status.textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕，共五幕：${actInfo.title}`;
     } else {
-      $("#frame-counter").textContent = `${String(meta.actionIndex + 1).padStart(2, "0")} / 10`;
-      $("#shot-number").textContent = `分鏡 ${String(meta.actionIndex + 1).padStart(2, "0")}`;
+      const sceneSteps = totalSteps(meta.scene);
+      $("#frame-counter").textContent = `${String(meta.localStep + 1).padStart(2, "0")} / ${String(sceneSteps).padStart(2, "0")}`;
+      $("#shot-number").textContent = `${TYPE_LABELS[meta.scene.type]} ${String(meta.localStep + 1).padStart(2, "0")}`;
       $("#shot-action").textContent = meta.scene.actions[meta.actionIndex] || "場景推進";
+      const status = $("#current-act-status"); if (status) status.textContent = `${TYPE_LABELS[meta.scene.type]}第${meta.localStep + 1}段，共${sceneSteps}段`;
     }
     const activeSpeaker = line?.speaker || "旁白";
     $("#speaker").textContent = activeSpeaker; $("#dialogue-text").textContent = line?.text || meta.scene.title;
     dialogueBox.dataset.speakerTone = speakerTone(activeSpeaker);
-    $$(".story-beat", $("#storyboard")).forEach((beat, beatIndex) => beat.classList.toggle("is-current", beatIndex === meta.actionIndex)); updateActMarkers(meta.scene.id, meta.actionIndex);
+    const beats = $$(".story-beat", $("#storyboard"));
+    const closestBeat = beats.reduce((closest, beat) => Math.abs(Number(beat.dataset.actionIndex) - meta.actionIndex) < Math.abs(Number(closest?.dataset.actionIndex ?? Infinity) - meta.actionIndex) ? beat : closest, null);
+    beats.forEach((beat) => beat.classList.toggle("is-current", beat === closestBeat)); updateActMarkers(meta.scene.id, meta.actionIndex);
     if (staticVisuals || state.reduced || !hasGSAP) applyStaticVisuals(meta); if (!state.player.timeline) syncFallbackProgress();
   }
 
@@ -2183,7 +2235,7 @@
 
   function destroyTimeline() { state.player.timeline?.kill(); state.player.timeline = null; state.player.stepTimes = []; cinemaAudio?.pause(); stage?.classList.remove("is-gsap"); }
   function formatTime(seconds) { if (!Number.isFinite(seconds)) return "00:00"; const rounded = Math.max(0, Math.round(seconds)); return `${String(Math.floor(rounded / 60)).padStart(2, "0")}:${String(rounded % 60).padStart(2, "0")}`; }
-  function syncTimelineProgress() { if (!state.player.timeline) return; const total = state.player.timeline.duration() || 1; const value = Math.round((state.player.timeline.time() / total) * 1000); progressInput.value = String(value); progressInput.setAttribute("aria-valuetext", `${Math.round(value / 10)}%`); timelineTime.textContent = `${formatTime(state.player.timeline.time())} / ${formatTime(total)}`; syncSceneAudioToTimeline(false); }
+  function syncTimelineProgress() { if (!state.player.timeline) return; const total = state.player.timeline.duration() || 1; const current = state.player.timeline.time(); const value = Math.round((current / total) * 1000); progressInput.value = String(value); progressInput.setAttribute("aria-valuetext", `${Math.round(value / 10)}%，尚餘${formatTime(total - current)}`); timelineTime.textContent = `${formatTime(current)} / ${formatTime(total)} · 尚餘 ${formatTime(total - current)}`; syncSceneAudioToTimeline(false); }
   function syncFallbackProgress() { const total = state.player.stepMeta.length; const value = total <= 1 ? 0 : Math.round((state.player.stepIndex / (total - 1)) * 1000); progressInput.value = String(value); progressInput.setAttribute("aria-valuetext", `${Math.round(value / 10)}%`); timelineTime.textContent = `${String(state.player.stepIndex + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`; }
   function stepAtTime(time) { let found = 0; state.player.stepTimes.forEach((start, index) => { if (start <= time + .001) found = index; }); return found; }
 
@@ -2197,6 +2249,26 @@
   function pausePlayback() { state.player.timeline?.pause(); cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); }
   function goToStep(index) { if (!state.player.stepMeta.length) return; pausePlayback(); const target = clamp(index, 0, state.player.stepMeta.length - 1); if (state.player.timeline) state.player.timeline.pause(state.player.stepTimes[target] || 0, true); renderStep(target, true); syncTimelineProgress(); syncSceneAudioToTimeline(true); const meta = state.player.stepMeta[target]; if (state.player.mode === "single" && meta) setPlayerUrl(meta.scene.id, "single", meta.actionIndex); }
   function jumpToScene(id) { const index = state.player.stepMeta.findIndex((meta) => meta.scene.id === id); if (index >= 0) goToStep(index); }
+  function adjacentUnit(delta) {
+    const current = state.player.stepMeta[state.player.stepIndex];
+    if (!current || !productionFor(current.scene)) { goToStep(state.player.stepIndex + delta); return; }
+    const actStarts = state.player.stepMeta.map((meta, index) => ({ meta, index })).filter(({ meta }) => meta.isActStart);
+    const currentUnit = actStarts.reduce((found, unit, index) => unit.index <= state.player.stepIndex ? index : found, 0);
+    goToStep(actStarts[clamp(currentUnit + delta, 0, actStarts.length - 1)]?.index ?? state.player.stepIndex);
+  }
+  function replayCurrentUnit() {
+    const current = state.player.stepMeta[state.player.stepIndex]; if (!current) return;
+    const index = productionFor(current.scene)
+      ? state.player.stepMeta.findIndex((meta) => meta.scene.id === current.scene.id && meta.actionIndex === current.actionIndex)
+      : state.player.stepMeta.findIndex((meta) => meta.scene.id === current.scene.id);
+    goToStep(index >= 0 ? index : state.player.stepIndex);
+  }
+  function setCaptions(enabled) {
+    state.player.captions = Boolean(enabled);
+    stage?.classList.toggle("captions-hidden", !state.player.captions);
+    const button = $("#toggle-captions");
+    if (button) { button.textContent = state.player.captions ? "字幕：開" : "字幕：關"; button.setAttribute("aria-pressed", String(state.player.captions)); }
+  }
 
   function renderActMarkers() {
     const root = $("#act-markers"); if (!root) return; root.replaceChildren();
@@ -2230,11 +2302,12 @@
   function renderStoryboard(scene) {
     const root = $("#storyboard"); if (!root) return; root.replaceChildren();
     const production = productionFor(scene);
-    const beatCount = production ? production.acts.length : 10;
-    for (let actionIndex = 0; actionIndex < beatCount; actionIndex += 1) {
+    const beatCount = production ? production.acts.length : scene.type === "shadow" ? 6 : scene.type === "side" ? 4 : 10;
+    for (let beatIndex = 0; beatIndex < beatCount; beatIndex += 1) {
+      const actionIndex = production ? beatIndex : Math.round((beatIndex / Math.max(1, beatCount - 1)) * Math.max(0, scene.actions.length - 1));
       const actInfo = production?.acts[actionIndex];
       const action = actInfo?.action || scene.actions[actionIndex] || `分鏡 ${actionIndex + 1}`;
-      const button = document.createElement("button"); button.type = "button"; button.className = "story-beat"; button.dataset.number = production ? `幕${CHINESE_ACT_NUMBERS[actionIndex]}` : String(actionIndex + 1).padStart(2, "0"); button.title = actInfo ? `${actInfo.title}｜${action}` : action; button.setAttribute("aria-label", production ? `跳到第${CHINESE_ACT_NUMBERS[actionIndex]}幕：${actInfo.title}` : `跳到分鏡${actionIndex + 1}：${action}`);
+      const button = document.createElement("button"); button.type = "button"; button.className = "story-beat"; button.dataset.actionIndex = String(actionIndex); button.dataset.number = production ? `幕${CHINESE_ACT_NUMBERS[actionIndex]}` : String(beatIndex + 1).padStart(2, "0"); button.title = actInfo ? `${actInfo.title}｜${action}` : action; button.setAttribute("aria-label", production ? `跳到第${CHINESE_ACT_NUMBERS[actionIndex]}幕：${actInfo.title}` : `跳到${TYPE_LABELS[scene.type]}鏡位${beatIndex + 1}：${action}`);
       if (scene.id === "FM-C" && FM_C_ACT_PLATES[actionIndex]) {
         button.style.setProperty("--beat-image", `url('${assetUrl(FM_C_ACT_PLATES[actionIndex].src)}')`);
         button.style.setProperty("--beat-size", "cover");
@@ -2308,7 +2381,7 @@
     if (!dialog.open) dialog.showModal();
     document.body.style.overflow = "hidden";
     scoreLibraryAudio?.pause();
-    preloadSequence(state.player.sequence); renderActMarkers(); renderTranscript(); buildTimeline(); renderStep(0, true); setPlayerUrl(scene.id, mode); updatePlayButton(); animateCinemaEntrance(); $("#cinema-play-overlay")?.focus();
+    preloadSequence(state.player.sequence); renderActMarkers(); renderTranscript(); buildTimeline(); renderStep(0, true); setCaptions(state.player.captions); setPlayerUrl(scene.id, mode); updatePlayButton(); animateCinemaEntrance(); $("#cinema-play-overlay")?.focus();
   }
 
   function animateCinemaEntrance() {
@@ -2385,8 +2458,10 @@
     $$("a", nav).forEach((link) => link.addEventListener("click", () => setNavOpen(false))); window.addEventListener("resize", () => { if (window.innerWidth > 1120) setNavOpen(false); requestActorCalibration(); });
     window.addEventListener("scroll", () => { if (!readingProgressFrame) readingProgressFrame = window.requestAnimationFrame(updateReadingProgress); }, { passive: true });
     $("#hero-play-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel")); $("#play-full-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel"));
-    $("#close-cinema")?.addEventListener("click", closeCinema); $("#share-cinema")?.addEventListener("click", shareCinema); $("#prev-beat")?.addEventListener("click", () => goToStep(state.player.stepIndex - 1)); $("#next-beat")?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
+    $("#close-cinema")?.addEventListener("click", closeCinema); $("#share-cinema")?.addEventListener("click", shareCinema); $("#prev-beat")?.addEventListener("click", () => adjacentUnit(-1)); $("#next-beat")?.addEventListener("click", () => adjacentUnit(1));
     $("#play-cinema")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); $("#cinema-play-overlay")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); dialogueBox?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
+    $("#replay-act")?.addEventListener("click", replayCurrentUnit);
+    $("#toggle-captions")?.addEventListener("click", () => setCaptions(!state.player.captions));
     $("#toggle-transcript")?.addEventListener("click", () => { if (!transcript) return; transcript.open = !transcript.open; syncTranscriptToggle(true); });
     transcript?.addEventListener("toggle", () => { syncTranscriptToggle(false); animateTranscriptOpen(transcript, ".transcript-scene"); });
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); const target = stepAtTime(time); state.player.timeline.pause(time, true); renderStep(target, false); syncTimelineProgress(); const meta = state.player.stepMeta[target]; if (state.player.mode === "single" && meta) setPlayerUrl(meta.scene.id, "single", meta.actionIndex); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
@@ -2402,7 +2477,7 @@
     scoreLibraryAudio?.addEventListener("play", () => { cinemaAudio?.pause(); suspendAmbient(); });
     scoreLibraryAudio?.addEventListener("pause", () => { if (!dialog?.open) resumeAmbient(); });
     scoreLibraryAudio?.addEventListener("ended", () => { if (!dialog?.open) resumeAmbient(); });
-    document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") goToStep(state.player.stepIndex + 1); if (event.key === "ArrowLeft") goToStep(state.player.stepIndex - 1); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
+    document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") adjacentUnit(1); if (event.key === "ArrowLeft") adjacentUnit(-1); if (event.key.toLowerCase() === "c") setCaptions(!state.player.captions); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         state.player.resumeAfterVisibility = state.player.playing;
@@ -2445,7 +2520,7 @@
     if (!scenes.length) { console.error("Scene registry was not loaded."); return; }
     const gated = sessionStorage.getItem("kk-entered-v8") !== "true";
     setPageGate(gated);
-    refreshMotionUi(); refreshAmbientUi(); renderFilmActs(); bindEvents(); updateReadingProgress(); loadInlineStory(); setupPageMotion();
+    refreshMotionUi(); refreshAmbientUi(); renderFilmActs(); bindEvents(); updateReadingProgress(); setupFullCopy(); setupPageMotion();
     const directPlayer = initDirectPlayer();
     if (!directPlayer) { if (gated) playGateIntro(); else playPageIntro(); }
   }

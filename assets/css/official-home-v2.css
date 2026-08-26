@@ -1509,3 +1509,197 @@
     scroll-behavior:auto;
   }
 }
+
+/* Director's cut — 2026-08-26: shorter homepage, evidence-separated speech audit,
+   distinct theatre grammar and complete player controls. */
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+.entry-gate{transition:opacity .2s ease,visibility .2s ease}
+.entry-gate[hidden]{display:none!important}
+#chen-statements{scroll-margin-top:6rem}
+
+.statement-audit{
+  margin-top:clamp(4rem,7vw,6.5rem);
+  padding-top:clamp(2.5rem,5vw,4.5rem);
+  border-top:1px solid rgba(216,180,115,.2);
+}
+.statement-audit-heading{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);
+  gap:clamp(1.2rem,4vw,4rem);
+  align-items:end;
+}
+.statement-audit-heading h3{
+  max-width:16ch;
+  margin:.55rem 0 0;
+  color:var(--evidence-ink);
+  font:600 clamp(2rem,4vw,4rem)/1.12 var(--serif,serif);
+  text-wrap:balance;
+}
+.statement-audit-heading>p{max-width:54ch;margin:0;color:var(--evidence-muted);line-height:1.85}
+.statement-status{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.55rem 1rem;
+  margin:1.75rem 0 1rem;
+  padding:.85rem 1rem;
+  border:1px solid rgba(201,131,118,.28);
+  border-radius:1rem;
+  background:linear-gradient(100deg,rgba(201,131,118,.09),rgba(13,25,22,.75));
+}
+.statement-status strong{color:#e8b1a7;font-size:.74rem;letter-spacing:.08em}
+.statement-status span{color:#f1e9dc;font:600 1rem var(--serif,serif)}
+.statement-status a{margin-left:auto;color:#e7c58b;font-size:.78rem}
+.statement-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.statement-grid article{
+  display:grid;
+  align-content:start;
+  min-width:0;
+  min-height:22rem;
+  padding:clamp(1.1rem,2.2vw,1.65rem);
+  border:1px solid rgba(216,180,115,.14);
+  border-radius:1.25rem;
+  background:linear-gradient(145deg,rgba(255,255,255,.03),rgba(10,22,19,.92));
+}
+.statement-grid article>header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem;align-items:center}
+[data-evidence-level]{display:inline-flex;align-items:center;min-height:1.75rem;padding:.3rem .55rem;border-radius:999px;font:800 .62rem/1.2 var(--sans,system-ui,sans-serif);letter-spacing:.06em}
+[data-evidence-level="reported"]{color:#e8d6b7;border:1px solid rgba(216,180,115,.27);background:rgba(216,180,115,.08)}
+[data-evidence-level="third-party"]{color:#bdd6d0;border:1px solid rgba(127,163,151,.32);background:rgba(127,163,151,.1)}
+.statement-grid header small{color:#879b94;font-size:.68rem}
+.statement-grid blockquote{
+  margin:1.25rem 0 .8rem;
+  padding:0 0 0 1rem;
+  color:#f2e8d8;
+  border-left:3px solid var(--evidence-rose);
+  font:600 clamp(1.2rem,2.05vw,1.65rem)/1.65 var(--serif,serif);
+}
+.statement-grid p{margin:0 0 1rem;color:#b8c2bc;line-height:1.8}
+.statement-grid a{align-self:end;margin-top:auto;color:#e5c187;font-size:.78rem}
+.third-party-statement{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:1rem;
+  align-items:center;
+  margin-top:.8rem;
+  padding:1rem 1.15rem;
+  border:1px solid rgba(127,163,151,.2);
+  border-radius:1rem;
+  background:rgba(127,163,151,.06);
+}
+.third-party-statement strong{color:#e7ece7;font:600 1.08rem/1.55 var(--serif,serif)}
+.third-party-statement p{margin:.25rem 0 0;color:#aebbb5;font-size:.83rem}
+.third-party-statement a{color:#bcd4cd;font-size:.74rem}
+.court-finding-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:1rem;overflow:hidden;border:1px solid rgba(138,165,175,.2);border-radius:1rem;background:rgba(138,165,175,.16)}
+.court-finding-split>div{padding:1.1rem;background:#0d1916}
+.court-finding-split small{color:#9db9c2;font-weight:800;letter-spacing:.06em}
+.court-finding-split p{margin:.55rem 0 0;color:#c3cdc8;line-height:1.8}
+.statement-boundary{margin:1rem 0 0;padding:.85rem 1rem;color:#aab7b0;border-left:3px solid #8aa5af;background:rgba(138,165,175,.06);font-size:.82rem;line-height:1.75}
+
+.format-roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:2rem;overflow:hidden;border:1px solid rgba(216,180,115,.16);border-radius:1.2rem;background:rgba(216,180,115,.16)}
+.format-roles article{display:grid;gap:.25rem;padding:1rem 1.15rem;background:#0d1916}
+.format-roles span{color:#d8b473;font-size:.68rem;font-weight:800;letter-spacing:.08em}
+.format-roles strong{color:#f0ece2;font:600 1.2rem var(--serif,serif)}
+.format-roles small{color:#9fafA7;font-size:.72rem}
+
+.full-copy{padding-block:clamp(4.5rem,8vw,7rem)}
+.full-copy-details{margin:0;border:0}
+.full-copy-details>summary{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:1rem;
+  align-items:center;
+  min-height:5.5rem;
+  padding:1rem 4rem 1rem 1.25rem;
+  border:1px solid rgba(216,180,115,.23);
+  border-radius:1.15rem;
+  background:linear-gradient(105deg,rgba(35,67,64,.54),rgba(13,25,22,.96),rgba(92,52,50,.28));
+  cursor:pointer;
+  list-style:none;
+}
+.full-copy-details>summary::-webkit-details-marker{display:none}
+.full-copy-details>summary::after{content:"＋";position:absolute;right:1.3rem;top:50%;color:#d8b473;font-size:1.7rem;transform:translateY(-50%)}
+.full-copy-details[open]>summary::after{content:"−"}
+.full-copy-details>summary span{display:grid;gap:.15rem}
+.full-copy-details>summary b{color:#d8b473;font-size:.65rem;letter-spacing:.12em}
+.full-copy-details>summary strong{color:#f0ece2;font:600 clamp(1.15rem,2vw,1.5rem) var(--serif,serif)}
+.full-copy-details>summary small{color:#aab7b0}
+.full-copy-details>summary a{color:#e5c187}
+.full-copy-details .copy-layout{margin-top:2rem}
+
+/* Fix the actual over-wide theatre breakout instead of relying on body clipping. */
+main,.section-shell,.copy-layout,.inline-story,.copy-scene-group,.copy-scene-grid{min-width:0;max-width:100%}
+.inline-story>.copy-scene-group{
+  width:100%;
+  max-width:100%;
+  margin-inline:0;
+  padding-inline:clamp(.75rem,2vw,1.4rem);
+  transform:none;
+}
+.inline-story>.copy-scene-group>header,
+.inline-story>.copy-scene-group>.copy-scene-grid{width:100%;max-width:100%;margin-inline:0}
+.cinema-dialog{width:100%;max-width:100%}
+
+/* Shadow theatre is warm, fibrous and hand-pulled; side theatre is cool and procedural. */
+.cinema-stage[data-type="shadow"] .cinema-visual::before,
+.cinema-stage[data-type="side"] .cinema-visual::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  pointer-events:none;
+}
+.cinema-stage[data-type="shadow"] .cinema-visual::before{
+  opacity:.32;
+  background:repeating-linear-gradient(92deg,transparent 0 7px,rgba(238,219,181,.06) 8px 9px),radial-gradient(ellipse at 48% 44%,rgba(237,182,99,.2),transparent 45%);
+  mix-blend-mode:screen;
+}
+.cinema-stage[data-type="shadow"] .cinema-actor{transform-origin:50% 78%}
+.cinema-stage[data-type="side"] .cinema-visual::before{
+  opacity:.42;
+  background:linear-gradient(90deg,rgba(8,25,27,.46),transparent 23% 77%,rgba(8,25,27,.46)),repeating-linear-gradient(0deg,transparent 0 64px,rgba(154,190,192,.035) 65px 66px);
+}
+.cinema-stage[data-type="side"] .cinema-thread{height:1px;filter:saturate(.45)}
+.cinema-stage.captions-hidden .dialogue-box{visibility:hidden;opacity:0;pointer-events:none}
+.cinema-stage .dialogue-box{transition:opacity .18s ease,visibility .18s ease,background .3s ease,border-color .3s ease}
+
+/* Light-paper rendering inside story.html and the inline full text. */
+.story-statement-audit{margin:3.5rem 0;padding:1.25rem;border:1px solid rgba(83,105,96,.22);border-radius:1rem;background:rgba(82,124,112,.055)}
+.story-content .story-statement-audit h4{margin-top:0}
+.statement-reading-boundary{padding:.85rem 1rem;border-left:4px solid #668e86;background:rgba(102,142,134,.08)}
+.statement-third-party{border-left-color:#55778a!important;background:rgba(85,119,138,.08)!important}
+.story-statement-audit a{color:#735247;text-underline-offset:.2em}
+
+@media(max-width:760px){
+  .minnan-seal-field img:nth-child(n+3){display:none!important}
+  .statement-audit-heading,.statement-grid,.court-finding-split,.format-roles{grid-template-columns:1fr}
+  .statement-audit-heading h3{max-width:none;font-size:clamp(1.9rem,9.5vw,3rem)}
+  .statement-grid article{min-height:0}
+  .statement-status{align-items:flex-start}
+  .statement-status a{width:100%;margin-left:0}
+  .third-party-statement{grid-template-columns:1fr;gap:.65rem}
+  .format-roles article{min-height:5.2rem}
+  .full-copy-details>summary{grid-template-columns:1fr;padding:.9rem 3rem .9rem 1rem}
+  .full-copy-details>summary small{font-size:.72rem}
+  .inline-story>.copy-scene-group{margin-inline:0!important;width:100%!important;padding-inline:.55rem}
+  .inline-story>.copy-scene-group>header,
+  .inline-story>.copy-scene-group>.copy-scene-grid{width:100%!important}
+  .cinema-header h2{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3}
+  .cinema-stage[data-type="shadow"] .cinema-actor,
+  .cinema-stage[data-type="side"] .cinema-actor{width:min(72vw,430px);height:55%}
+  .cinema-stage[data-type="side"] .cinema-actor{width:min(65vw,390px)}
+  .cinema-controls{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cinema-controls button{min-height:42px;font-size:.72rem}
+  .timeline-control output{min-width:155px;font-size:.66rem}
+  .story-statement-audit{padding:.75rem}
+}

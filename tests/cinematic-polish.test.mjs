@@ -132,10 +132,37 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
   assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
-  assert.match(loader, /const version="20260824-prologue-audio-1"/);
-  assert.match(html, /cinematic-revamp\.css\?v=20260824-prologue-text-1/);
-  assert.match(html, /cinematic-revamp\.js\?v=20260824-prologue-text-2/);
-  assert.match(html, /audio=20260824-prologue-audio-1/);
+  assert.match(loader, /const version="20260826-directors-cut-1"/);
+  assert.match(html, /cinematic-revamp\.css\?v=20260826-directors-cut-1/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260826-directors-cut-1/);
+  assert.match(html, /audio=20260826-skip-fast-1/);
+  assert.match(prologue, /duration:skipped \? \.18 : \.72/);
+  assert.match(prologue, /status\.textContent="已略過序幕"/);
+});
+
+test("ships the director's cut, evidence-separated Chen statements, and complete player controls", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const story = await readFile(new URL("story.html", root), "utf8");
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/official-home-v2.css", root), "utf8");
+
+  assert.ok(html.indexOf('id="film-reel"') < html.indexOf('id="responsibility-map"'));
+  assert.match(html, /id="chen-statements"/);
+  assert.match(html, /本人說法／具名報導/);
+  assert.match(html, /他人發言／內部群組說法/);
+  assert.match(html, /不是陳尚潔本人發言/);
+  assert.match(story, /id="chen-statements-text"/);
+  assert.match(story, /偽造文書部分無罪/);
+  assert.match(html, /class="full-copy-details"/);
+  assert.match(html, /id="replay-act"/);
+  assert.match(html, /id="toggle-captions"[^>]*aria-pressed="true"/);
+  assert.match(app, /function adjacentUnit/);
+  assert.match(app, /function replayCurrentUnit/);
+  assert.match(app, /function setCaptions/);
+  assert.match(app, /尚餘/);
+  assert.match(app, /scene\.type === "shadow"\) return Math\.max\(6/);
+  assert.match(app, /scene\.type === "side"\) return Math\.max\(4/);
+  assert.match(css, /\.inline-story>\.copy-scene-group\{[\s\S]*?width:100%/);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {
