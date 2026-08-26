@@ -164,6 +164,7 @@ test("ships the director's cut, evidence-separated Chen statements, and complete
   assert.match(app, /scene\.type === "shadow"\) return Math\.max\(6/);
   assert.match(app, /scene\.type === "side"\) return Math\.max\(4/);
   assert.match(css, /\.inline-story>\.copy-scene-group\{[\s\S]*?width:100%/);
+  assert.match(css, /\.cinema-stage\.captions-hidden \.dialogue-box\{visibility:hidden!important;opacity:0!important/);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {

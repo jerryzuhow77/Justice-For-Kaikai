@@ -1670,7 +1670,7 @@ main,.section-shell,.copy-layout,.inline-story,.copy-scene-group,.copy-scene-gri
   background:linear-gradient(90deg,rgba(8,25,27,.46),transparent 23% 77%,rgba(8,25,27,.46)),repeating-linear-gradient(0deg,transparent 0 64px,rgba(154,190,192,.035) 65px 66px);
 }
 .cinema-stage[data-type="side"] .cinema-thread{height:1px;filter:saturate(.45)}
-.cinema-stage.captions-hidden .dialogue-box{visibility:hidden;opacity:0;pointer-events:none}
+.cinema-stage.captions-hidden .dialogue-box{visibility:hidden!important;opacity:0!important;pointer-events:none}
 .cinema-stage .dialogue-box{transition:opacity .18s ease,visibility .18s ease,background .3s ease,border-color .3s ease}
 
 /* Light-paper rendering inside story.html and the inline full text. */
