@@ -208,8 +208,11 @@ jobs:
               2> "visual-regression/player-${scene}-console.log"
 
             grep -q 'class="film-act-card"' "visual-regression/player-${scene}-dom.html"
-            grep -q 'class="copy-scene-card film"' "visual-regression/player-${scene}-dom.html"
-            test "$(grep -o 'class="copy-scene-item' "visual-regression/player-${scene}-dom.html" | wc -l)" -eq 24
+            grep -q 'class="full-copy-details"' "visual-regression/player-${scene}-dom.html"
+            if grep -q 'class="copy-scene-item' "visual-regression/player-${scene}-dom.html"; then
+              echo "The complete long-form story loaded before the reader expanded it."
+              exit 1
+            fi
             if grep -q 'id="scene-library"' "visual-regression/player-${scene}-dom.html"; then
               echo "Removed scene-library block returned in the browser render."
               exit 1
