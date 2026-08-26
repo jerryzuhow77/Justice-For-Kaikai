@@ -1624,6 +1624,10 @@
 .quote-dispute-grid a{align-self:end;margin-top:.8rem;color:#e5c187;font-size:.74rem}
 .quote-dispute-boundary{margin:1rem 0 0;padding:.85rem 1rem;color:#bdc9c3;border-left:3px solid #8aa5af;background:rgba(138,165,175,.07);font-size:.82rem;line-height:1.75}
 .quote-dispute-boundary strong{color:#d7e3df}
+/* Keep the fixed 113 pill over an intentionally empty gutter, never over evidence text. */
+@media(min-width:761px){
+  .quote-dispute>.quote-dispute-boundary{padding-right:10.25rem}
+}
 .court-finding-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:1rem;overflow:hidden;border:1px solid rgba(138,165,175,.2);border-radius:1rem;background:rgba(138,165,175,.16)}
 .court-finding-split>div{padding:1.1rem;background:#0d1916}
 .court-finding-split small{color:#9db9c2;font-weight:800;letter-spacing:.06em}
@@ -1710,6 +1714,14 @@ main,.section-shell,.copy-layout,.inline-story,.copy-scene-group,.copy-scene-gri
 .story-quote-dispute>blockquote p{margin:0;font:600 1.08rem/1.7 var(--serif,serif)}
 .story-quote-dispute>blockquote cite{display:block;margin-top:.35rem;color:#775e56;font-size:.72rem;font-style:normal}
 .story-quote-dispute table{margin-bottom:1rem}
+/* The shared boundary component is light on the dark homepage; restore ink contrast on paper. */
+.story-page .story-quote-dispute>.quote-dispute-boundary{
+  color:#3f554e;
+  border-left-color:#52786e;
+  background:rgba(82,120,110,.12);
+  font-size:.875rem;
+}
+.story-page .story-quote-dispute>.quote-dispute-boundary strong{color:#2f463f}
 
 @media(max-width:760px){
   .minnan-seal-field img:nth-child(n+3){display:none!important}
