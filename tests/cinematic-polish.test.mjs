@@ -135,8 +135,9 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
   assert.match(loader, /const version="20260826-directors-cut-1"/);
   assert.match(html, /cinematic-revamp\.css\?v=20260826-directors-cut-1/);
   assert.match(html, /cinematic-revamp\.js\?v=20260826-directors-cut-1/);
-  assert.match(html, /audio=20260826-skip-fast-1/);
-  assert.match(prologue, /duration:skipped \? \.18 : \.72/);
+  assert.match(html, /audio=20260826-skip-immediate-2/);
+  assert.match(prologue, /if\(skipped\)\{settle\(true\);return\}/);
+  assert.match(prologue, /duration:\.72/);
   assert.match(prologue, /status\.textContent="已略過序幕"/);
 });
 
