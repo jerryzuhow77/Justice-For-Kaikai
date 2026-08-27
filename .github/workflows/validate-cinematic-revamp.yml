@@ -211,7 +211,7 @@ jobs:
               2> "visual-regression/player-${scene}-console.log"
 
             grep -q 'class="animation-card"' "visual-regression/player-${scene}-dom.html"
-            test "$(grep -o 'class="animation-card' "visual-regression/player-${scene}-dom.html" | wc -l)" -eq 24
+            test "$(grep -o 'class="animation-card"' "visual-regression/player-${scene}-dom.html" | wc -l)" -eq 24
             grep -q 'class="full-copy-details"' "visual-regression/player-${scene}-dom.html"
             if grep -q 'class="copy-scene-item' "visual-regression/player-${scene}-dom.html"; then
               echo "The complete long-form story loaded before the reader expanded it."
