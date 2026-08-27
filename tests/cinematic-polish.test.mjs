@@ -44,6 +44,7 @@ test("exposes the canonical 24-animation map without public production codes", a
   assert.match(app, /new IntersectionObserver/);
   assert.match(app, /data-src="\$\{shot\.src\}"/);
   assert.doesNotMatch(app, /<img src="\$\{shot\.src\}"[^>]*loading="eager"/);
+  assert.doesNotMatch(app, /fromTo\("\.cinema-control-dock", \{ autoAlpha: 0 \}/);
   assert.match(reader, /const publicLabel = publicIndex >= 0/);
   assert.match(css, /\.animation-card-grid/);
   assert.match(css, /\.cinema-control-dock\.is-expanded \.cinema-secondary-controls/);

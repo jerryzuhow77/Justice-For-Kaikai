@@ -2660,8 +2660,7 @@
     entrance
       .fromTo(".cinema-header, .source-ribbon, .cinema-audio-bar", { y: -10, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .46, stagger: .055, clearProps: "transform,opacity,visibility" })
       .fromTo(stage, { scale: .985, autoAlpha: .25 }, { scale: 1, autoAlpha: 1, duration: .62, clearProps: "transform,opacity,visibility" }, "-=.3")
-      .fromTo(".cinema-meta-row, .storyboard, .transcript", { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .48, stagger: .06, clearProps: "transform,opacity,visibility" }, "-=.38")
-      .fromTo(".cinema-control-dock", { autoAlpha: 0 }, { autoAlpha: 1, duration: .35, clearProps: "opacity,visibility" }, "-=.26");
+      .fromTo(".cinema-meta-row, .storyboard, .transcript", { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .48, stagger: .06, clearProps: "transform,opacity,visibility" }, "-=.38");
   }
   function closeCinema() { pausePlayback(); destroyTimeline(); if (dialog?.open) dialog.close(); }
 

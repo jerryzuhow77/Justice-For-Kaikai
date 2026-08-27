@@ -224,6 +224,10 @@ jobs:
             grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' "visual-regression/player-${scene}-dom.html"
             grep -q "data-film=\"${scene}\"" "visual-regression/player-${scene}-dom.html"
             grep -q 'data-beats="5"' "visual-regression/player-${scene}-dom.html"
+            if grep -Eq 'class="cinema-control-dock"[^>]*(opacity: 0|visibility: hidden)' "visual-regression/player-${scene}-dom.html"; then
+              echo "The primary player controls remained hidden after the entrance sequence."
+              exit 1
+            fi
             if grep -Eq 'Uncaught|ReferenceError|TypeError|SyntaxError' "visual-regression/player-${scene}-console.log"; then
               cat "visual-regression/player-${scene}-console.log"
               exit 1
