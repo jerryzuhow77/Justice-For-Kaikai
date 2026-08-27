@@ -11,9 +11,12 @@ on:
       - index.html
       - assets/css/cinematic-revamp.css
       - assets/css/cinematic-revamp-core.css
+      - assets/css/official-home-v2.css
       - assets/css/chair-prologue-*.css
       - assets/js/cinematic-revamp.js
       - assets/js/cinematic-revamp-core.js
+      - assets/js/cinematic-revamp-legacy.js
+      - assets/js/story-reader.js
       - assets/js/chair-prologue-*.js
       - assets/data/scenes.js
       - assets/data/film-productions.js
@@ -207,7 +210,8 @@ jobs:
               > "visual-regression/player-${scene}-dom.html" \
               2> "visual-regression/player-${scene}-console.log"
 
-            grep -q 'class="film-act-card"' "visual-regression/player-${scene}-dom.html"
+            grep -q 'class="animation-card"' "visual-regression/player-${scene}-dom.html"
+            test "$(grep -o 'class="animation-card"' "visual-regression/player-${scene}-dom.html" | wc -l)" -eq 24
             grep -q 'class="full-copy-details"' "visual-regression/player-${scene}-dom.html"
             if grep -q 'class="copy-scene-item' "visual-regression/player-${scene}-dom.html"; then
               echo "The complete long-form story loaded before the reader expanded it."
@@ -220,6 +224,10 @@ jobs:
             grep -q '<dialog class="cinema-dialog" id="cinema-dialog"' "visual-regression/player-${scene}-dom.html"
             grep -q "data-film=\"${scene}\"" "visual-regression/player-${scene}-dom.html"
             grep -q 'data-beats="5"' "visual-regression/player-${scene}-dom.html"
+            if grep -Eq 'class="cinema-control-dock"[^>]*(opacity: 0|visibility: hidden)' "visual-regression/player-${scene}-dom.html"; then
+              echo "The primary player controls remained hidden after the entrance sequence."
+              exit 1
+            fi
             if grep -Eq 'Uncaught|ReferenceError|TypeError|SyntaxError' "visual-regression/player-${scene}-console.log"; then
               cat "visual-regression/player-${scene}-console.log"
               exit 1

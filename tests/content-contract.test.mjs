@@ -1,8 +1,24 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import vm from "node:vm";
 
 const root = new URL("../", import.meta.url);
+
+test("public animation order contains four films and twenty chapter theatres", async () => {
+  const sandbox = { window: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(await readFile(new URL("assets/data/scenes.js", root), "utf8"), sandbox);
+  const scenes = Array.from(sandbox.window.KAIKAI_SCENES || []);
+  const order = Array.from(sandbox.window.KAIKAI_SCENE_ORDER || []);
+  const sceneMap = new Map(scenes.map((scene) => [scene.id, scene]));
+  assert.equal(order.length, 24);
+  assert.equal(new Set(order).size, 24);
+  assert.ok(order.every((id) => sceneMap.has(id)));
+  assert.deepEqual(order.slice(0, 3), ["FM-A", "SP00", "DV00"]);
+  assert.deepEqual(order.slice(-3), ["SP09", "DV09", "FM-C"]);
+  assert.deepEqual(Object.fromEntries(["film", "shadow", "side"].map((type) => [type, order.filter((id) => sceneMap.get(id).type === type).length])), { film: 4, shadow: 10, side: 10 });
+});
 
 test("scene manifest has one official ten-scene sequence", async () => {
   const manifest = JSON.parse(await readFile(new URL("public/data/scene-manifest.json", root), "utf8"));

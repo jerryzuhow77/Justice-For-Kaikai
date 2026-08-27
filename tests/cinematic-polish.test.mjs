@@ -19,6 +19,38 @@ test("removes the duplicate scene-library block while keeping chapter theatres",
   assert.doesNotMatch(app, /renderSceneLibrary/);
 });
 
+test("exposes the canonical 24-animation map without public production codes", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const css = await readFile(new URL("assets/css/official-home-v2.css", root), "utf8");
+  const reader = await readFile(new URL("assets/js/story-reader.js", root), "utf8");
+
+  assert.match(html, /id="animation-catalog"/);
+  assert.match(html, /4部主線電影（各5幕）＋10場皮影詩劇＋10場陰翳側視劇場/);
+  assert.equal((html.match(/data-catalog-view=/g) ?? []).length, 3);
+  assert.match(html, /id="animation-progress-label"/);
+  assert.match(html, /id="resume-animation"/);
+  assert.match(html, /id="prev-story"/);
+  assert.match(html, /id="next-story"/);
+  assert.match(html, /id="return-animation-map"/);
+  assert.match(html, /id="continue-reading"/);
+  assert.match(html, /id="toggle-more-controls"/);
+  assert.doesNotMatch(html, /FILM A · D · B · C/);
+  assert.match(app, /window\.KAIKAI_SCENE_ORDER \|\| fallbackStoryOrder/);
+  assert.match(app, /function publicSceneNumber/);
+  assert.match(app, /function renderAnimationCatalog/);
+  assert.match(app, /function completeCurrentPlayback/);
+  assert.match(app, /url\.searchParams\.set\("animation", publicSceneNumber/);
+  assert.match(app, /new IntersectionObserver/);
+  assert.match(app, /data-src="\$\{shot\.src\}"/);
+  assert.doesNotMatch(app, /<img src="\$\{shot\.src\}"[^>]*loading="eager"/);
+  assert.doesNotMatch(app, /fromTo\("\.cinema-control-dock", \{ autoAlpha: 0 \}/);
+  assert.match(reader, /const publicLabel = publicIndex >= 0/);
+  assert.match(css, /\.animation-card-grid/);
+  assert.match(css, /\.cinema-control-dock\.is-expanded \.cinema-secondary-controls/);
+  assert.match(css, /--scene-mobile-focus/);
+});
+
 test("ships twelve translucent Minnan seals as decorative backgrounds", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
