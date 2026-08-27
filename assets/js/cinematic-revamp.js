@@ -3,6 +3,7 @@
   const version="20260826-directors-cut-1";
   const coreVersion="20260826-directors-cut-1-fm123-runtime-clean-1-character-art-clean-2";
   const directVersion="20260826-directors-cut-1-skip-immediate-3";
+  const animationMapVersion="20260827-animation-map-1";
   const mobileQuery=matchMedia("(max-width:760px)");
   const mobileParts=[
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
@@ -36,13 +37,13 @@
   });
 
   const bootDesignPolish=()=>load(`assets/js/chapter1-design-polish.js?v=${version}`,null,()=>{});
-  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${coreVersion}`,()=>bootDesignPolish(),()=>bootDesignPolish());
+  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${coreVersion}&map=${animationMapVersion}`,()=>bootDesignPolish(),()=>bootDesignPolish());
   let started=false;
 
   const start=()=>{
     if(started)return;
     started=true;
-    load(`assets/js/chair-prologue-refined.js?v=${directVersion}`,()=>{
+    load(`assets/js/chair-prologue-refined.js?v=${directVersion}&map=${animationMapVersion}`,()=>{
       try{
         if(typeof window.initChairPrologueRefined==="function")window.initChairPrologueRefined();
       }finally{

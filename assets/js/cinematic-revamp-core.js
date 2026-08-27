@@ -59,6 +59,46 @@
     { match: ["外婆含淚的指責", "正文收束"], label: "法庭電影", scenes: ["FM-B"] },
     { match: ["結尾皮影戲", "下一扇門更早打開", "普通清晨"], label: "終章三聯劇場", scenes: ["SP09", "DV09", "FM-C"] }
   ];
+  const fallbackStoryOrder = [...new Set(INLINE_PLACEMENTS.flatMap((placement) => placement.scenes))];
+  const STORY_ORDER = [...new Set((window.KAIKAI_SCENE_ORDER || fallbackStoryOrder).filter((id) => sceneById.has(id)))];
+  const STORY_INDEX = new Map(STORY_ORDER.map((id, index) => [id, index]));
+  const STORY_SCENES = STORY_ORDER.map((id) => sceneById.get(id)).filter(Boolean);
+  const PUBLIC_TOTAL = STORY_ORDER.length;
+  const STORAGE_KEYS = {
+    watched: "kk-animation-watched-v9",
+    resume: "kk-animation-resume-v9",
+    catalogView: "kk-animation-catalog-view-v9"
+  };
+
+  function readStoredJson(key, fallback) {
+    try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
+    catch { return fallback; }
+  }
+
+  function writeStoredJson(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); }
+    catch { /* Viewing progress remains optional when storage is unavailable. */ }
+  }
+
+  function publicSceneNumber(sceneOrId) {
+    const id = typeof sceneOrId === "string" ? sceneOrId : sceneOrId?.id;
+    const index = STORY_INDEX.get(id);
+    return Number.isInteger(index) ? String(index + 1).padStart(2, "0") : "--";
+  }
+
+  function publicSceneLabel(sceneOrId) {
+    return `${publicSceneNumber(sceneOrId)} / ${String(PUBLIC_TOTAL).padStart(2, "0")}`;
+  }
+
+  function chapterLabel(scene) {
+    if (!scene) return "章節位置未定";
+    if (scene.id === "FM-A") return "開場｜序幕與序問";
+    if (scene.id === "SP00" || scene.id === "DV00") return "開場｜序幕與序問";
+    if (["FM-D", "SP08", "DV08", "FM-B"].includes(scene.id)) return "第八篇";
+    if (["SP09", "DV09", "FM-C"].includes(scene.id)) return "終章";
+    const chapter = String(scene.chapter || "").match(/^0?([1-7])$/)?.[1];
+    return chapter ? `第${["", "一", "二", "三", "四", "五", "六", "七"][Number(chapter)]}篇` : String(scene.chapter || "章節位置未定");
+  }
 
   const MOTION_POSES = [
     { f: [-18, 0, -2, .98], m: [18, 0, 2, 1] },
@@ -139,19 +179,32 @@
   const SHADOW_POSE_ROOT = "public/media/poses";
   const SIDE_POSE_ROOT = "assets/img/actors/side";
   const posePlanCache = new Map();
+  const preloadedAssets = new Set();
   let copyNavObserver = null;
   let readingProgressFrame = 0;
   let actorCalibrationFrame = 0;
   let gateMotionContext = null;
   let pageIntroPlayed = false;
   let inlineStoryLoaded = false;
+  let inlineStoryPromise = null;
+  let catalogPosterObserver = null;
   let gateHideTimer = 0;
+
+  const storedWatched = readStoredJson(STORAGE_KEYS.watched, []);
+  const storedResume = readStoredJson(STORAGE_KEYS.resume, null);
+  const storedCatalogView = (() => {
+    try { return localStorage.getItem(STORAGE_KEYS.catalogView); }
+    catch { return null; }
+  })();
 
   const state = {
     reduced: localStorage.getItem("kk-reduced-v8") === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     navOpen: false,
     pageMedia: null,
     musicEnabled: localStorage.getItem("kk-music-v8") !== "false",
+    catalogView: ["story", "type", "chapter"].includes(storedCatalogView) ? storedCatalogView : "story",
+    watched: new Set(Array.isArray(storedWatched) ? storedWatched.filter((id) => STORY_INDEX.has(id)) : []),
+    resume: storedResume && STORY_INDEX.has(storedResume.sceneId) ? storedResume : null,
     ambient: {
       requested: window.__kaikaiAmbientRequested === true,
       trackIndex: Number.isInteger(window.__kaikaiAmbientTrackIndex) ? clamp(window.__kaikaiAmbientTrackIndex, 0, AMBIENT_TRACKS.length - 1) : 0,
@@ -173,7 +226,8 @@
       resumeAfterVisibility: false,
       returnFocus: null,
       returnUrl: null,
-      shareTimer: null
+      shareTimer: null,
+      completedSceneId: null
     }
   };
 
@@ -183,7 +237,7 @@
   const nav = $("#main-nav");
   const navToggle = $("#nav-toggle");
   const motionToggle = $("#motion-toggle");
-  const filmActGrid = $("#film-act-grid");
+  const animationCatalog = $("#animation-catalog");
   const dialog = $("#cinema-dialog");
   const stage = $("#cinema-stage");
   const bgA = $("#cinema-bg-a");
@@ -305,7 +359,7 @@
     ];
   };
   const FM_C_ACT_SHOTS = FM_C_ACT_PLATES.map((plate, index) => fmCShotPlan(index));
-  const fmCResponsibilityRigMarkup = (plate) => `<div class="fm-c-responsibility-rig" aria-hidden="true" style="--adult-focus-image:url('${plate.handleSrc}')">
+  const fmCResponsibilityRigMarkup = (plate) => `<div class="fm-c-responsibility-rig" aria-hidden="true" data-adult-focus-image="${plate.handleSrc}">
     <span class="duty-fluorescent duty-fluorescent-qing"></span><span class="duty-fluorescent duty-fluorescent-modern"></span>
     <span class="duty-shadow duty-shadow-qing"></span><span class="duty-shadow duty-shadow-modern"></span>
     <span class="duty-grip"><i></i></span><span class="duty-release"><i></i><i></i><i></i></span>
@@ -344,12 +398,12 @@
   const fmCSilenceRigMarkup = () => `<div class="fm-c-silence-rig fm-c-witness-rig" aria-hidden="true">
     <span class="silence-lamp witness-door-qing"></span><span class="silence-fluorescent witness-door-modern"></span>
     <span class="silence-curtain witness-group-qing">
-      <i class="witness-person qing-woman qing-woman-one has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-maroon-clean-mobile.png" alt="" loading="eager" decoding="async"></i>
-      <i class="witness-person qing-woman qing-woman-two has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-brown.webp" alt="" loading="eager" decoding="async"></i>
-      <i class="witness-person qing-woman qing-woman-turn has-character-art"><img src="assets/img/films/fm-c-characters/qing-woman-teal-turn.webp" alt="" loading="eager" decoding="async"><span class="witness-fabric-motion witness-fabric-sleeve" aria-hidden="true"></span></i>
+      <i class="witness-person qing-woman qing-woman-one has-character-art"><img data-src="assets/img/films/fm-c-characters/qing-woman-maroon-clean-mobile.png" alt="" loading="lazy" decoding="async"></i>
+      <i class="witness-person qing-woman qing-woman-two has-character-art"><img data-src="assets/img/films/fm-c-characters/qing-woman-brown.webp" alt="" loading="lazy" decoding="async"></i>
+      <i class="witness-person qing-woman qing-woman-turn has-character-art"><img data-src="assets/img/films/fm-c-characters/qing-woman-teal-turn.webp" alt="" loading="lazy" decoding="async"><span class="witness-fabric-motion witness-fabric-sleeve" aria-hidden="true"></span></i>
     </span><span class="silence-form-grid witness-group-modern">
-      <i class="witness-person modern-nurse modern-nurse-walk has-character-art"><img src="assets/img/films/fm-c-characters/nurse-cart.webp" alt="" loading="eager" decoding="async"></i>
-      <i class="witness-person modern-nurse modern-nurse-turn has-character-art"><img src="assets/img/films/fm-c-characters/nurse-turn.webp" alt="" loading="eager" decoding="async"><span class="witness-fabric-motion witness-fabric-arm" aria-hidden="true"></span></i>
+      <i class="witness-person modern-nurse modern-nurse-walk has-character-art"><img data-src="assets/img/films/fm-c-characters/nurse-cart.webp" alt="" loading="lazy" decoding="async"></i>
+      <i class="witness-person modern-nurse modern-nurse-turn has-character-art"><img data-src="assets/img/films/fm-c-characters/nurse-turn.webp" alt="" loading="lazy" decoding="async"><span class="witness-fabric-motion witness-fabric-arm" aria-hidden="true"></span></i>
     </span>
     <i class="silence-page silence-page-one witness-cart"></i><i class="silence-page silence-page-two witness-chair"></i><i class="silence-page silence-page-three witness-rail"></i>
     <b class="silence-check silence-check-one witness-hand witness-hand-qing"></b><b class="silence-check silence-check-two witness-hand witness-hand-modern"></b><b class="silence-check silence-check-three witness-look witness-look-qing"></b><b class="silence-check silence-check-four witness-look witness-look-modern"></b>
@@ -372,7 +426,7 @@
   const filmActSequence = document.createElement("div");
   filmActSequence.className = "fm-c-five-act-sequence";
   filmActSequence.setAttribute("aria-hidden", "true");
-  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" style="--act-backdrop:url('${plate.src}')">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" style="--shot-backdrop:url('${shot.src}');--shot-focus:${shot.origin}"><img src="${shot.src}" alt="" loading="eager" decoding="async"></figure>`).join("")}${fmCActRigMarkup(index, plate)}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
+  filmActSequence.innerHTML = FM_C_ACT_PLATES.map((plate, index) => `<section class="fm-c-act-frame" data-act-plate="${index + 1}" data-label="${plate.label}" data-act-backdrop="${plate.src}">${FM_C_ACT_SHOTS[index].map((shot, shotIndex) => `<figure class="fm-c-act-shot" data-shot="${shotIndex + 1}" data-shot-kind="${shot.kind}" data-shot-backdrop="${shot.src}" style="--shot-focus:${shot.origin}"><img data-src="${shot.src}" alt="" loading="lazy" decoding="async"></figure>`).join("")}${fmCActRigMarkup(index, plate)}<div class="fm-c-live-fx" aria-hidden="true"><b></b><em></em>${Array.from({ length: 8 }, (_, particleIndex) => `<i style="--particle:${particleIndex}"></i>`).join("")}</div></section>`).join("");
   filmProduction?.prepend(filmActSequence);
   const filmEventRig = document.createElement("div");
   filmEventRig.className = "fm123-event-rig";
@@ -471,6 +525,20 @@
   const filmFinaleActions = $$(".finale-actions span", filmFinaleRig);
   const filmFinaleMemory = $$(".finale-memory", filmFinaleRig);
   const filmFinaleTitle = $(".finale-title", filmFinaleRig);
+  function hydrateFmCAct(actIndex) {
+    const frame = filmActFrames[actIndex];
+    if (!frame || frame.dataset.hydrated === "true") return;
+    if (frame.dataset.actBackdrop) frame.style.setProperty("--act-backdrop", `url('${frame.dataset.actBackdrop}')`);
+    $$(".fm-c-act-shot", frame).forEach((shot) => {
+      if (shot.dataset.shotBackdrop) shot.style.setProperty("--shot-backdrop", `url('${shot.dataset.shotBackdrop}')`);
+      const image = $("img[data-src]", shot);
+      if (image?.dataset.src) image.src = image.dataset.src;
+    });
+    $$("img[data-src]", frame).forEach((image) => { if (image.dataset.src && !image.getAttribute("src")) image.src = image.dataset.src; });
+    const responsibility = $(".fm-c-responsibility-rig", frame);
+    if (responsibility?.dataset.adultFocusImage) responsibility.style.setProperty("--adult-focus-image", `url('${responsibility.dataset.adultFocusImage}')`);
+    frame.dataset.hydrated = "true";
+  }
   const filmSeparatedPalms = document.createElement("div");
   filmSeparatedPalms.className = "film-separated-palms";
   filmSeparatedPalms.innerHTML = '<i class="palms-child palms-qing"><b></b><span>椅仔姑</span></i><em aria-hidden="true"></em><i class="palms-child palms-modern"><b></b><span>剴剴</span></i>';
@@ -820,16 +888,28 @@
     actorMale.dataset.pose = String(malePose);
   }
 
-  function preloadSequence(sequence) {
-    sequence.forEach((scene) => {
-      if (scene.image && scene.id !== "FM-C") { const image = new Image(); image.src = scene.image; }
-      if (scene.id === "FM-C") {
-        [...new Set(FM_C_ACT_SHOTS.flatMap((plans) => plans.map((plan) => plan.src)))].forEach((src) => { const image = new Image(); image.src = src; });
-      }
-      if (scene.type !== "film") {
-        ["female", "male"].forEach((sex) => actorPosePlan(scene, sex).forEach((pose) => { const image = new Image(); image.src = poseAsset(scene, sex, pose); }));
-      }
-    });
+  function warmImage(src) {
+    if (!src || preloadedAssets.has(src)) return;
+    preloadedAssets.add(src);
+    const image = new Image();
+    image.decoding = "async";
+    image.src = src;
+  }
+
+  function preloadSceneStart(scene) {
+    if (!scene) return;
+    if (scene.image && scene.id !== "FM-C") warmImage(scene.image);
+    if (scene.id === "FM-C") [...new Set((FM_C_ACT_SHOTS[0] || []).map((plan) => plan.src))].forEach(warmImage);
+    if (scene.type !== "film") ["female", "male"].forEach((sex) => warmImage(poseAsset(scene, sex, actorPosePlan(scene, sex)[0])));
+  }
+
+  function preloadCurrentAndNext(scene) {
+    preloadSceneStart(scene);
+    const sequenceIndex = state.player.sequence.findIndex((item) => item.id === scene?.id);
+    const sequenceNext = sequenceIndex >= 0 ? state.player.sequence[sequenceIndex + 1] : null;
+    const storyIndex = STORY_INDEX.get(scene?.id);
+    const storyNext = Number.isInteger(storyIndex) ? STORY_SCENES[storyIndex + 1] : null;
+    preloadSceneStart(sequenceNext || storyNext);
   }
 
   function configurePreviewActor(image, scene, sex, pose) {
@@ -864,30 +944,120 @@
     return scene?.production || filmProductions[scene?.id] || null;
   }
 
-  function createFilmActCard(scene, index) {
-    const production = productionFor(scene);
+  function catalogGroups(view) {
+    if (view === "type") {
+      return [
+        { eyebrow: "MAIN FILMS", title: "主線電影", description: "4部 · 各5幕", scenes: STORY_SCENES.filter((scene) => scene.type === "film") },
+        { eyebrow: "SHADOW POETRY", title: "皮影詩劇", description: "10場 · 記憶與倫理提問", scenes: STORY_SCENES.filter((scene) => scene.type === "shadow") },
+        { eyebrow: "SIDE VIEW", title: "陰翳側視劇場", description: "10場 · 制度接縫", scenes: STORY_SCENES.filter((scene) => scene.type === "side") }
+      ];
+    }
+    if (view === "chapter") {
+      const chapterTitles = ["第一篇", "第二篇", "第三篇", "第四篇", "第五篇", "第六篇", "第七篇"];
+      return [
+        { eyebrow: "OPENING", title: "開場｜序幕與序問", description: "主線起點與雙劇場", scenes: STORY_SCENES.filter((scene) => chapterLabel(scene).startsWith("開場")) },
+        ...chapterTitles.map((title, index) => ({ eyebrow: `CHAPTER ${String(index + 1).padStart(2, "0")}`, title, description: "皮影＋側視", scenes: STORY_SCENES.filter((scene) => chapterLabel(scene) === title) })),
+        { eyebrow: "CHAPTER 08", title: "第八篇", description: "2部主線＋雙劇場", scenes: STORY_SCENES.filter((scene) => chapterLabel(scene) === "第八篇") },
+        { eyebrow: "EPILOGUE", title: "終章", description: "雙劇場＋主線收束", scenes: STORY_SCENES.filter((scene) => chapterLabel(scene) === "終章") }
+      ].filter((group) => group.scenes.length);
+    }
+    return [{ eyebrow: "STORY ORDER", title: "故事順序｜二十四篇長卷", description: "依正文與劇場既定位置排列", scenes: STORY_SCENES }];
+  }
+
+  function createAnimationCard(scene) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "film-act-card";
+    button.className = "animation-card";
     button.dataset.sceneId = scene.id;
-    button.style.setProperty("--film-image", `url('${assetUrl(scene.image)}')`);
-    button.style.setProperty("--film-position", FILM_POSITIONS[scene.id] || "center");
-    button.setAttribute("aria-label", `播放${ACT_LABELS[scene.id]}：${scene.title}`);
-    const badge = document.createElement("span"); badge.textContent = `ACT ${String(index + 1).padStart(2, "0")}`;
-    const copy = document.createElement("div");
-    const small = document.createElement("small"); small.textContent = ACT_LABELS[scene.id];
-    const heading = document.createElement("h3"); heading.textContent = scene.title;
-    const paragraph = document.createElement("p"); paragraph.textContent = scene.cardCopy || scene.subtitle;
-    const metadata = document.createElement("small"); metadata.className = "film-card-meta"; metadata.textContent = production ? `五幕 ${formatTime(production.duration)}｜${production.score.label.split("｜")[0]}` : TYPE_LABELS[scene.type];
-    copy.append(small, heading, paragraph, metadata); button.append(badge, copy);
+    button.dataset.type = scene.type;
+    button.style.setProperty("--catalog-position", FILM_POSITIONS[scene.id] || "50% 50%");
+    if (scene.image) button.dataset.poster = assetUrl(scene.image);
+    button.setAttribute("aria-label", `播放第${publicSceneNumber(scene)}篇，共${PUBLIC_TOTAL}篇：${scene.title}，${TYPE_LABELS[scene.type]}`);
+
+    const top = document.createElement("span"); top.className = "animation-card-top";
+    const number = document.createElement("span"); number.className = "animation-card-number"; number.textContent = publicSceneLabel(scene);
+    const watched = document.createElement("span"); watched.className = "animation-card-state"; watched.textContent = state.watched.has(scene.id) ? "已觀看" : "未觀看";
+    top.append(number, watched);
+
+    const copy = document.createElement("span"); copy.className = "animation-card-copy";
+    const type = document.createElement("small"); type.textContent = `${TYPE_LABELS[scene.type]} · ${chapterLabel(scene)}`;
+    const title = document.createElement("strong"); title.textContent = scene.title;
+    const subtitle = document.createElement("span"); subtitle.textContent = scene.type === "film" ? (scene.cardCopy || scene.subtitle) : scene.subtitle;
+    const detail = document.createElement("i");
+    const production = productionFor(scene);
+    detail.textContent = production ? `五幕 · ${formatTime(production.duration)}` : TYPE_PURPOSES[scene.type].split("｜")[0];
+    copy.append(type, title, subtitle, detail);
+    button.append(top, copy);
+    button.classList.toggle("is-watched", state.watched.has(scene.id));
     button.addEventListener("click", () => openCinema(scene.id, "single"));
     return button;
   }
 
-  function renderFilmActs() {
-    if (!filmActGrid) return;
-    filmActGrid.replaceChildren();
-    FILM_ORDER.forEach((id, index) => { const scene = sceneById.get(id); if (scene) filmActGrid.append(createFilmActCard(scene, index)); });
+  function observeCatalogPosters(root) {
+    catalogPosterObserver?.disconnect();
+    const cards = $$('[data-poster]', root);
+    const reveal = (card) => {
+      if (!card.dataset.poster) return;
+      card.style.setProperty("--catalog-poster", `url('${card.dataset.poster}')`);
+      card.classList.add("is-poster-ready");
+      delete card.dataset.poster;
+    };
+    if (!("IntersectionObserver" in window)) { cards.forEach(reveal); return; }
+    catalogPosterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        reveal(entry.target);
+        catalogPosterObserver?.unobserve(entry.target);
+      });
+    }, { rootMargin: "260px 0px", threshold: .01 });
+    cards.forEach((card) => catalogPosterObserver.observe(card));
+  }
+
+  function renderAnimationCatalog(view = state.catalogView) {
+    if (!animationCatalog) return;
+    state.catalogView = ["story", "type", "chapter"].includes(view) ? view : "story";
+    try { localStorage.setItem(STORAGE_KEYS.catalogView, state.catalogView); }
+    catch { /* The selected layout simply resets next visit. */ }
+    $$('[data-catalog-view]').forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.catalogView === state.catalogView)));
+    animationCatalog.replaceChildren();
+    catalogGroups(state.catalogView).forEach((group) => {
+      const section = document.createElement("section"); section.className = "animation-catalog-group";
+      const header = document.createElement("header"); header.className = "animation-catalog-heading";
+      const headingCopy = document.createElement("div");
+      const eyebrow = document.createElement("span"); eyebrow.textContent = group.eyebrow;
+      const heading = document.createElement("h3"); heading.textContent = group.title;
+      const description = document.createElement("small"); description.textContent = `${group.scenes.length}篇 · ${group.description}`;
+      headingCopy.append(eyebrow, heading); header.append(headingCopy, description);
+      const grid = document.createElement("div"); grid.className = "animation-card-grid";
+      group.scenes.forEach((scene) => grid.append(createAnimationCard(scene)));
+      section.append(header, grid); animationCatalog.append(section);
+    });
+    animationCatalog.setAttribute("aria-busy", "false");
+    observeCatalogPosters(animationCatalog);
+    updateAnimationProgressUi();
+  }
+
+  function updateAnimationProgressUi() {
+    const count = state.watched.size;
+    const label = $("#animation-progress-label");
+    if (label) label.textContent = `已觀看 ${count} / ${PUBLIC_TOTAL}`;
+    const bar = $("#animation-progress-bar");
+    if (bar) bar.style.width = `${PUBLIC_TOTAL ? (count / PUBLIC_TOTAL) * 100 : 0}%`;
+    const resumeButton = $("#resume-animation");
+    const resumeScene = state.resume ? sceneById.get(state.resume.sceneId) : null;
+    if (resumeButton) {
+      resumeButton.hidden = !resumeScene;
+      if (resumeScene) {
+        resumeButton.textContent = `從上次位置繼續 · ${publicSceneLabel(resumeScene)}`;
+        resumeButton.setAttribute("aria-label", `從上次位置繼續：${resumeScene.title}，第${publicSceneNumber(resumeScene)}篇，共${PUBLIC_TOTAL}篇`);
+      }
+    }
+    $$(".animation-card", animationCatalog || document).forEach((card) => {
+      const isWatched = state.watched.has(card.dataset.sceneId);
+      card.classList.toggle("is-watched", isWatched);
+      const status = $(".animation-card-state", card);
+      if (status) status.textContent = isWatched ? "已觀看" : "未觀看";
+    });
   }
 
   function createLibraryTranscript(scene) {
@@ -924,7 +1094,7 @@
       ["female", "male"].forEach((sex) => { const pose = actorPosePlan(scene, sex)[4]; const image = document.createElement("img"); image.className = `copy-scene-actor ${sex}`; image.alt = ""; image.loading = "lazy"; image.src = poseAsset(scene, sex, pose); configurePreviewActor(image, scene, sex, pose); poster.append(image); });
     }
     const meta = document.createElement("span"); meta.className = "copy-scene-meta";
-    const small = document.createElement("small"); small.textContent = `${scene.id} · ${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]}`;
+    const small = document.createElement("small"); small.textContent = `${publicSceneLabel(scene)} · ${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]}`;
     const strong = document.createElement("strong"); strong.textContent = scene.title;
     const description = document.createElement("span"); description.textContent = scene.type === "film" ? (scene.cardCopy || scene.subtitle) : scene.subtitle;
     meta.append(small, strong, description); button.append(poster, meta);
@@ -972,27 +1142,36 @@
 
   async function loadInlineStory() {
     const target = $("#inline-story-content"); const navRoot = $("#copy-chapter-nav");
-    if (!target || !navRoot || inlineStoryLoaded) return;
+    if (!target || !navRoot) return false;
+    if (inlineStoryPromise) return inlineStoryPromise;
+    if (inlineStoryLoaded) return true;
     inlineStoryLoaded = true;
-    try {
-      const response = await fetch("story.html", { cache: "no-cache" });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const sourceDocument = new DOMParser().parseFromString(await response.text(), "text/html");
-      const source = $(".story-content", sourceDocument);
-      if (!source) throw new Error("完整文案節點不存在");
-      source.querySelector("#title-block-header")?.remove(); source.querySelectorAll("a[download]").forEach((link) => link.remove());
-      target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true))); target.removeAttribute("aria-busy"); enhanceStoryTypography(target); insertInlineScenes(target);
-      navRoot.replaceChildren(); const headings = $$("h2, h4", target);
-      headings.forEach((heading, index) => { if (!heading.id) heading.id = `copy-heading-${index + 1}`; const link = document.createElement("a"); link.href = `#${heading.id}`; link.textContent = heading.textContent.replace(/\s+/g, " ").trim(); navRoot.append(link); });
-      if (!headings.length) navRoot.textContent = "完整正文"; else setupCopyNavigation(headings, navRoot);
-      animateNewContent(target); window.ScrollTrigger?.refresh();
-    } catch (error) {
-      inlineStoryLoaded = false;
-      target.removeAttribute("aria-busy");
-      const paragraph = document.createElement("p"); paragraph.append("完整文案暫時無法嵌入本頁。請改用 ");
-      const link = document.createElement("a"); link.href = "story.html"; link.textContent = "純文字閱讀模式"; paragraph.append(link, "。");
-      target.replaceChildren(paragraph); navRoot.textContent = "載入失敗"; console.error("Inline story load failed", error);
-    }
+    inlineStoryPromise = (async () => {
+      try {
+        const response = await fetch("story.html", { cache: "no-cache" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const sourceDocument = new DOMParser().parseFromString(await response.text(), "text/html");
+        const source = $(".story-content", sourceDocument);
+        if (!source) throw new Error("完整文案節點不存在");
+        source.querySelector("#title-block-header")?.remove(); source.querySelectorAll("a[download]").forEach((link) => link.remove());
+        target.replaceChildren(...Array.from(source.childNodes).map((node) => node.cloneNode(true))); target.removeAttribute("aria-busy"); enhanceStoryTypography(target); insertInlineScenes(target);
+        navRoot.replaceChildren(); const headings = $$("h2, h4", target);
+        headings.forEach((heading, index) => { if (!heading.id) heading.id = `copy-heading-${index + 1}`; const link = document.createElement("a"); link.href = `#${heading.id}`; link.textContent = heading.textContent.replace(/\s+/g, " ").trim(); navRoot.append(link); });
+        if (!headings.length) navRoot.textContent = "完整正文"; else setupCopyNavigation(headings, navRoot);
+        animateNewContent(target); window.ScrollTrigger?.refresh();
+        return true;
+      } catch (error) {
+        inlineStoryLoaded = false;
+        target.removeAttribute("aria-busy");
+        const paragraph = document.createElement("p"); paragraph.append("完整文案暫時無法嵌入本頁。請改用 ");
+        const link = document.createElement("a"); link.href = "story.html"; link.textContent = "純文字閱讀模式"; paragraph.append(link, "。");
+        target.replaceChildren(paragraph); navRoot.textContent = "載入失敗"; console.error("Inline story load failed", error);
+        return false;
+      } finally {
+        inlineStoryPromise = null;
+      }
+    })();
+    return inlineStoryPromise;
   }
 
   function setupFullCopy() {
@@ -1082,11 +1261,11 @@
     const production = productionFor(scene);
     state.player.currentScene = scene; stage.dataset.type = scene.type; stage.dataset.scene = scene.id; stage.dataset.production = String(Boolean(production));
     if (filmProduction) filmProduction.hidden = !production;
-    $("#cinema-type").textContent = state.player.mode === "reel" ? `四部連續電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]}` : `${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]} · ${scene.id}`;
+    $("#cinema-type").textContent = state.player.mode === "reel" ? `四部主線電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]} · ${publicSceneLabel(scene)}` : `${publicSceneLabel(scene)} · ${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]}`;
     $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}` : scene.subtitle; $("#cinema-source").textContent = production?.ethics || scene.source; stageProp.textContent = scene.prop || scene.motif || "";
     const filmIntro = $("#cinema-film-intro"); if (filmIntro) { filmIntro.textContent = scene.description || ""; filmIntro.hidden = !scene.description; }
     if (changed) {
-      setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene);
+      preloadCurrentAndNext(scene); setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); updateStoryNavigation(scene);
       const productionControls = Boolean(production);
       const previous = $("#prev-beat"); const next = $("#next-beat"); const replay = $("#replay-act");
       if (previous) previous.textContent = productionControls ? "上一幕" : "上一拍";
@@ -2196,19 +2375,102 @@
     timeline.fromTo($("#frame-counter"), { scale: .86, autoAlpha: .5 }, { scale: 1, autoAlpha: 1, duration: .34, immediateRender: false }, at);
   }
 
+  function saveResumePosition(meta) {
+    if (!meta || !STORY_INDEX.has(meta.scene.id)) return;
+    state.resume = { sceneId: meta.scene.id, localStep: meta.localStep, actionIndex: meta.actionIndex };
+    writeStoredJson(STORAGE_KEYS.resume, state.resume);
+  }
+
+  function setCompletionState(completed) {
+    const panel = $("#cinema-complete");
+    if (!panel) return;
+    panel.hidden = !completed;
+    if (!completed) return;
+    const current = state.player.currentScene;
+    const index = STORY_INDEX.get(current?.id);
+    const next = Number.isInteger(index) ? STORY_SCENES[index + 1] : null;
+    const title = $("#cinema-complete-title");
+    if (title) title.textContent = next ? `下一篇是 ${publicSceneLabel(next)}｜${next.title}` : "二十四篇動畫長卷已看完";
+    const button = $("#complete-next-story");
+    if (button) {
+      button.disabled = !next;
+      button.textContent = next ? `選擇下一篇 · ${publicSceneNumber(next)}` : "已到長卷尾聲";
+      button.setAttribute("aria-label", next ? `開啟下一篇：${next.title}` : "已到二十四篇動畫長卷尾聲");
+    }
+    window.requestAnimationFrame(() => panel.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "nearest" }));
+  }
+
+  function completeCurrentPlayback() {
+    const current = state.player.currentScene;
+    if (!current || state.player.completedSceneId === current.id) return;
+    state.player.completedSceneId = current.id;
+    state.player.sequence.forEach((scene) => { if (STORY_INDEX.has(scene.id)) state.watched.add(scene.id); });
+    writeStoredJson(STORAGE_KEYS.watched, [...state.watched]);
+    const currentIndex = STORY_INDEX.get(current.id);
+    const next = Number.isInteger(currentIndex) ? STORY_SCENES[currentIndex + 1] : null;
+    const lastMeta = state.player.stepMeta[state.player.stepMeta.length - 1];
+    state.resume = next ? { sceneId: next.id, localStep: 0, actionIndex: 0 } : { sceneId: current.id, localStep: lastMeta?.localStep || 0, actionIndex: lastMeta?.actionIndex || 0 };
+    writeStoredJson(STORAGE_KEYS.resume, state.resume);
+    updateAnimationProgressUi();
+    updateStoryNavigation(current);
+    setCompletionState(true);
+  }
+
+  function updateStoryNavigation(scene = state.player.currentScene) {
+    const index = STORY_INDEX.get(scene?.id);
+    const previous = Number.isInteger(index) ? STORY_SCENES[index - 1] : null;
+    const next = Number.isInteger(index) ? STORY_SCENES[index + 1] : null;
+    const previousButton = $("#prev-story");
+    const nextButton = $("#next-story");
+    if (previousButton) {
+      previousButton.disabled = !previous;
+      previousButton.textContent = previous ? `上一篇 · ${publicSceneNumber(previous)}` : "已是第一篇";
+      previousButton.setAttribute("aria-label", previous ? `開啟上一篇：${previous.title}` : "已是第一篇動畫");
+    }
+    if (nextButton) {
+      nextButton.disabled = !next;
+      nextButton.textContent = next ? `下一篇 · ${publicSceneNumber(next)}` : "已是最後一篇";
+      nextButton.setAttribute("aria-label", next ? `開啟下一篇：${next.title}` : "已是最後一篇動畫");
+    }
+    const progress = $("#cinema-story-progress");
+    if (progress) progress.textContent = `${publicSceneLabel(scene)} · 已觀看 ${state.watched.size} / ${PUBLIC_TOTAL}`;
+  }
+
+  function switchStoryScene(delta) {
+    const index = STORY_INDEX.get(state.player.currentScene?.id);
+    if (!Number.isInteger(index)) return;
+    const scene = STORY_SCENES[index + delta];
+    if (scene) openCinema(scene.id, "single");
+  }
+
+  function resumeLastAnimation() {
+    const saved = state.resume ? { ...state.resume } : null;
+    const scene = saved ? sceneById.get(saved.sceneId) : null;
+    if (!scene) return;
+    openCinema(scene.id, "single");
+    const target = state.player.stepMeta.findIndex((meta) => meta.scene.id === scene.id && meta.localStep === saved.localStep);
+    if (target > 0) goToStep(target);
+  }
+
   function renderStep(index, staticVisuals = false) {
     const meta = state.player.stepMeta[index]; if (!meta) return;
     state.player.stepIndex = index; applyScene(meta.scene, staticVisuals); if (meta.scene.type !== "film") setActorSprites(meta.scene, meta.actionIndex);
+    saveResumePosition(meta);
+    if (index !== state.player.stepMeta.length - 1 && state.player.completedSceneId === meta.scene.id) state.player.completedSceneId = null;
+    if (state.player.completedSceneId !== meta.scene.id || index !== state.player.stepMeta.length - 1) setCompletionState(false);
     const production = productionFor(meta.scene);
     const line = meta.line || meta.scene.dialogue[meta.dialogueIndex];
     if (production) {
       const actInfo = production.acts[meta.actionIndex];
+      if (meta.scene.id === "FM-C") hydrateFmCAct(meta.actionIndex);
+      stage.style.setProperty("--scene-mobile-focus", productionView(actInfo).position);
       setProductionState(meta);
       $("#frame-counter").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 / 五幕`;
       $("#shot-number").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 · ${formatTime(meta.localStart)}`;
       $("#shot-action").textContent = actInfo.action;
       const status = $("#current-act-status"); if (status) status.textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕，共五幕：${actInfo.title}`;
     } else {
+      stage.style.setProperty("--scene-mobile-focus", "50% 50%");
       const sceneSteps = totalSteps(meta.scene);
       $("#frame-counter").textContent = `${String(meta.localStep + 1).padStart(2, "0")} / ${String(sceneSteps).padStart(2, "0")}`;
       $("#shot-number").textContent = `${TYPE_LABELS[meta.scene.type]} ${String(meta.localStep + 1).padStart(2, "0")}`;
@@ -2222,6 +2484,7 @@
     const closestBeat = beats.reduce((closest, beat) => Math.abs(Number(beat.dataset.actionIndex) - meta.actionIndex) < Math.abs(Number(closest?.dataset.actionIndex ?? Infinity) - meta.actionIndex) ? beat : closest, null);
     beats.forEach((beat) => beat.classList.toggle("is-current", beat === closestBeat)); updateActMarkers(meta.scene.id, meta.actionIndex);
     if (staticVisuals || state.reduced || !hasGSAP) applyStaticVisuals(meta); if (!state.player.timeline) syncFallbackProgress();
+    if ((state.reduced || !hasGSAP) && index === state.player.stepMeta.length - 1) completeCurrentPlayback();
   }
 
   function buildTimeline() {
@@ -2229,7 +2492,7 @@
     if (!hasGSAP || state.reduced) { state.player.timeline = null; syncFallbackProgress(); return; }
     const timeline = window.gsap.timeline({ paused: true }); let cursor = 0; stage.classList.add("is-gsap");
     state.player.stepMeta.forEach((meta, index) => { state.player.stepTimes.push(cursor); timeline.addLabel(`step-${index}`, cursor); if (meta.isSceneStart) timeline.addLabel(`scene-${meta.scene.id}`, cursor); if (meta.isActStart) timeline.addLabel(`${meta.scene.id}-act${meta.actionIndex + 1}`, cursor); timeline.call(() => renderStep(index, false), null, cursor); addBeatAnimation(timeline, meta, cursor); timeline.to({}, { duration: meta.duration }, cursor); cursor += meta.duration; });
-    timeline.eventCallback("onUpdate", syncTimelineProgress); timeline.eventCallback("onComplete", () => { cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); syncTimelineProgress(); });
+    timeline.eventCallback("onUpdate", syncTimelineProgress); timeline.eventCallback("onComplete", () => { cinemaAudio?.pause(); state.player.playing = false; updatePlayButton(); syncTimelineProgress(); completeCurrentPlayback(); });
     state.player.timeline = timeline; syncTimelineProgress();
   }
 
@@ -2295,7 +2558,7 @@
       });
       return;
     }
-    state.player.sequence.forEach((scene, index) => { const button = document.createElement("button"); button.type = "button"; button.dataset.sceneId = scene.id; button.textContent = state.player.mode === "reel" ? `${ACT_LABELS[scene.id]} · ${scene.title}` : `${String(index + 1).padStart(2, "0")} · ${scene.title}`; button.addEventListener("click", () => jumpToScene(scene.id)); root.append(button); });
+    state.player.sequence.forEach((scene) => { const button = document.createElement("button"); button.type = "button"; button.dataset.sceneId = scene.id; button.textContent = state.player.mode === "reel" ? `${ACT_LABELS[scene.id]} · ${publicSceneLabel(scene)} · ${scene.title}` : `${publicSceneLabel(scene)} · ${scene.title}`; button.addEventListener("click", () => jumpToScene(scene.id)); root.append(button); });
   }
   function updateActMarkers(sceneId, actIndex = 0) { $$("button", $("#act-markers")).forEach((button) => button.classList.toggle("is-current", button.dataset.sceneId === sceneId && (button.dataset.actIndex == null || Number(button.dataset.actIndex) === actIndex))); }
 
@@ -2352,7 +2615,7 @@
       section.className = "transcript-scene";
       section.open = state.player.sequence.length === 1 || sceneIndex === 0;
       const summary = document.createElement("summary");
-      const heading = document.createElement("strong"); heading.textContent = `${scene.id}｜${scene.title}`;
+      const heading = document.createElement("strong"); heading.textContent = `${publicSceneLabel(scene)}｜${scene.title}`;
       const source = document.createElement("small"); source.textContent = scene.source;
       summary.append(heading, source);
       const lines = document.createElement("div"); lines.className = "transcript-lines";
@@ -2371,17 +2634,23 @@
   }
 
   function relativeUrl(url) { return `${url.pathname}${url.search}${url.hash}`; }
-  function urlWithoutPlayer() { const url = new URL(window.location.href); url.searchParams.delete("scene"); url.searchParams.delete("reel"); url.searchParams.delete("act"); return relativeUrl(url); }
-  function setPlayerUrl(id, mode, actIndex = 0) { const url = new URL(window.location.href); url.hash = ""; url.searchParams.delete("scene"); url.searchParams.delete("reel"); url.searchParams.delete("act"); if (mode === "reel") url.searchParams.set("reel", "1"); else { url.searchParams.set("scene", id); if (actIndex > 0) url.searchParams.set("act", String(actIndex + 1)); } window.history.replaceState({ scene: id, mode, act: actIndex + 1 }, "", relativeUrl(url)); }
+  function urlWithoutPlayer() { const url = new URL(window.location.href); url.searchParams.delete("animation"); url.searchParams.delete("scene"); url.searchParams.delete("reel"); url.searchParams.delete("act"); return relativeUrl(url); }
+  function setPlayerUrl(id, mode, actIndex = 0) { const url = new URL(window.location.href); url.hash = ""; url.searchParams.delete("animation"); url.searchParams.delete("scene"); url.searchParams.delete("reel"); url.searchParams.delete("act"); if (mode === "reel") url.searchParams.set("reel", "1"); else { url.searchParams.set("animation", publicSceneNumber(id)); if (actIndex > 0) url.searchParams.set("act", String(actIndex + 1)); } window.history.replaceState({ scene: id, mode, act: actIndex + 1 }, "", relativeUrl(url)); }
 
   function openCinema(id, mode = "single") {
     const scene = sceneById.get(id) || sceneById.get(FILM_ORDER[0]); if (!scene || !dialog) return;
-    state.player.returnFocus = document.activeElement; state.player.returnUrl = urlWithoutPlayer(); state.player.mode = mode; state.player.sequence = mode === "reel" ? FILM_ORDER.map((filmId) => sceneById.get(filmId)).filter(Boolean) : [scene]; state.player.currentScene = null; state.player.currentBackdrop = 0;
+    const openingFresh = !dialog.open;
+    if (openingFresh) { state.player.returnFocus = document.activeElement; state.player.returnUrl = urlWithoutPlayer(); }
+    state.player.mode = mode; state.player.sequence = mode === "reel" ? FILM_ORDER.map((filmId) => sceneById.get(filmId)).filter(Boolean) : [scene]; state.player.currentScene = null; state.player.currentBackdrop = 0; state.player.completedSceneId = null;
     suspendAmbient();
-    if (!dialog.open) dialog.showModal();
+    if (openingFresh) dialog.showModal();
     document.body.style.overflow = "hidden";
     scoreLibraryAudio?.pause();
-    preloadSequence(state.player.sequence); renderActMarkers(); renderTranscript(); buildTimeline(); renderStep(0, true); setCaptions(state.player.captions); setPlayerUrl(scene.id, mode); updatePlayButton(); animateCinemaEntrance(); $("#cinema-play-overlay")?.focus();
+    $("#cinema-control-dock")?.classList.remove("is-expanded");
+    $("#toggle-more-controls")?.setAttribute("aria-expanded", "false");
+    setCompletionState(false); renderActMarkers(); renderTranscript(); buildTimeline(); renderStep(0, true); setCaptions(state.player.captions); setPlayerUrl(scene.id, mode); updatePlayButton();
+    if (openingFresh) animateCinemaEntrance();
+    $("#cinema-play-overlay")?.focus();
   }
 
   function animateCinemaEntrance() {
@@ -2395,7 +2664,48 @@
       .fromTo(".cinema-control-dock", { autoAlpha: 0 }, { autoAlpha: 1, duration: .35, clearProps: "opacity,visibility" }, "-=.26");
   }
   function closeCinema() { pausePlayback(); destroyTimeline(); if (dialog?.open) dialog.close(); }
-  function sceneShareUrl() { const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href; const url = new URL(canonical, window.location.href); if (state.player.mode === "reel") url.searchParams.set("reel", "1"); else if (state.player.currentScene) { url.searchParams.set("scene", state.player.currentScene.id); const meta = state.player.stepMeta[state.player.stepIndex]; if (productionFor(state.player.currentScene) && meta?.actionIndex > 0) url.searchParams.set("act", String(meta.actionIndex + 1)); } return url.href; }
+
+  function releasePlayerSurface() {
+    [actorFemaleImage, actorMaleImage].forEach((image) => image?.removeAttribute("src"));
+    [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => element?.style.removeProperty("background-image"));
+    filmActFrames.forEach((frame) => {
+      delete frame.dataset.hydrated;
+      frame.style.removeProperty("--act-backdrop");
+      $$(".fm-c-act-shot", frame).forEach((shot) => shot.style.removeProperty("--shot-backdrop"));
+      $$("img[data-src]", frame).forEach((image) => image.removeAttribute("src"));
+      $(".fm-c-responsibility-rig", frame)?.style.removeProperty("--adult-focus-image");
+    });
+    stage?.style.removeProperty("--scene-mobile-focus");
+  }
+
+  function afterCinemaClose(action) {
+    if (!dialog?.open) { action(); return; }
+    dialog.addEventListener("close", () => window.requestAnimationFrame(action), { once: true });
+    closeCinema();
+  }
+
+  function returnToAnimationMap() {
+    afterCinemaClose(() => {
+      const target = $("#film-reel");
+      target?.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
+      const heading = $("#film-reel-title");
+      if (heading) { heading.setAttribute("tabindex", "-1"); window.setTimeout(() => heading.focus({ preventScroll: true }), state.reduced ? 0 : 450); }
+    });
+  }
+
+  function continueReadingCurrentScene() {
+    const sceneId = state.player.currentScene?.id;
+    afterCinemaClose(async () => {
+      const details = $(".full-copy-details");
+      if (details) details.open = true;
+      const loaded = await loadInlineStory();
+      const target = loaded && sceneId ? $(`.copy-scene-item[data-scene-id="${sceneId}"]`) : $("#full-copy");
+      target?.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "center" });
+      const focusTarget = $(".copy-scene-card", target || document);
+      window.setTimeout(() => focusTarget?.focus?.({ preventScroll: true }), state.reduced ? 0 : 450);
+    });
+  }
+  function sceneShareUrl() { const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href; const url = new URL(canonical, window.location.href); if (state.player.mode === "reel") url.searchParams.set("reel", "1"); else if (state.player.currentScene) { url.searchParams.set("animation", publicSceneNumber(state.player.currentScene)); const meta = state.player.stepMeta[state.player.stepIndex]; if (productionFor(state.player.currentScene) && meta?.actionIndex > 0) url.searchParams.set("act", String(meta.actionIndex + 1)); } return url.href; }
   function setShareStatus(message) { const status = $("#share-status"); if (!status) return; window.clearTimeout(state.player.shareTimer); status.textContent = message; state.player.shareTimer = window.setTimeout(() => { status.textContent = ""; }, 3200); }
 
   async function shareCinema() {
@@ -2458,14 +2768,23 @@
     $$("a", nav).forEach((link) => link.addEventListener("click", () => setNavOpen(false))); window.addEventListener("resize", () => { if (window.innerWidth > 1120) setNavOpen(false); requestActorCalibration(); });
     window.addEventListener("scroll", () => { if (!readingProgressFrame) readingProgressFrame = window.requestAnimationFrame(updateReadingProgress); }, { passive: true });
     $("#hero-play-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel")); $("#play-full-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel"));
+    $$('[data-catalog-view]').forEach((button) => button.addEventListener("click", () => renderAnimationCatalog(button.dataset.catalogView)));
+    $("#resume-animation")?.addEventListener("click", resumeLastAnimation);
     $("#close-cinema")?.addEventListener("click", closeCinema); $("#share-cinema")?.addEventListener("click", shareCinema); $("#prev-beat")?.addEventListener("click", () => adjacentUnit(-1)); $("#next-beat")?.addEventListener("click", () => adjacentUnit(1));
+    $("#prev-story")?.addEventListener("click", () => switchStoryScene(-1)); $("#next-story")?.addEventListener("click", () => switchStoryScene(1));
+    $("#return-animation-map")?.addEventListener("click", returnToAnimationMap); $("#continue-reading")?.addEventListener("click", continueReadingCurrentScene);
+    $("#complete-next-story")?.addEventListener("click", () => switchStoryScene(1)); $("#complete-return-map")?.addEventListener("click", returnToAnimationMap); $("#complete-continue-reading")?.addEventListener("click", continueReadingCurrentScene);
     $("#play-cinema")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); $("#cinema-play-overlay")?.addEventListener("click", () => state.player.playing ? pausePlayback() : startPlayback()); dialogueBox?.addEventListener("click", () => goToStep(state.player.stepIndex + 1));
     $("#replay-act")?.addEventListener("click", replayCurrentUnit);
     $("#toggle-captions")?.addEventListener("click", () => setCaptions(!state.player.captions));
+    $("#toggle-more-controls")?.addEventListener("click", () => {
+      const dock = $("#cinema-control-dock"); const expanded = !dock?.classList.contains("is-expanded");
+      dock?.classList.toggle("is-expanded", expanded); $("#toggle-more-controls")?.setAttribute("aria-expanded", String(expanded));
+    });
     $("#toggle-transcript")?.addEventListener("click", () => { if (!transcript) return; transcript.open = !transcript.open; syncTranscriptToggle(true); });
     transcript?.addEventListener("toggle", () => { syncTranscriptToggle(false); animateTranscriptOpen(transcript, ".transcript-scene"); });
     progressInput?.addEventListener("input", (event) => { if (!state.player.stepMeta.length) return; pausePlayback(); const ratio = Number(event.target.value) / 1000; if (state.player.timeline) { const time = ratio * state.player.timeline.duration(); const target = stepAtTime(time); state.player.timeline.pause(time, true); renderStep(target, false); syncTimelineProgress(); const meta = state.player.stepMeta[target]; if (state.player.mode === "single" && meta) setPlayerUrl(meta.scene.id, "single", meta.actionIndex); } else goToStep(Math.round(ratio * (state.player.stepMeta.length - 1))); });
-    dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); resumeAmbient(); });
+    dialog?.addEventListener("close", () => { pausePlayback(); destroyTimeline(); resetEffects(); releasePlayerSurface(); updateAnimationProgressUi(); document.body.style.overflow = ""; if (state.player.returnUrl) window.history.replaceState(null, "", state.player.returnUrl); state.player.returnUrl = null; const target = state.player.returnFocus; state.player.returnFocus = null; target?.focus?.({ preventScroll: true }); resumeAmbient(); });
     musicToggle?.addEventListener("click", toggleMusic);
     cinemaAudio?.addEventListener("loadedmetadata", () => syncSceneAudioToTimeline(true));
     ambientToggles.forEach((button) => button.addEventListener("click", toggleAmbient));
@@ -2500,7 +2819,7 @@
   }
 
   function initDirectPlayer() {
-    const params = new URLSearchParams(window.location.search); const sceneId = params.get("scene"); const reel = params.get("reel") === "1"; const requestedAct = clamp(Math.trunc(Number(params.get("act"))) || 1, 1, 5) - 1;
+    const params = new URLSearchParams(window.location.search); const publicAnimation = Math.trunc(Number(params.get("animation"))); const publicScene = publicAnimation >= 1 && publicAnimation <= PUBLIC_TOTAL ? STORY_SCENES[publicAnimation - 1] : null; const sceneId = publicScene?.id || params.get("scene"); const reel = params.get("reel") === "1"; const requestedAct = clamp(Math.trunc(Number(params.get("act"))) || 1, 1, 5) - 1;
     if (reel || (sceneId && sceneById.has(sceneId))) {
       setPageGate(false); sessionStorage.setItem("kk-entered-v8", "true");
       window.setTimeout(() => {
@@ -2520,7 +2839,7 @@
     if (!scenes.length) { console.error("Scene registry was not loaded."); return; }
     const gated = sessionStorage.getItem("kk-entered-v8") !== "true";
     setPageGate(gated);
-    refreshMotionUi(); refreshAmbientUi(); renderFilmActs(); bindEvents(); updateReadingProgress(); setupFullCopy(); setupPageMotion();
+    refreshMotionUi(); refreshAmbientUi(); renderAnimationCatalog(); bindEvents(); updateReadingProgress(); setupFullCopy(); setupPageMotion();
     const directPlayer = initDirectPlayer();
     if (!directPlayer) { if (gated) playGateIntro(); else playPageIntro(); }
   }

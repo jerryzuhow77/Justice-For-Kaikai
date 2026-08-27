@@ -25,9 +25,12 @@
   const createTranscriptItem = (scene) => {
     const lines = scene.production?.cues || scene.dialogue || [];
     const labels = { film: "五幕電影", shadow: "皮影詩劇", side: "陰翳側視劇場" };
+    const order = Array.from(window.KAIKAI_SCENE_ORDER || []);
+    const publicIndex = order.indexOf(scene.id);
+    const publicLabel = publicIndex >= 0 ? `${String(publicIndex + 1).padStart(2, "0")} / ${String(order.length).padStart(2, "0")}` : "動畫";
     const details = document.createElement("details"); details.className = `animation-transcript-item ${scene.type}`;
     const summary = document.createElement("summary");
-    summary.innerHTML = `<span><b>${scene.id}</b>${scene.title}</span><small>${labels[scene.type]} · ${lines.length}段完整對話／場景說明</small>`;
+    summary.innerHTML = `<span><b>${publicLabel}</b>${scene.title}</span><small>${labels[scene.type]} · ${lines.length}段完整對話／場景說明</small>`;
     const body = document.createElement("div"); body.className = "animation-transcript-lines";
     lines.forEach((line) => {
       const row = document.createElement("p");
@@ -46,7 +49,8 @@
     status.textContent = "正在載入本章動畫逐字稿……";
     try {
       const sceneMap = await getScenes();
-      sceneIds.map((id) => sceneMap.get(id)).filter(Boolean).forEach((scene) => container.append(createTranscriptItem(scene)));
+      const storyOrder = Array.from(window.KAIKAI_SCENE_ORDER || []);
+      sceneIds.map((id) => sceneMap.get(id)).filter(Boolean).sort((a, b) => storyOrder.indexOf(a.id) - storyOrder.indexOf(b.id)).forEach((scene) => container.append(createTranscriptItem(scene)));
       container.dataset.ready = "true";
       status.textContent = `本章共${container.children.length}場動畫；點選各場標題展開或收合。`;
     } catch (error) {
