@@ -208,7 +208,7 @@ test("ships the director's cut, evidence-separated Chen statements, and complete
   assert.match(app, /scene\.type === "side"\) return Math\.max\(4/);
   assert.match(css, /\.inline-story>\.copy-scene-group\{[\s\S]*?width:100%/);
   assert.match(css, /\.cinema-stage\.captions-hidden \.dialogue-box\{visibility:hidden!important;opacity:0!important/);
-  assert.match(html, /official-home-v2\.css\?v=[^"]*shadow=20260828-carved-paper-1/);
+  assert.match(html, /official-home-v2\.css\?v=[^"]*shadow=20260828-paper-art-v2/);
   assert.match(story, /official-home-v2\.css\?v=20260828-paper-art-v2/);
   assert.match(css, /\.quote-dispute>\.quote-dispute-boundary\{padding-right:10\.25rem\}/);
   assert.match(css, /\.story-page \.story-quote-dispute>\.quote-dispute-boundary\{[\s\S]*?color:#3f554e;[\s\S]*?background:rgba\(82,120,110,\.12\);[\s\S]*?font-size:\.875rem/);
