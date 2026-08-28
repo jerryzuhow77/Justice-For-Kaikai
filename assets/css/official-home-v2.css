@@ -1887,3 +1887,279 @@ main,.section-shell,.copy-layout,.inline-story,.copy-scene-group,.copy-scene-gri
 @media(prefers-reduced-motion:reduce){
   .animation-card,.animation-card::before,.animation-progress-track i{transition:none!important}
 }
+
+
+/* CARVED SHADOW THEATRE + LAYERED PAPER ART · 2026-08-28
+ * The proscenium is shared by SP00–SP09; every scene keeps one restrained
+ * paper-cut motif behind the existing hand-pulled performers.
+ */
+.shadow-paper-screen,
+.paper-cut-rig,
+.shadow-stage-frame{display:none;position:absolute;inset:0;pointer-events:none}
+
+.cinema-stage[data-type="shadow"] .shadow-paper-screen,
+.cinema-stage[data-type="shadow"] .paper-cut-rig,
+.cinema-stage[data-type="shadow"] .shadow-stage-frame{display:block}
+
+.cinema-stage[data-type="shadow"] .shadow-paper-screen{
+  z-index:-2;
+  inset:4.2% 4.4% 3.8%;
+  overflow:hidden;
+  border:1px solid rgba(219,188,126,.22);
+  background:
+    radial-gradient(ellipse at 50% 44%,rgba(242,211,150,.3),transparent 43%),
+    linear-gradient(104deg,rgba(130,86,49,.14),transparent 27% 73%,rgba(91,56,35,.18)),
+    #bda879;
+  box-shadow:inset 0 0 70px rgba(42,24,15,.58),inset 0 0 0 7px rgba(238,220,181,.035)
+}
+.shadow-screen-fibre,.shadow-screen-light{position:absolute;inset:-8%;display:block}
+.shadow-screen-fibre{
+  opacity:.64;
+  background:
+    repeating-linear-gradient(91deg,transparent 0 6px,rgba(255,244,215,.055) 7px 8px),
+    repeating-linear-gradient(3deg,transparent 0 17px,rgba(62,38,23,.045) 18px 19px);
+  mix-blend-mode:soft-light
+}
+.shadow-screen-light{
+  opacity:.7;
+  background:
+    radial-gradient(ellipse at 48% 43%,rgba(255,227,163,.28),transparent 48%),
+    linear-gradient(90deg,rgba(47,25,16,.26),transparent 15% 85%,rgba(47,25,16,.26));
+  filter:blur(1px)
+}
+
+.cinema-stage[data-type="shadow"] .cinema-bg{
+  background-image:radial-gradient(ellipse at 50% 46%,#8a7752 0,#51452e 38%,#171710 78%,#090d0b 100%);
+  filter:saturate(.78) contrast(1.03) brightness(.9)
+}
+.cinema-stage[data-type="shadow"] .cinema-visual::before{z-index:0;opacity:.2}
+.cinema-stage[data-type="shadow"] .cinema-atmosphere{z-index:3;opacity:.2;mix-blend-mode:screen}
+.cinema-stage[data-type="shadow"] .cinema-focus{z-index:3;opacity:.2}
+.cinema-stage[data-type="shadow"] .cinema-thread{z-index:8;height:2px;filter:saturate(.82)}
+.cinema-stage[data-type="shadow"] .cinema-thread span{
+  background:repeating-linear-gradient(90deg,transparent 0 5px,#a6554f 6px 11px,#cf7c68 12px 16px);
+  box-shadow:0 1px 0 rgba(243,216,172,.2),0 5px 10px rgba(53,23,19,.42)
+}
+.cinema-stage[data-type="shadow"] .cinema-prop{
+  z-index:5;
+  top:22%;
+  min-width:clamp(108px,13vw,180px);
+  padding:.62rem 1rem;
+  color:rgba(64,39,25,.86);
+  border:1px solid rgba(87,52,31,.3);
+  border-radius:0;
+  background:
+    repeating-linear-gradient(91deg,transparent 0 7px,rgba(72,47,29,.035) 8px 9px),
+    linear-gradient(125deg,rgba(239,224,191,.92),rgba(201,178,130,.86));
+  box-shadow:0 8px 0 rgba(52,28,18,.18),0 16px 24px rgba(14,8,5,.24),inset 0 0 0 4px rgba(255,247,222,.12);
+  clip-path:polygon(2% 8%,14% 3%,29% 7%,44% 2%,61% 6%,77% 2%,98% 9%,95% 92%,82% 96%,66% 91%,50% 97%,34% 92%,18% 97%,3% 90%);
+  font-size:clamp(.72rem,1vw,.92rem);
+  font-weight:700;
+  letter-spacing:.2em;
+  text-shadow:0 1px rgba(255,246,216,.32)
+}
+.cinema-stage[data-type="shadow"] .cinema-papers i{
+  border:1px solid rgba(89,55,35,.18);
+  border-radius:0;
+  background:
+    repeating-linear-gradient(87deg,transparent 0 5px,rgba(87,54,32,.045) 6px 7px),
+    rgba(226,207,164,.8);
+  clip-path:polygon(3% 12%,19% 4%,41% 9%,61% 2%,96% 12%,91% 87%,72% 96%,47% 90%,24% 98%,5% 83%);
+  box-shadow:0 2px 0 rgba(248,230,191,.2),0 7px 13px rgba(31,15,9,.34)
+}
+.cinema-stage[data-type="shadow"] .cinema-actor{
+  z-index:6;
+  transform-origin:50% 88%;
+  filter:
+    drop-shadow(1px 0 0 rgba(238,209,154,.22))
+    drop-shadow(-1px 0 0 rgba(58,29,18,.48))
+    drop-shadow(0 8px 0 rgba(49,24,16,.2))
+    drop-shadow(0 22px 18px rgba(0,0,0,.66))
+}
+.cinema-stage[data-type="shadow"] .cinema-actor img{
+  filter:
+    saturate(.84) sepia(.12) contrast(1.1) brightness(.98)
+    drop-shadow(0 -1px 0 rgba(241,215,165,.25))
+    drop-shadow(0 2px 0 rgba(47,23,15,.46))
+}
+.shadow-stage-frame{
+  z-index:11;
+  background:url("../img/shadow-theatre/carved-proscenium.svg?v=20260828-carved-paper-1") center/100% 100% no-repeat;
+  filter:drop-shadow(0 18px 24px rgba(0,0,0,.62))
+}
+.shadow-stage-frame::before,.shadow-stage-frame::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:12.5%;
+  bottom:12%;
+  width:6.2%;
+  opacity:.74;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 46px,rgba(202,126,116,.18) 47px 49px),
+    linear-gradient(90deg,rgba(87,34,39,.92),rgba(115,53,58,.64),rgba(45,19,21,.92));
+  box-shadow:inset 0 0 18px rgba(21,8,9,.6)
+}
+.shadow-stage-frame::before{left:5.9%;clip-path:polygon(0 0,100% 5%,83% 100%,12% 96%)}
+.shadow-stage-frame::after{right:5.9%;clip-path:polygon(0 5%,100% 0,88% 96%,17% 100%)}
+.cinema-stage[data-type="shadow"] .cinema-frame-bars{border-block-color:rgba(8,5,4,.76)}
+.cinema-stage[data-type="shadow"] .cinema-grain{opacity:.075}
+
+.paper-cut-rig{z-index:4;inset:12.5% 8.5% 10.5%;overflow:hidden}
+.paper-scene{position:absolute;inset:0;display:none}
+.paper-piece{
+  position:absolute;
+  display:block;
+  transform-origin:50% 80%;
+  filter:drop-shadow(0 1px 0 rgba(255,239,203,.24)) drop-shadow(0 7px 8px rgba(38,19,12,.3));
+  will-change:transform
+}
+.cinema-stage[data-scene="SP00"] [data-paper-scene="SP00"],
+.cinema-stage[data-scene="SP01"] [data-paper-scene="SP01"],
+.cinema-stage[data-scene="SP02"] [data-paper-scene="SP02"],
+.cinema-stage[data-scene="SP03"] [data-paper-scene="SP03"],
+.cinema-stage[data-scene="SP04"] [data-paper-scene="SP04"],
+.cinema-stage[data-scene="SP05"] [data-paper-scene="SP05"],
+.cinema-stage[data-scene="SP06"] [data-paper-scene="SP06"],
+.cinema-stage[data-scene="SP07"] [data-paper-scene="SP07"],
+.cinema-stage[data-scene="SP08"] [data-paper-scene="SP08"],
+.cinema-stage[data-scene="SP09"] [data-paper-scene="SP09"]{display:block}
+
+/* SP00 · six doors and one held lamp */
+.paper-scene-doors .paper-door{
+  top:31%;
+  width:8.4%;
+  height:46%;
+  border:clamp(2px,.28vw,4px) solid rgba(70,39,24,.76);
+  background:
+    linear-gradient(90deg,transparent 42%,rgba(70,39,24,.72) 44% 56%,transparent 58%),
+    linear-gradient(0deg,transparent 46%,rgba(70,39,24,.72) 48% 55%,transparent 57%),
+    rgba(217,194,148,.42);
+  box-shadow:inset 0 0 0 2px rgba(242,221,178,.14)
+}
+.paper-scene-doors .paper-door:nth-child(1){left:15%;transform:scale(.9)}
+.paper-scene-doors .paper-door:nth-child(2){left:26.5%;top:27%;height:50%}
+.paper-scene-doors .paper-door:nth-child(3){left:38%;top:23%;height:54%}
+.paper-scene-doors .paper-door:nth-child(4){right:38%;top:23%;height:54%}
+.paper-scene-doors .paper-door:nth-child(5){right:26.5%;top:27%;height:50%}
+.paper-scene-doors .paper-door:nth-child(6){right:15%;transform:scale(.9)}
+.paper-scene-doors .paper-lamp{
+  left:47.3%;top:9%;width:5.4%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,#ffe3a1 0 13%,#cb8c4e 15% 38%,rgba(82,42,23,.88) 41% 53%,transparent 55%);
+  box-shadow:0 0 24px rgba(237,171,87,.34)
+}
+
+/* SP01 · empty bamboo chair, loose tenon and plum shadow */
+.paper-scene-chair .chair-back{left:42%;top:24%;width:16%;height:30%;border:clamp(4px,.55vw,8px) double rgba(80,48,27,.78);background:repeating-linear-gradient(90deg,transparent 0 14%,rgba(107,70,37,.42) 15% 18%,transparent 19% 32%)}
+.paper-scene-chair .chair-seat{left:39%;top:52%;width:22%;height:7%;background:linear-gradient(#b78a50,#755031);clip-path:polygon(3% 0,97% 4%,91% 100%,9% 94%)}
+.paper-scene-chair .chair-leg{top:57%;width:2.8%;height:26%;background:linear-gradient(90deg,#4b2d1c,#9b6a3a 48%,#3a2116);clip-path:polygon(12% 0,88% 0,70% 100%,25% 100%)}
+.paper-scene-chair .chair-leg-left{left:41%}.paper-scene-chair .chair-leg-right{right:41%}
+.paper-scene-chair .chair-tenon{left:57%;top:74%;width:8%;height:3%;background:#b96c58;transform:rotate(8deg)}
+.paper-scene-chair .chair-thread{left:31%;top:71%;width:37%;height:2px;background:repeating-linear-gradient(90deg,#a75650 0 8px,transparent 9px 14px);transform:rotate(5deg)}
+.paper-scene-chair .plum-shadow{left:18%;top:8%;width:26%;height:38%;opacity:.34;background:radial-gradient(circle at 22% 31%,#7f3342 0 5%,transparent 6%),radial-gradient(circle at 47% 19%,#7f3342 0 5%,transparent 6%),radial-gradient(circle at 62% 42%,#7f3342 0 5%,transparent 6%),linear-gradient(62deg,transparent 47%,#3c2c20 48% 51%,transparent 52%);clip-path:polygon(4% 8%,97% 0,88% 95%,0 82%)}
+
+/* SP02 · blue-white handover band and six knots */
+.paper-scene-handover .handover-band{left:13%;top:48%;width:74%;height:12%;background:repeating-linear-gradient(90deg,#d8e1d9 0 7%,#759c9b 7.5% 14%,#e9dfc4 14.5% 21%);clip-path:polygon(0 16%,11% 4%,22% 13%,34% 3%,47% 12%,61% 2%,76% 13%,89% 4%,100% 18%,97% 86%,84% 94%,70% 85%,55% 97%,39% 86%,23% 96%,8% 85%,2% 91%)}
+.paper-scene-handover .handover-knot{top:45.5%;width:4.5%;aspect-ratio:1;border:4px double rgba(69,69,56,.68);border-radius:50%;background:#d9c9a6}
+.paper-scene-handover .handover-knot:nth-child(2){left:19%}.paper-scene-handover .handover-knot:nth-child(3){left:31.5%}.paper-scene-handover .handover-knot:nth-child(4){left:44%}.paper-scene-handover .handover-knot:nth-child(5){left:56.5%}.paper-scene-handover .handover-knot:nth-child(6){left:69%}.paper-scene-handover .handover-knot:nth-child(7){left:81.5%}
+
+/* SP03 · ten windows around a human-shaped negative space */
+.paper-scene-windows{display:none;grid-template-columns:repeat(5,9%);grid-auto-rows:17%;justify-content:center;align-content:center;gap:4% 6%}
+.cinema-stage[data-scene="SP03"] .paper-scene-windows{display:grid}
+.paper-scene-windows .paper-window{position:relative;width:100%;height:100%;border:3px solid rgba(70,42,26,.72);background:linear-gradient(90deg,transparent 46%,rgba(68,39,24,.64) 47% 54%,transparent 55%),linear-gradient(0deg,transparent 46%,rgba(68,39,24,.64) 47% 54%,transparent 55%),rgba(222,201,154,.46)}
+.paper-scene-windows .paper-window:nth-child(6){opacity:.28}
+.paper-scene-windows .human-space{left:46.5%;top:28%;width:7%;height:43%;background:radial-gradient(circle at 50% 13%,rgba(31,25,18,.64) 0 16%,transparent 17%),linear-gradient(90deg,transparent 20%,rgba(31,25,18,.62) 22% 78%,transparent 80%) 50% 80%/100% 68% no-repeat;filter:none}
+
+/* SP04 · moon-white curtain, trolley line and three source slips */
+.paper-scene-curtain .moon-curtain{left:34%;top:9%;width:32%;height:67%;opacity:.76;background:repeating-linear-gradient(94deg,rgba(239,234,215,.72) 0 7%,rgba(176,187,177,.48) 8% 10%,rgba(239,234,215,.68) 11% 18%);clip-path:polygon(1% 0,99% 0,96% 96%,86% 91%,75% 98%,64% 91%,53% 97%,42% 90%,30% 97%,17% 91%,3% 96%)}
+.paper-scene-curtain .trolley-track{left:18%;right:18%;bottom:16%;height:3px;background:linear-gradient(90deg,transparent,#6f817c 12% 88%,transparent)}
+.paper-scene-curtain .trolley-wheel{bottom:12%;width:4.2%;aspect-ratio:1;border:3px solid #526662;border-radius:50%}
+.paper-scene-curtain .trolley-wheel:nth-child(3){left:38%}.paper-scene-curtain .trolley-wheel:nth-child(4){right:38%}
+.paper-scene-curtain .source-slip{top:19%;width:9%;height:23%;background:repeating-linear-gradient(0deg,#d8c69f 0 8px,#b79b70 9px 10px);clip-path:polygon(4% 1%,95% 5%,91% 96%,2% 91%)}
+.paper-scene-curtain .source-slip:nth-child(5){left:16%}.paper-scene-curtain .source-slip:nth-child(6){left:25%;top:14%}.paper-scene-curtain .source-slip:nth-child(7){right:16%}
+
+/* SP05 · movable-type frame and a page that refuses to become proof */
+.paper-scene-type .type-frame{left:29%;top:17%;width:42%;height:54%;border:clamp(5px,.7vw,10px) double rgba(68,38,24,.82);background:repeating-linear-gradient(90deg,transparent 0 12%,rgba(69,39,24,.22) 12.5% 13.5%),repeating-linear-gradient(0deg,transparent 0 18%,rgba(69,39,24,.2) 18.5% 20%)}
+.paper-scene-type .type-block{width:8%;height:13%;display:grid;place-items:center;background:linear-gradient(135deg,#5a3121,#9a6040);box-shadow:inset 0 0 0 3px rgba(36,18,12,.48)}
+.paper-scene-type .type-block:nth-child(2){left:35%;top:25%}.paper-scene-type .type-block:nth-child(3){left:46%;top:25%}.paper-scene-type .type-block:nth-child(4){left:57%;top:25%}.paper-scene-type .type-block:nth-child(5){left:35%;top:43%}.paper-scene-type .type-block:nth-child(6){left:46%;top:43%}.paper-scene-type .type-block:nth-child(7){left:57%;top:43%}
+.paper-scene-type .printed-page{right:13%;top:29%;width:18%;height:42%;background:repeating-linear-gradient(0deg,#e1d2b0 0 12px,#b99f74 13px 14px);clip-path:polygon(2% 1%,96% 4%,92% 98%,5% 94%);transform:rotate(4deg)}
+
+/* SP06 · two ward windows kept apart */
+.paper-scene-wards .ward-window{top:20%;width:25%;height:44%;border:clamp(4px,.55vw,8px) double rgba(64,55,43,.76);background:linear-gradient(90deg,transparent 48%,rgba(71,79,69,.55) 49% 53%,transparent 54%),linear-gradient(0deg,transparent 48%,rgba(71,79,69,.55) 49% 53%,transparent 54%),rgba(198,210,195,.36)}
+.paper-scene-wards .ward-window-left{left:17%}.paper-scene-wards .ward-window-right{right:17%}
+.paper-scene-wards .ward-divider{left:49.4%;top:13%;width:1.2%;height:65%;background:linear-gradient(#d1b881,#5c4931);box-shadow:0 0 0 3px rgba(53,36,24,.24)}
+.paper-scene-wards .ward-drawer{left:44%;bottom:10%;width:12%;height:7%;background:#b69a6b;border:2px solid rgba(70,48,30,.54)}
+.paper-scene-wards .ward-drawer:nth-child(4){transform:translateY(-116%)}.paper-scene-wards .ward-drawer:nth-child(5){transform:translateY(-232%)}
+
+/* SP07 · 115-day grass scale and a broken stitch */
+.paper-scene-stitch .stitch-line{left:12%;right:12%;top:51%;height:3px;background:repeating-linear-gradient(90deg,#8b6050 0 13px,transparent 14px 21px)}
+.paper-scene-stitch .stitch-tick{top:41%;width:1.5%;height:22%;background:linear-gradient(90deg,#6f5b35,#b69a5f,#5f4c2e);clip-path:polygon(34% 0,68% 0,86% 100%,14% 100%)}
+.paper-scene-stitch .stitch-tick:nth-child(2){left:15%}.paper-scene-stitch .stitch-tick:nth-child(3){left:25%}.paper-scene-stitch .stitch-tick:nth-child(4){left:35%}.paper-scene-stitch .stitch-tick:nth-child(5){left:45%}.paper-scene-stitch .stitch-tick:nth-child(6){left:55%}.paper-scene-stitch .stitch-tick:nth-child(7){left:65%}.paper-scene-stitch .stitch-tick:nth-child(8){left:75%}.paper-scene-stitch .stitch-tick:nth-child(9){left:85%}
+.paper-scene-stitch .stitch-break{left:49%;top:47%;width:9%;height:10%;background:linear-gradient(135deg,transparent 0 35%,#b76960 36% 43%,transparent 44% 57%,#b76960 58% 65%,transparent 66%)}
+
+/* SP08 · wooden comb, black/silver strands and unused tissue */
+.paper-scene-hair .wooden-comb{left:31%;top:55%;width:20%;height:9%;background:repeating-linear-gradient(90deg,#754329 0 6%,#2d1a12 6.5% 9%,#9a6340 9.5% 15%);clip-path:polygon(0 0,100% 8%,96% 55%,87% 58%,85% 100%,78% 59%,68% 60%,66% 100%,58% 60%,48% 61%,46% 100%,38% 61%,28% 60%,26% 100%,18% 59%,8% 57%,6% 100%)}
+.paper-scene-hair .hair-strand{top:18%;width:1.1%;height:57%;border-radius:50%;background:linear-gradient(#1b1a17 0 42%,#b8b4a9 44% 55%,#28241f 58%);transform:rotate(var(--strand-rotate,0deg));opacity:.78}
+.paper-scene-hair .hair-strand:nth-child(2){left:46%;--strand-rotate:-6deg}.paper-scene-hair .hair-strand:nth-child(3){left:49%;--strand-rotate:-3deg}.paper-scene-hair .hair-strand:nth-child(4){left:52%;--strand-rotate:1deg}.paper-scene-hair .hair-strand:nth-child(5){left:55%;--strand-rotate:4deg}.paper-scene-hair .hair-strand:nth-child(6){left:58%;--strand-rotate:7deg}.paper-scene-hair .hair-strand:nth-child(7){left:61%;--strand-rotate:10deg}
+.paper-scene-hair .unused-tissue{right:22%;bottom:17%;width:11%;height:13%;background:#e6dfce;clip-path:polygon(3% 10%,91% 0,100% 86%,12% 100%);opacity:.74}
+
+/* SP09 · repaired bamboo tenon, eight craft badges and an ordinary threshold */
+.paper-scene-threshold .bamboo-tenon{left:32%;top:47%;width:29%;height:7%;background:repeating-linear-gradient(90deg,#a17d46 0 20%,#69502e 21% 23%,#b89658 24% 44%);clip-path:polygon(0 16%,89% 0,100% 50%,89% 100%,0 85%)}
+.paper-scene-threshold .tenon-socket{right:27%;top:43%;width:13%;height:15%;border:clamp(4px,.55vw,8px) solid #62442a;background:rgba(194,168,111,.32);clip-path:polygon(0 12%,90% 0,100% 88%,8% 100%)}
+.paper-scene-threshold .craft-badge{top:18%;width:5.3%;aspect-ratio:1;border:3px double rgba(91,57,34,.6);border-radius:50%;background:radial-gradient(circle,#d2b67d 0 22%,#7d5231 24% 36%,#d7c08d 38% 60%,transparent 62%)}
+.paper-scene-threshold .craft-badge:nth-child(3){left:22%}.paper-scene-threshold .craft-badge:nth-child(4){left:30%}.paper-scene-threshold .craft-badge:nth-child(5){left:38%}.paper-scene-threshold .craft-badge:nth-child(6){left:46%}.paper-scene-threshold .craft-badge:nth-child(7){left:54%}.paper-scene-threshold .craft-badge:nth-child(8){left:62%}.paper-scene-threshold .craft-badge:nth-child(9){left:70%}.paper-scene-threshold .craft-badge:nth-child(10){left:78%}
+.paper-scene-threshold .ordinary-threshold{left:17%;right:17%;bottom:12%;height:6%;background:linear-gradient(#9a6b42,#41281a);clip-path:polygon(1% 18%,99% 0,96% 100%,3% 84%)}
+
+/* The full player gets detail; cards get a quiet, static echo. */
+.copy-scene-card.shadow .copy-scene-poster::before{
+  content:"";position:absolute;z-index:2;inset:0;pointer-events:none;
+  background:url("../img/shadow-theatre/carved-proscenium.svg?v=20260828-carved-paper-1") center/100% 100% no-repeat;
+  filter:drop-shadow(0 10px 16px rgba(0,0,0,.48))
+}
+.copy-scene-card.shadow .copy-scene-poster::after{z-index:0}
+.copy-scene-card.shadow .copy-scene-actor{
+  filter:drop-shadow(0 1px 0 rgba(240,215,168,.2)) drop-shadow(0 8px 0 rgba(58,29,18,.24)) drop-shadow(0 16px 14px rgba(0,0,0,.7))
+}
+.animation-card[data-type="shadow"]::after{
+  background:
+    url("../img/shadow-theatre/carved-proscenium.svg?v=20260828-carved-paper-1") center/100% 100% no-repeat,
+    linear-gradient(90deg,rgba(65,29,20,.34),transparent 13% 87%,rgba(65,29,20,.34)),
+    linear-gradient(180deg,transparent 8%,rgba(4,8,7,.22) 54%,rgba(4,8,7,.96))
+}
+
+@media(max-width:760px){
+  .cinema-stage[data-type="shadow"] .shadow-paper-screen{inset:3.5% 4.5% 3%}
+  .paper-cut-rig{inset:10% 7% 8.5%}
+  .cinema-stage[data-type="shadow"] .cinema-prop{top:17%;min-width:96px;padding:.48rem .72rem;font-size:.68rem}
+  .cinema-stage[data-type="shadow"] .cinema-actor{bottom:5%;width:min(72vw,430px);height:55%}
+  .shadow-stage-frame::before,.shadow-stage-frame::after{top:11%;bottom:10%;width:5.2%}
+  .shadow-stage-frame::before{left:6.1%}.shadow-stage-frame::after{right:6.1%}
+  .paper-scene-doors .paper-door{width:9.2%}
+  .paper-scene-chair .chair-back{left:39%;width:22%}.paper-scene-chair .chair-seat{left:36%;width:28%}
+  .paper-scene-chair .chair-leg-left{left:39%}.paper-scene-chair .chair-leg-right{right:39%}
+  .paper-scene-handover .handover-band{left:8%;width:84%}
+  .paper-scene-type .type-frame{left:22%;width:56%}
+  .paper-scene-type .printed-page{right:7%;width:21%}
+  .paper-scene-wards .ward-window{width:31%}.paper-scene-wards .ward-window-left{left:8%}.paper-scene-wards .ward-window-right{right:8%}
+  .paper-scene-hair .wooden-comb{left:21%;width:28%}
+}
+
+@media(max-width:430px){
+  .paper-cut-rig{inset:9% 5.5% 7.5%}
+  .shadow-stage-frame{filter:drop-shadow(0 12px 18px rgba(0,0,0,.58))}
+  .cinema-stage[data-type="shadow"] .cinema-prop{top:14.5%;letter-spacing:.13em}
+  .paper-scene-doors .paper-door:nth-child(1),.paper-scene-doors .paper-door:nth-child(6){opacity:.55}
+  .paper-scene-windows{gap:4% 4%}
+  .paper-scene-threshold .craft-badge{width:6.2%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .paper-piece{transform:none!important;will-change:auto!important}
+}
+body.is-reduced .paper-piece{transform:none!important;will-change:auto!important}
+
+@media(forced-colors:active){
+  .shadow-stage-frame{background-image:none;border:3px double CanvasText}
+  .shadow-paper-screen{border-color:CanvasText;background:Canvas}
+  .paper-cut-rig{opacity:.72}
+}

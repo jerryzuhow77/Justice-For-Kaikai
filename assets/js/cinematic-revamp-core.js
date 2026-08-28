@@ -259,6 +259,7 @@
   const thread = $("#cinema-thread");
   const papers = $("#cinema-papers");
   const stageProp = $("#cinema-prop");
+  const paperCutRig = $("#paper-cut-rig");
   const filmProduction = $("#film-production");
   const FM_C_ACT_PLATES = [
     {
@@ -2434,6 +2435,36 @@
     animateEffect(timeline, meta, at, duration);
   }
 
+  function addPaperCutBeat(timeline, meta, at, duration) {
+    if (meta.scene.type !== "shadow" || !paperCutRig) return;
+    const group = $("[data-paper-scene=\"" + meta.scene.id + "\"]", paperCutRig);
+    if (!group) return;
+    const pieces = $$(".paper-piece", group);
+    if (!pieces.length) return;
+    const primary = pieces[meta.actionIndex % pieces.length];
+    const secondary = pieces[(meta.actionIndex + Math.ceil(pieces.length / 2)) % pieces.length];
+    const direction = meta.actionIndex % 2 === 0 ? 1 : -1;
+    const travel = Math.min(.72, duration * .18);
+    timeline.to(primary, {
+      x: "+=" + direction * (3 + meta.actionIndex % 3),
+      y: "+=" + (meta.actionIndex % 3 - 1),
+      rotation: "+=" + direction * .9,
+      duration: travel,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: 1
+    }, at + Math.min(.24, duration * .06));
+    timeline.to(secondary, {
+      x: "+=" + -direction * (2 + meta.actionIndex % 2),
+      y: "+=" + (meta.actionIndex % 2 ? 2 : -2),
+      rotation: "+=" + -direction * .55,
+      duration: Math.min(.62, travel),
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: 1
+    }, at + Math.min(.48, duration * .12));
+  }
+
   function addActorBeat(timeline, meta, at, duration) {
     const targets = actorTargets(meta.scene, meta.actionIndex); const reactionDelay = meta.actionIndex % 2 === 0 ? .18 : 0; const femaleAt = at + (reactionDelay ? 0 : .18); const maleAt = at + reactionDelay; const travel = Math.min(1.85, duration * .42);
     timeline.to(actorFemale, { x: targets.female.x, y: targets.female.y, rotation: targets.female.rotation, scale: targets.female.scale, duration: travel, ease: "power2.inOut" }, femaleAt);
@@ -2448,6 +2479,7 @@
       const wristTurn = meta.actionIndex % 2 ? 1.15 : -1.15;
       timeline.to(actorFemaleImage, { rotation: wristTurn, transformOrigin: "48% 78%", duration: .42, ease: "sine.inOut", yoyo: true, repeat: 1 }, at + Math.min(.58, duration * .14));
       timeline.to(actorMaleImage, { rotation: -wristTurn * .72, transformOrigin: "52% 76%", duration: .46, ease: "sine.inOut", yoyo: true, repeat: 1 }, at + Math.min(.72, duration * .18));
+      addPaperCutBeat(timeline, meta, at, duration);
     }
     animateEffect(timeline, meta, at, duration);
   }

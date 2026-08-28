@@ -208,10 +208,35 @@ test("ships the director's cut, evidence-separated Chen statements, and complete
   assert.match(app, /scene\.type === "side"\) return Math\.max\(4/);
   assert.match(css, /\.inline-story>\.copy-scene-group\{[\s\S]*?width:100%/);
   assert.match(css, /\.cinema-stage\.captions-hidden \.dialogue-box\{visibility:hidden!important;opacity:0!important/);
-  assert.match(html, /official-home-v2\.css\?v=20260827-experience-1/);
+  assert.match(html, /official-home-v2\.css\?v=[^"]*shadow=20260828-carved-paper-1/);
   assert.match(story, /official-home-v2\.css\?v=20260827-experience-1/);
   assert.match(css, /\.quote-dispute>\.quote-dispute-boundary\{padding-right:10\.25rem\}/);
   assert.match(css, /\.story-page \.story-quote-dispute>\.quote-dispute-boundary\{[\s\S]*?color:#3f554e;[\s\S]*?background:rgba\(82,120,110,\.12\);[\s\S]*?font-size:\.875rem/);
+});
+
+test("gives all ten shadow poems one carved stage and scene-specific paper art", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("assets/css/official-home-v2.css", root), "utf8");
+  const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const stage = await readFile(new URL("assets/img/shadow-theatre/carved-proscenium.svg", root), "utf8");
+
+  assert.match(html, /id="shadow-paper-screen"[^>]*aria-hidden="true"/);
+  assert.match(html, /id="paper-cut-rig"[^>]*aria-hidden="true"/);
+  assert.match(html, /id="shadow-stage-frame"[^>]*aria-hidden="true"/);
+  for (const sceneId of ["SP00", "SP01", "SP02", "SP03", "SP04", "SP05", "SP06", "SP07", "SP08", "SP09"]) {
+    assert.match(html, new RegExp(`data-paper-scene="${sceneId}"`));
+    assert.match(css, new RegExp(`data-scene="${sceneId}"`));
+  }
+  assert.match(css, /carved-proscenium\.svg\?v=20260828-carved-paper-1/);
+  assert.match(css, /\.cinema-stage\[data-type="shadow"\] \.cinema-actor img\{[\s\S]*?drop-shadow/);
+  assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?\.paper-cut-rig/);
+  assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[\s\S]*?\.paper-piece/);
+  assert.match(app, /function addPaperCutBeat/);
+  assert.match(app, /addPaperCutBeat\(timeline, meta, at, duration\)/);
+  assert.match(stage, /viewBox="0 0 1600 900"/);
+  assert.match(stage, /id="cloud-scroll"/);
+  assert.match(stage, /id="rosette"/);
+  assert.ok(Buffer.byteLength(stage) < 40000);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {
