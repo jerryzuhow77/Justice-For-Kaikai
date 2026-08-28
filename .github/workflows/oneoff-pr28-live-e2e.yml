@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 20
     env:
       BASE_URL: https://jerryzuhow77.github.io/Justice-For-Kaikai/
-      EXPECTED_PRODUCTION_SHA: 5d3b7eba719ea743ab84b0082a25154778a8b96e
+      EXPECTED_PRODUCTION_SHA: 7b1d5f79269ef568dc80b9af3c8514d18e7d1175
       ARTIFACT_DIR: artifacts
     steps:
       - name: Check out QA branch
