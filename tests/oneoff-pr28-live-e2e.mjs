@@ -372,7 +372,8 @@ async function testDesktopPlayerStateAndRelease() {
   await page.evaluate(() => localStorage.setItem("kk-music-v8", "true"));
   await page.goto(`${BASE_URL}?animation=24&qa=${qa}`, { waitUntil: "domcontentloaded", timeout: 45_000 });
   await waitForPlayer(page);
-  assert.match(await page.locator("#cinema-type").innerText(), /^24 \/ 24/);
+  await page.waitForFunction(() => document.querySelector("#cinema-type")?.textContent?.startsWith("24 / 24"), null, { timeout: 15_000 });
+  assert.match(await page.locator("#cinema-type").textContent(), /^24 \/ 24/);
   const heavyBefore = await playerReleaseState(page);
   assert.ok(
     heavyBefore.hydratedActFrames + heavyBefore.hydratedShots + heavyBefore.actBackdropCount + heavyBefore.filmImageSrcCount > 0,
