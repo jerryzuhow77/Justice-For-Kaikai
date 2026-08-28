@@ -209,34 +209,67 @@ test("ships the director's cut, evidence-separated Chen statements, and complete
   assert.match(css, /\.inline-story>\.copy-scene-group\{[\s\S]*?width:100%/);
   assert.match(css, /\.cinema-stage\.captions-hidden \.dialogue-box\{visibility:hidden!important;opacity:0!important/);
   assert.match(html, /official-home-v2\.css\?v=[^"]*shadow=20260828-carved-paper-1/);
-  assert.match(story, /official-home-v2\.css\?v=20260827-experience-1/);
+  assert.match(story, /official-home-v2\.css\?v=20260828-paper-art-v2/);
   assert.match(css, /\.quote-dispute>\.quote-dispute-boundary\{padding-right:10\.25rem\}/);
   assert.match(css, /\.story-page \.story-quote-dispute>\.quote-dispute-boundary\{[\s\S]*?color:#3f554e;[\s\S]*?background:rgba\(82,120,110,\.12\);[\s\S]*?font-size:\.875rem/);
 });
 
-test("gives all ten shadow poems one carved stage and scene-specific paper art", async () => {
+test("gives all ten shadow poems a production carved stage and generated paper props", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("assets/css/official-home-v2.css", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
-  const stage = await readFile(new URL("assets/img/shadow-theatre/carved-proscenium.svg", root), "utf8");
 
   assert.match(html, /id="shadow-paper-screen"[^>]*aria-hidden="true"/);
   assert.match(html, /id="paper-cut-rig"[^>]*aria-hidden="true"/);
   assert.match(html, /id="shadow-stage-frame"[^>]*aria-hidden="true"/);
-  for (const sceneId of ["SP00", "SP01", "SP02", "SP03", "SP04", "SP05", "SP06", "SP07", "SP08", "SP09"]) {
-    assert.match(html, new RegExp(`data-paper-scene="${sceneId}"`));
-    assert.match(css, new RegExp(`data-scene="${sceneId}"`));
+  assert.match(html, /official-home-v2\.css\?v=[^"]*shadow=20260828-paper-art-v2/);
+
+  const sceneAssets = {
+    SP00: "prop-doors-v2.webp",
+    SP01: "prop-chair-v2.webp",
+    SP02: "prop-files-v2.webp",
+    SP03: "prop-doors-v2.webp",
+    SP04: "prop-trolley-v2.webp",
+    SP05: "prop-type-v2.webp",
+    SP06: "prop-doors-v2.webp",
+    SP07: "prop-files-v2.webp",
+    SP08: "prop-hair-v2.webp",
+    SP09: "prop-threshold-v2.webp"
+  };
+  for (const [sceneId, assetName] of Object.entries(sceneAssets)) {
+    const group = html.match(new RegExp(`<div class="paper-scene[^"]*" data-paper-scene="${sceneId}">([\\s\\S]*?)</div>`));
+    assert.ok(group, `missing ${sceneId} paper group`);
+    assert.ok((group[1].match(/paper-piece/g) || []).length >= 2, `${sceneId} needs two independent motion layers`);
+    assert.match(css, new RegExp(`data-scene="${sceneId}"[\\s\\S]{0,900}${assetName.replace(".", "\\.")}`));
   }
-  assert.match(css, /carved-proscenium\.svg\?v=20260828-carved-paper-1/);
+
+  const stageAssets = [
+    "stage-top-v2.webp",
+    "stage-left-v2.webp",
+    "stage-right-v2.webp",
+    "stage-bottom-left-v2.webp",
+    "stage-bottom-right-v2.webp"
+  ];
+  const propAssets = [...new Set(Object.values(sceneAssets))];
+  let totalBytes = 0;
+  for (const assetName of [...stageAssets, ...propAssets]) {
+    const asset = await readFile(new URL(`assets/img/shadow-theatre/${assetName}`, root));
+    assert.equal(asset.subarray(0, 4).toString(), "RIFF", `${assetName} is not RIFF WebP`);
+    assert.equal(asset.subarray(8, 12).toString(), "WEBP", `${assetName} is not WebP`);
+    assert.ok(asset.byteLength < 160000, `${assetName} exceeds the per-asset budget`);
+    totalBytes += asset.byteLength;
+    assert.match(css, new RegExp(assetName.replace(".", "\\.")));
+  }
+  assert.ok(totalBytes < 800000, "shadow production art exceeds the total byte budget");
+
+  assert.doesNotMatch(css, /carved-proscenium\.svg/);
+  assert.match(css, /@keyframes shadowPaperBreath/);
+  assert.match(css, /background-size:100% 17%,8\.8% 74%,8\.8% 74%/);
+  assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[\s\S]*?\.paper-scene\{animation:none!important/);
+  assert.match(css, /body\.is-reduced \.paper-scene\{animation:none!important/);
   assert.match(css, /\.cinema-stage\[data-type="shadow"\] \.cinema-actor img\{[\s\S]*?drop-shadow/);
-  assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?\.paper-cut-rig/);
-  assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[\s\S]*?\.paper-piece/);
   assert.match(app, /function addPaperCutBeat/);
   assert.match(app, /addPaperCutBeat\(timeline, meta, at, duration\)/);
-  assert.match(stage, /viewBox="0 0 1600 900"/);
-  assert.match(stage, /id="cloud-scroll"/);
-  assert.match(stage, /id="rosette"/);
-  assert.ok(Buffer.byteLength(stage) < 40000);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {
