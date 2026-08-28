@@ -160,19 +160,19 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
 
   assert.match(prologue, /class="kkp6__skip"[^>]*>略過序幕<\/button>/);
   assert.match(prologue, /skip\.addEventListener\("click",finish\)/);
-  assert.match(prologue, /class="kkp6__chapter-two" href="#chapter-two-preview"/);
-  assert.match(prologue, /孩子被選擇的人生/);
-  assert.match(prologue, /chapterTwo\?\.addEventListener\("click"/);
+  assert.match(prologue, /class="kkp6__chapter-two" href="#full-copy"/);
+  assert.match(prologue, /前往第一章：沒有父母的孤兒/);
+  assert.match(prologue, /chapterOne\?\.addEventListener\("click"/);
   assert.doesNotMatch(prologue, /\.from\("\.kkp6__skip",\{autoAlpha:0/);
   assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
   assert.match(refinedCss, /\.kkp6__chapter-two\{[^}]*pointer-events:auto/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
   assert.match(mobileCss, /\.kkp6__chapter-two\{[^}]*min-height:44px!important/);
-  assert.match(loader, /const version = "20260828-auto-prologue-ch2-3"/);
+  assert.match(loader, /const version = "20260828-prologue-ch1-link-1"/);
   assert.match(html, /cinematic-revamp\.css\?v=20260827-experience-1/);
-  assert.match(html, /cinematic-revamp\.js\?v=20260828-auto-prologue-ch2-3/);
-  assert.match(html, /audio=20260828-auto-prologue-ch2-3/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260828-prologue-ch1-link-1/);
+  assert.match(html, /audio=20260828-prologue-ch1-link-1/);
   assert.match(prologue, /if\(skipped\)\{settle\(true,target\);return\}/);
   assert.match(prologue, /duration:\.72/);
   assert.match(prologue, /\.to\(\{\}, \{duration:2\.58\},9\.32\)/);
@@ -280,8 +280,8 @@ test("gives all ten shadow poems a production carved stage and generated paper p
   assert.match(app, /function addPaperCutBeat/);
   assert.match(app, /const pieces = \$\$\("\.paper-piece", group\)\.slice\(0, 2\);/);
   assert.match(app, /addPaperCutBeat\(timeline, meta, at, duration\)/);
-  assert.match(loader, /const coreVersion = "20260828-auto-prologue-ch2-3"/);
-  assert.match(legacy, /cinematic-revamp-core\.js\?v=20260828-auto-prologue-ch2-3/);
+  assert.match(loader, /const coreVersion = "20260828-prologue-ch1-link-1"/);
+  assert.match(legacy, /cinematic-revamp-core\.js\?v=20260828-prologue-ch1-link-1/);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {
