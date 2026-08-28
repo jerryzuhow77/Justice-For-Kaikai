@@ -1,0 +1,62 @@
+name: Build four film downloads
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Install FFmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Render MP4 downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/video
+          render() {
+            local image="$1"
+            local audio="$2"
+            local duration="$3"
+            local output="$4"
+            ffmpeg -y -loop 1 -i "$image" -i "$audio"               -filter_complex "[0:v]scale=1100:620:force_original_aspect_ratio=increase,crop=1100:620,zoompan=z='min(zoom+0.00012,1.10)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$((duration * 25)):s=960x540:fps=25,format=yuv420p[v]"               -map "[v]" -map 1:a:0 -t "$duration"               -c:v libx264 -preset veryfast -crf 25 -c:a aac -b:a 128k               -movflags +faststart "$output"
+          }
+          render assets/img/films/fm-a-buried-name.webp public/media/film-stamped-in-marble.m4a 155 assets/video/fm-a-buried-qing-legend.mp4
+          render assets/img/films/fm-d-unarrived-visit.webp public/media/film-late-question.m4a 144 assets/video/fm-d-unarrived-visit.mp4
+          render assets/img/films/fm-b-hair-to-white.webp public/media/film-one-year-old-extended.m4a 105 assets/video/fm-b-hair-turns-white.mp4
+          render assets/img/films/fm-c-two-worlds-v2.webp public/media/film-who-opens-door.m4a 195 assets/video/fm-c-two-eras-one-door.mp4
+
+      - name: Verify files and project QA
+        run: |
+          for film in assets/video/*.mp4; do
+            test -s "$film"
+            ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of default=nw=1 "$film"
+            ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=nw=1 "$film"
+          done
+          node scripts/qa.mjs
+
+      - name: Commit generated videos
+        run: |
+          git config user.name "chatgpt-codex-connector[bot]"
+          git config user.email "chatgpt-codex-connector[bot]@users.noreply.github.com"
+          git add assets/video
+          if git diff --cached --quiet; then
+            echo "Video assets already match."
+          else
+            git commit -m "產生四部主線電影 MP4"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
