@@ -115,8 +115,11 @@ for (const sex of ["female", "male"]) {
 }
 
 const homeDownloads = html.match(/<a\b[^>]*\bdownload\b[^>]*>/gi) || [];
-const unexpectedHomeDownloads = homeDownloads.filter((tag) => !/href="assets\/data\/timeline-115-days\.csv"/i.test(tag));
+const approvedFilmDownloads = ["fm-a-buried-qing-legend.mp4", "fm-d-unarrived-visit.mp4", "fm-b-hair-turns-white.mp4", "fm-c-two-eras-one-door.mp4"];
+const unexpectedHomeDownloads = homeDownloads.filter((tag) => !/href="assets\/data\/timeline-115-days\.csv"/i.test(tag) && !approvedFilmDownloads.some((file) => tag.includes(`href="assets/video/${file}"`)));
 if (unexpectedHomeDownloads.length || /<a\b[^>]*\bdownload\b/i.test(story)) errors.push("網頁仍存在未核准的下載連結");
+for (const file of approvedFilmDownloads) if (!fs.existsSync(path.join(root, "assets/video", file))) errors.push(`主線電影下載檔不存在：${file}`);
+if (homeDownloads.filter((tag) => approvedFilmDownloads.some((file) => tag.includes(file))).length !== 4) errors.push("四部主線電影下載連結不是4個");
 if (!html.includes('id="full-copy"') || !html.includes('id="inline-story-content"') || !app.includes("loadInlineStory")) errors.push("完整文案尚未整合到主頁");
 if (!html.includes("fm-c-two-worlds-v2.webp") || !registry.includes("淺藍與深藍條紋上衣")) errors.push("剴剴服裝未鎖定淺藍／深藍條紋");
 if (!app.includes("actorPosePlan") || !app.includes("setActorSprites") || !app.includes("SIDE_POSE_ROOT")) errors.push("多姿勢角色切換尚未接入播放器");

@@ -322,6 +322,11 @@ body:not(.is-gated) .entry-gate { opacity: 0; visibility: hidden; pointer-events
 .reel-stage-copy small { color: #c7cac4; font-size: .95rem; }
 .film-act-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin-top: 1rem; perspective: 1100px; }
 .film-act-card { position: relative; min-height: 330px; overflow: hidden; padding: 0; color: inherit; border: 1px solid var(--line); border-radius: 20px; background: #15211f; text-align: left; cursor: pointer; isolation: isolate; }
+.film-download-card{display:grid;grid-template-rows:1fr auto;min-width:0}
+.film-download-card .film-act-card{width:100%;height:100%;border-radius:20px 20px 0 0}
+.film-download-card>a{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.85rem 1rem;border:1px solid rgba(217,186,127,.34);border-top:0;border-radius:0 0 20px 20px;background:linear-gradient(90deg,rgba(34,70,68,.96),rgba(18,38,37,.98));color:#f3e7c8;font:800 .78rem/1.2 var(--sans);letter-spacing:.08em;text-decoration:none;transition:background .2s ease,color .2s ease}
+.film-download-card>a:hover,.film-download-card>a:focus-visible{background:#d9ba7f;color:#10211f;outline:0}
+.film-download-card>a span{font-size:1.05rem}
 .film-act-card::before { content: ""; position: absolute; z-index: -2; inset: 0; background-image: var(--film-image); background-position: var(--film-position, center); background-size: cover; filter: saturate(.62) contrast(1.06) brightness(.7); transition: transform .8s cubic-bezier(.2,.8,.2,1), filter .4s ease; }
 .film-act-card::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(5, 11, 10, .08), rgba(5, 11, 10, .92)); }
 .film-act-card:hover::before, .film-act-card:focus-visible::before { transform: scale(1.08); filter: saturate(.76) contrast(1.08) brightness(.82); }
