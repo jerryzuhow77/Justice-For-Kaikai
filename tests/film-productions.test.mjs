@@ -175,7 +175,8 @@ test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async ()
   assert.match(app, /params\.get\("act"\)/);
   assert.match(app, /shotCount/);
   assert.match(app, /dataset\.newPlate = "true"/);
-  assert.match(app, /url\.searchParams\.set\("act", String\(actIndex \+ 1\)\)/);
+  assert.match(app, /const publicAct = productionFor\(scene\) \? actIndex \+ 1 : localStep \+ 1/);
+  assert.match(app, /url\.searchParams\.set\("act", String\(publicAct\)\)/);
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.doesNotMatch(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(html, /assets\/vendor\/gsap\/MotionPathPlugin\.min\.js/);
