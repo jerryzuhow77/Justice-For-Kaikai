@@ -80,6 +80,16 @@
     catch { /* Viewing progress remains optional when storage is unavailable. */ }
   }
 
+  function hasEnteredSession() {
+    try { return sessionStorage.getItem("kk-entered-v8") === "true"; }
+    catch { return false; }
+  }
+
+  function rememberEnteredSession() {
+    try { sessionStorage.setItem("kk-entered-v8", "true"); }
+    catch { /* The entrance remains usable when session storage is unavailable. */ }
+  }
+
   function publicSceneNumber(sceneOrId) {
     const id = typeof sceneOrId === "string" ? sceneOrId : sceneOrId?.id;
     const index = STORY_INDEX.get(id);
@@ -747,7 +757,7 @@
     const startWithMusic = $("#gate-music")?.checked === true;
     if (target === "#full-copy") { $(".full-copy-details")?.setAttribute("open", ""); loadInlineStory(); }
     setPageGate(false);
-    sessionStorage.setItem("kk-entered-v8", "true");
+    rememberEnteredSession();
     if (startWithMusic) playAmbient(); else pauseAmbient(true);
     if (target === "#top") playPageIntro();
     window.setTimeout(() => {
@@ -2799,6 +2809,16 @@
   function closeCinema() { pausePlayback(); destroyTimeline(); if (dialog?.open) dialog.close(); }
 
   function releasePlayerSurface() {
+    if (cinemaAudio) {
+      cinemaAudio.pause();
+      cinemaAudio.removeAttribute("src");
+      cinemaAudio.load();
+    }
+    if (filmFoleyContext) {
+      filmFoleyContext.close().catch(() => {});
+      filmFoleyContext = null;
+    }
+    filmFoleyCooldown.clear();
     [actorFemaleImage, actorMaleImage].forEach((image) => image?.removeAttribute("src"));
     [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => element?.style.removeProperty("background-image"));
     filmActFrames.forEach((frame) => {
@@ -2984,10 +3004,21 @@
     });
   }
 
+  function directPlayerRequest(params = new URLSearchParams(window.location.search)) {
+    const animation = Number(params.get("animation"));
+    const publicScene = Number.isInteger(animation) && animation >= 1 && animation <= PUBLIC_TOTAL ? STORY_SCENES[animation - 1] : null;
+    const requestedScene = params.get("scene");
+    return {
+      sceneId: publicScene?.id || (sceneById.has(requestedScene) ? requestedScene : null),
+      reel: params.get("reel") === "1",
+      requestedAct: clamp(Math.trunc(Number(params.get("act"))) || 1, 1, 5) - 1
+    };
+  }
+
   function initDirectPlayer() {
-    const params = new URLSearchParams(window.location.search); const publicAnimation = Math.trunc(Number(params.get("animation"))); const publicScene = publicAnimation >= 1 && publicAnimation <= PUBLIC_TOTAL ? STORY_SCENES[publicAnimation - 1] : null; const sceneId = publicScene?.id || params.get("scene"); const reel = params.get("reel") === "1"; const requestedAct = clamp(Math.trunc(Number(params.get("act"))) || 1, 1, 5) - 1;
+    const { sceneId, reel, requestedAct } = directPlayerRequest();
     if (reel || (sceneId && sceneById.has(sceneId))) {
-      setPageGate(false); sessionStorage.setItem("kk-entered-v8", "true");
+      setPageGate(false); rememberEnteredSession();
       window.setTimeout(() => {
         const targetSceneId = reel ? FILM_ORDER[0] : sceneId;
         openCinema(targetSceneId, reel ? "reel" : "single");
@@ -3008,7 +3039,7 @@
   function initDirectHash() {
     if (!hasDirectHash()) return false;
     setPageGate(false);
-    sessionStorage.setItem("kk-entered-v8", "true");
+    rememberEnteredSession();
     window.setTimeout(async () => {
       let id = "";
       try { id = decodeURIComponent(window.location.hash.slice(1)); }
@@ -3033,8 +3064,9 @@
   function init() {
     if (!scenes.length) { console.error("Scene registry was not loaded."); return; }
     const params = new URLSearchParams(window.location.search);
-    const hasDirectPlayer = params.has("scene") || params.has("animation") || params.get("reel") === "1";
-    const gated = !hasDirectHash() && !hasDirectPlayer && sessionStorage.getItem("kk-entered-v8") !== "true";
+    const requestedPlayer = directPlayerRequest(params);
+    const hasDirectPlayer = requestedPlayer.reel || Boolean(requestedPlayer.sceneId);
+    const gated = !hasDirectHash() && !hasDirectPlayer && !hasEnteredSession();
     setPageGate(gated);
     refreshMotionUi(); refreshAmbientUi(); renderAnimationCatalog(); bindEvents(); updateReadingProgress(); setupFullCopy(); setupPageMotion();
     const directPlayer = initDirectPlayer();

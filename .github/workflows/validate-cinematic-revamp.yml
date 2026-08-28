@@ -10,6 +10,9 @@ on:
     paths:
       - index.html
       - story.html
+      - story-*.html
+      - scripts/story-page-template.html
+      - sitemap.xml
       - assets/css/cinematic-revamp.css
       - assets/css/cinematic-revamp-core.css
       - assets/css/cinematic-revamp-legacy.css
@@ -194,13 +197,15 @@ jobs:
           # installed Traditional Chinese Noto fonts for readable captures.
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           js_path = Path('/tmp/kaikai-preview/site/assets/js/cinematic-revamp-core.js')
           js = js_path.read_text(encoding='utf-8')
-          needle = 'const gated = !hasDirectHash() && !hasDirectPlayer && sessionStorage.getItem("kk-entered-v8") !== "true";'
-          if needle not in js:
-              raise SystemExit('Preview gate-bypass anchor was not found')
-          js_path.write_text(js.replace(needle, 'const gated = false;', 1), encoding='utf-8')
+          pattern = r'const gated = !hasDirectHash\(\) && !hasDirectPlayer && [^;]+;'
+          js, replacements = re.subn(pattern, 'const gated = false;', js, count=1)
+          if replacements != 1:
+              raise SystemExit('Preview gate-bypass anchor was not found exactly once')
+          js_path.write_text(js, encoding='utf-8')
 
           css_path = Path('/tmp/kaikai-preview/site/assets/css/cinematic-revamp.css')
           css = css_path.read_text(encoding='utf-8')

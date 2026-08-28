@@ -20,6 +20,12 @@ function metaContent(html, property) {
   return html.match(propertyFirst)?.[1] || html.match(contentFirst)?.[1] || "";
 }
 
+function alternateHref(html, language) {
+  const tags = html.match(/<link\b[^>]*>/gi) || [];
+  const tag = tags.find((candidate) => new RegExp(`\\bhreflang=["']${language}["']`, "i").test(candidate));
+  return tag?.match(/\bhref=["']([^"']+)["']/i)?.[1] || "";
+}
+
 test("keeps the prologue opt-in, session-stable, and bypassed by direct hashes", async () => {
   const [html, loader, legacy, app, css] = await Promise.all([
     read("index.html"),
@@ -39,9 +45,47 @@ test("keeps the prologue opt-in, session-stable, and bypassed by direct hashes",
   assert.doesNotMatch(loader, /(?:^|[;}]\s*)playChairPrologue\(\)/m);
   assert.match(app, /#enter-experience[\s\S]*?await window\.playChairPrologue\?\.\(\)/);
   assert.match(app, /function hasDirectHash\(\)\s*{\s*return Boolean\(window\.location\.hash && window\.location\.hash !== "#" && window\.location\.hash !== "#top"\)/);
-  assert.match(app, /const gated = !hasDirectHash\(\) && !hasDirectPlayer && sessionStorage\.getItem\("kk-entered-v8"\) !== "true"/);
+  assert.match(app, /const gated = !hasDirectHash\(\) && !hasDirectPlayer && !hasEnteredSession\(\)/);
+  assert.match(app, /function directPlayerRequest/);
+  assert.match(html, /Number\.isInteger\(animation\) && animation >= 1 && animation <= 24/);
+  assert.match(html, /\^\(\?:SP0\[0-9\]\|DV0\[0-9\]\|FM-\[ABCD\]\)\$/);
   assert.match(app, /function initDirectHash\(\)[\s\S]*?setPageGate\(false\);[\s\S]*?document\.getElementById\(id\)/);
   assert.match(html, /椅仔姑序幕約 12 秒，只在首次進站時提供；直接連到章節或動畫的網址不會被入口攔住/);
+});
+
+test("releases temporary prologue and player media resources", async () => {
+  const [loader, app] = await Promise.all([
+    read("assets/js/cinematic-revamp.js"),
+    read("assets/js/cinematic-revamp-core.js"),
+  ]);
+  assert.match(loader, /function releaseMobileArtwork\(\)/);
+  assert.match(loader, /URL\.revokeObjectURL\(window\.__chairMobileArtObjectUrl\)/);
+  assert.match(loader, /delete window\.__chairMobileArtObjectUrl/);
+  assert.match(loader, /finally\s*{\s*releaseMobileArtwork\(\);\s*}/);
+
+  const release = functionBlock(app, "function releasePlayerSurface()", "function afterCinemaClose");
+  assert.match(release, /cinemaAudio\.removeAttribute\("src"\)/);
+  assert.match(release, /cinemaAudio\.load\(\)/);
+  assert.match(release, /filmFoleyContext\.close\(\)/);
+  assert.match(release, /filmFoleyContext = null/);
+  assert.match(release, /filmFoleyCooldown\.clear\(\)/);
+});
+
+test("keeps language alternates reciprocal and routes x-default to the interactive entry", async () => {
+  const files = ["index.html", "story.html", "story-zh-hans.html", "story-en.html", "story-ja.html"];
+  const expected = {
+    "zh-Hant": "https://jerryzuhow77.github.io/Justice-For-Kaikai/story.html",
+    "zh-Hans": "https://jerryzuhow77.github.io/Justice-For-Kaikai/story-zh-hans.html",
+    en: "https://jerryzuhow77.github.io/Justice-For-Kaikai/story-en.html",
+    ja: "https://jerryzuhow77.github.io/Justice-For-Kaikai/story-ja.html",
+    "x-default": "https://jerryzuhow77.github.io/Justice-For-Kaikai/",
+  };
+  for (const file of files) {
+    const html = await read(file);
+    for (const [language, href] of Object.entries(expected)) {
+      assert.equal(alternateHref(html, language), href, `${file} ${language}`);
+    }
+  }
 });
 
 test("features exactly four films before the complete 24-animation catalog", async () => {
@@ -147,6 +191,7 @@ test("routes each film share to a unique static Open Graph page", async () => {
     assert.ok(title, `${slug} og:title`);
     assert.ok(image, `${slug} og:image`);
     assert.equal(url, `https://jerryzuhow77.github.io/Justice-For-Kaikai/share/${slug}/`);
+    assert.match(html, /<meta name="robots" content="noindex,follow">/);
     assert.ok(html.includes(`../../?scene=${sceneId}`), `${slug} redirects to ${sceneId}`);
     titles.add(title);
     images.add(image);

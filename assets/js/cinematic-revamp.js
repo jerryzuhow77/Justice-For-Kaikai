@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const version = "20260827-experience-1";
-  const coreVersion = "20260828-paper-art-motion-2";
+  const version = "20260828-production-pass-1";
+  const coreVersion = "20260828-paper-art-motion-2-production-pass-1";
   const animationMapVersion = "20260827-animation-map-2";
   const mobileQuery = matchMedia("(max-width:760px)");
   const mobileParts = [
@@ -58,6 +58,13 @@
     document.documentElement.classList.add("chair-mobile-art-ready");
   }
 
+  function releaseMobileArtwork() {
+    if (window.__chairMobileArtObjectUrl) URL.revokeObjectURL(window.__chairMobileArtObjectUrl);
+    delete window.__chairMobileArtObjectUrl;
+    document.documentElement.style.removeProperty("--chair-mobile-art");
+    document.documentElement.classList.remove("chair-mobile-art-ready");
+  }
+
   async function prepareDesktopArtwork() {
     const image = new Image();
     image.decoding = "async";
@@ -89,6 +96,8 @@
         });
       } catch (error) {
         console.warn("[Chair prologue] lazy experience unavailable", error);
+      } finally {
+        releaseMobileArtwork();
       }
     })();
     return prologuePromise;

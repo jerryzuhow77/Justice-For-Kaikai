@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/img/films/fm-c-two-worlds-v2.webp">
   <meta name="twitter:image:alt" content="清代椅仔姑與現代剴剴隔著同一扇門，分處古宅與醫院走廊">
   <link rel="canonical" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
-  <link rel="alternate" hreflang="zh-Hant" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story.html">
   <link rel="alternate" hreflang="zh-Hans" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-zh-hans.html">
   <link rel="alternate" hreflang="en" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-en.html">
   <link rel="alternate" hreflang="ja" href="https://jerryzuhow77.github.io/Justice-For-Kaikai/story-ja.html">
@@ -43,7 +43,7 @@
   <script defer src="assets/data/scenes.js?v=20260825-fm123-event-motion-3"></script>
   <script defer src="assets/data/film-productions.js?v=20260825-fm123-event-motion-3"></script>
   <script defer src="assets/data/editorial-home-data.js?v=20260827-experience-1"></script>
-  <script defer src="assets/js/cinematic-revamp.js?v=20260827-experience-1&amp;rev=20260826-fm123-runtime-clean-1&amp;home=20260826-directors-cut-1&amp;audio=20260827-lazy-prologue-1&amp;fmc=character-art-clean-2&amp;map=20260827-animation-map-2&amp;shadow=20260828-paper-art-v2"></script>
+  <script defer src="assets/js/cinematic-revamp.js?v=20260828-production-pass-1&amp;rev=20260826-fm123-runtime-clean-1&amp;home=20260826-directors-cut-1&amp;audio=20260827-lazy-prologue-1&amp;fmc=character-art-clean-2&amp;map=20260827-animation-map-2&amp;shadow=20260828-paper-art-v2"></script>
   <script defer src="assets/js/official-home-v2.js?v=20260827-experience-1"></script>
   <title>JUSTICE FOR KAIKAI｜為剴剴，也為下一個孩子</title>
   <script type="application/ld+json">
@@ -74,7 +74,12 @@
   <script>
     (() => {
       const query = new URLSearchParams(location.search);
-      const direct = query.has("scene") || query.has("animation") || query.get("reel") === "1" || (location.hash && location.hash !== "#" && location.hash !== "#top");
+      const animation = Number(query.get("animation"));
+      const scene = query.get("scene") || "";
+      const direct = (Number.isInteger(animation) && animation >= 1 && animation <= 24)
+        || /^(?:SP0[0-9]|DV0[0-9]|FM-[ABCD])$/.test(scene)
+        || query.get("reel") === "1"
+        || (location.hash && location.hash !== "#" && location.hash !== "#top");
       try { if (direct || sessionStorage.getItem("kk-entered-v8") === "true") document.body.classList.remove("is-gated"); }
       catch { if (direct) document.body.classList.remove("is-gated"); }
     })();
