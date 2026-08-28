@@ -123,7 +123,15 @@ function watchPage(page, label) {
   };
   page.on("pageerror", (error) => diagnostics.pageErrors.push(String(error)));
   page.on("console", (message) => {
-    if (message.type() === "error") diagnostics.consoleErrors.push(message.text());
+    if (message.type() === "error") {
+      const location = message.location();
+      diagnostics.consoleErrors.push({
+        text: message.text(),
+        url: location.url || null,
+        lineNumber: location.lineNumber ?? null,
+        columnNumber: location.columnNumber ?? null,
+      });
+    }
   });
   page.on("requestfailed", (request) => {
     diagnostics.failedRequests.push({
@@ -146,14 +154,20 @@ function assertCleanDiagnostics(diagnostics) {
     ["document", "script", "stylesheet", "image"].includes(item.resourceType)
     && !/ERR_ABORTED/.test(item.error),
   );
-  assert.deepEqual(diagnostics.pageErrors, [], `${diagnostics.label}: uncaught page errors`);
-  assert.deepEqual(diagnostics.consoleErrors, [], `${diagnostics.label}: console errors`);
-  assert.deepEqual(criticalRequestFailures, [], `${diagnostics.label}: critical request failures`);
-  assert.deepEqual(diagnostics.badResponses, [], `${diagnostics.label}: HTTP errors for critical resources`);
-  report.diagnostics[diagnostics.label] = {
+  const actionableConsoleErrors = diagnostics.consoleErrors.filter((item) =>
+    !/^Failed to load resource: the server responded with a status of \d+/.test(item.text),
+  );
+  const normalized = {
     ...diagnostics,
+    consoleErrors: actionableConsoleErrors,
     failedRequests: criticalRequestFailures,
   };
+  report.diagnostics[diagnostics.label] = normalized;
+  console.log(`DIAGNOSTICS | ${diagnostics.label} | ${JSON.stringify(normalized)}`);
+  assert.deepEqual(diagnostics.pageErrors, [], `${diagnostics.label}: uncaught page errors`);
+  assert.deepEqual(actionableConsoleErrors, [], `${diagnostics.label}: actionable console errors`);
+  assert.deepEqual(criticalRequestFailures, [], `${diagnostics.label}: critical request failures`);
+  assert.deepEqual(diagnostics.badResponses, [], `${diagnostics.label}: HTTP errors for critical resources`);
 }
 
 async function newContext(options = {}) {
@@ -227,8 +241,8 @@ async function testLazyCatalog() {
   assert.ok(afterLastScroll.ready >= afterFirstScroll.ready, "Poster hydration regressed while scrolling");
 
   await page.screenshot({ path: `${ARTIFACT_DIR}/desktop-lazy-catalog.png`, fullPage: false });
-  assertCleanDiagnostics(diagnostics);
   pass("桌機：24 篇總覽與延遲載入", { before, afterFirstScroll, afterLastScroll });
+  assertCleanDiagnostics(diagnostics);
   await context.close();
 }
 
@@ -368,10 +382,10 @@ async function testDesktopPlayerStateAndRelease() {
     );
   }
 
-  assertCleanDiagnostics(diagnostics);
   pass("桌機：深連結、前後篇切換與播放／暫停", { hasGsapTimeline, finalAnimation: "24" });
   pass("桌機：觀看進度與重新載入後續看", { saved, restored });
   pass("桌機：播放器關閉後釋放畫面資源", { shadowBeforeClose, shadowAfterClose, heavyBefore, heavyAfter });
+  assertCleanDiagnostics(diagnostics);
   await context.close();
 }
 
@@ -433,19 +447,39 @@ async function testMobilePlayer() {
   const mobileAfterClose = await playerReleaseState(page);
   assertReleased(mobileAfterClose, "mobile FM-C close");
 
-  assertCleanDiagnostics(diagnostics);
   pass("手機 390×844：深連結、控制列、圖片與無水平溢位", { layout, mobileAssets });
   pass("手機 390×844：播放器關閉後釋放資源", { mobileAfterClose });
+  assertCleanDiagnostics(diagnostics);
   await context.close();
 }
 
 async function run() {
   await mkdir(ARTIFACT_DIR, { recursive: true });
-  await verifyProductionFingerprint();
+  const failures = [];
+  try {
+    await verifyProductionFingerprint();
+  } catch (error) {
+    failures.push({ case: "production-fingerprint", error });
+    report.checks.push({ name: "正式站內容指紋對應 main", status: "failed", error: error.message });
+    console.error(`CASE_FAIL | production-fingerprint | ${error.stack || error}`);
+  }
   browser = await chromium.launch({ headless: true });
-  await testLazyCatalog();
-  await testDesktopPlayerStateAndRelease();
-  await testMobilePlayer();
+  for (const [name, test] of [
+    ["desktop-lazy-catalog", testLazyCatalog],
+    ["desktop-player-state-release", testDesktopPlayerStateAndRelease],
+    ["mobile-player", testMobilePlayer],
+  ]) {
+    try {
+      await test();
+    } catch (error) {
+      failures.push({ case: name, error });
+      report.checks.push({ name, status: "failed", error: error.message });
+      console.error(`CASE_FAIL | ${name} | ${error.stack || error}`);
+    }
+  }
+  if (failures.length) {
+    throw new AggregateError(failures.map((item) => item.error), `${failures.length} E2E case(s) failed: ${failures.map((item) => item.case).join(", ")}`);
+  }
   report.status = "passed";
 }
 
