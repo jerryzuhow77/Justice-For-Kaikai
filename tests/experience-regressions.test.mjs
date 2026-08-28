@@ -43,7 +43,11 @@ test("autoplays the first-session prologue without forced audio and bypasses it 
   assert.match(loader, /loadStyle\(`assets\/css\/chair-prologue-mobile-v2-runtime\.css\?v=\$\{version\}`\)/);
   assert.doesNotMatch(css, /@import url\("\.\/chair-prologue-/);
   assert.doesNotMatch(loader, /(?:^|[;}]\s*)playChairPrologue\(\)/m);
-  assert.match(loader, /resolve\(event\.detail \|\| \{ target: "#top" \}\)/);
+  assert.match(loader, /const forceFinish = \(\) =>/);
+  assert.match(loader, /skip\?\.click\(\)/);
+  assert.match(loader, /document\.body\.classList\.remove\("kkp6-open"\)/);
+  assert.match(loader, /fallback = window\.setTimeout\(forceFinish, 15000\)/);
+  assert.match(loader, /const onFinished = \(event\) => complete\(event\.detail \|\| \{ target: "#top" \}\)/);
   assert.match(app, /async function startEntrancePrologue\(\{ automatic = false \} = \{\}\)/);
   assert.match(app, /window\.requestAnimationFrame\(\(\) => startEntrancePrologue\(\{ automatic: true \}\)\)/);
   assert.match(app, /const startWithMusic = automatic \? window\.__kaikaiAmbientRequested === true/);

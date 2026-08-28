@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const version = "20260828-auto-prologue-ch2-1";
-  const coreVersion = "20260828-auto-prologue-ch2-1";
+  const version = "20260828-auto-prologue-ch2-2";
+  const coreVersion = "20260828-auto-prologue-ch2-2";
   const animationMapVersion = "20260827-animation-map-2";
   const mobileQuery = matchMedia("(max-width:760px)");
   const mobileParts = [
@@ -87,11 +87,32 @@
         await loadScript(`assets/js/chair-prologue-refined.js?v=${version}`);
         if (typeof window.initChairPrologueRefined !== "function") return;
         return await new Promise((resolve) => {
-          const fallback = window.setTimeout(() => resolve({ target: "#top", timedOut: true }), 15000);
-          window.addEventListener("kaikai:prologue-finished", (event) => {
+          let fallback = 0;
+          let settled = false;
+          const complete = (detail) => {
+            if (settled) return;
+            settled = true;
             window.clearTimeout(fallback);
-            resolve(event.detail || { target: "#top" });
-          }, { once: true });
+            window.removeEventListener("kaikai:prologue-finished", onFinished);
+            resolve(detail);
+          };
+          const onFinished = (event) => complete(event.detail || { target: "#top" });
+          const forceFinish = () => {
+            const prologue = document.querySelector("#chair-maiden-prologue");
+            const skip = prologue?.querySelector(".kkp6__skip");
+            skip?.click();
+            if (settled) return;
+            if (prologue) {
+              prologue.hidden = true;
+              prologue.setAttribute("aria-hidden", "true");
+              prologue.removeAttribute("aria-modal");
+              prologue.innerHTML = "";
+            }
+            document.body.classList.remove("kkp6-open");
+            complete({ target: "#top", timedOut: true });
+          };
+          window.addEventListener("kaikai:prologue-finished", onFinished);
+          fallback = window.setTimeout(forceFinish, 15000);
           window.initChairPrologueRefined();
         });
       } catch (error) {
