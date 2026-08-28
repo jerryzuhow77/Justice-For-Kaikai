@@ -218,6 +218,8 @@ test("gives all ten shadow poems a production carved stage and generated paper p
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("assets/css/official-home-v2.css", root), "utf8");
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
+  const loader = await readFile(new URL("assets/js/cinematic-revamp.js", root), "utf8");
+  const legacy = await readFile(new URL("assets/js/cinematic-revamp-legacy.js", root), "utf8");
 
   assert.match(html, /id="shadow-paper-screen"[^>]*aria-hidden="true"/);
   assert.match(html, /id="paper-cut-rig"[^>]*aria-hidden="true"/);
@@ -268,8 +270,12 @@ test("gives all ten shadow poems a production carved stage and generated paper p
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[\s\S]*?\.paper-scene\{animation:none!important/);
   assert.match(css, /body\.is-reduced \.paper-scene\{animation:none!important/);
   assert.match(css, /\.cinema-stage\[data-type="shadow"\] \.cinema-actor img\{[\s\S]*?drop-shadow/);
+  assert.match(css, /\.cinema-stage\[data-type="shadow"\] \.cinema-play-overlay\{[\s\S]{0,160}width:68px/);
   assert.match(app, /function addPaperCutBeat/);
+  assert.match(app, /const pieces = \$\$\("\.paper-piece", group\)\.slice\(0, 2\);/);
   assert.match(app, /addPaperCutBeat\(timeline, meta, at, duration\)/);
+  assert.match(loader, /const coreVersion = "20260828-paper-art-motion-2"/);
+  assert.match(legacy, /cinematic-revamp-core\.js\?v=20260828-paper-art-motion-2/);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {

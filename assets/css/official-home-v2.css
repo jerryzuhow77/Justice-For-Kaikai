@@ -2226,6 +2226,13 @@ main,.section-shell,.copy-layout,.inline-story,.copy-scene-group,.copy-scene-gri
     background-position:center top,left 12%,right 12%,left bottom,right bottom
   }
   .shadow-stage-frame::before{bottom:.8%;width:clamp(24px,6.5vw,40px)}
+  .cinema-stage[data-type="shadow"] .cinema-play-overlay{
+    width:68px;
+    background:rgba(15,25,23,.68);
+    backdrop-filter:blur(4px)
+  }
+  .cinema-stage[data-type="shadow"] .cinema-play-overlay span{font-size:1.25rem}
+  .cinema-stage[data-type="shadow"] .cinema-play-overlay small{font-size:.63rem}
   .paper-scene>.paper-piece:nth-child(1){inset:3% 8% 0}
   .cinema-stage[data-scene="SP00"] [data-paper-scene="SP00"]>.paper-piece:nth-child(1),
   .cinema-stage[data-scene="SP03"] [data-paper-scene="SP03"]>.paper-piece:nth-child(1),

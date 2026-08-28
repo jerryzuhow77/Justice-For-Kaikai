@@ -2439,7 +2439,7 @@
     if (meta.scene.type !== "shadow" || !paperCutRig) return;
     const group = $("[data-paper-scene=\"" + meta.scene.id + "\"]", paperCutRig);
     if (!group) return;
-    const pieces = $$(".paper-piece", group);
+    const pieces = $$(".paper-piece", group).slice(0, 2);
     if (!pieces.length) return;
     const primary = pieces[meta.actionIndex % pieces.length];
     const secondary = pieces[(meta.actionIndex + Math.ceil(pieces.length / 2)) % pieces.length];
