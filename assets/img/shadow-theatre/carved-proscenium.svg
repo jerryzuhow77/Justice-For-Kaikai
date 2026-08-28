@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="none" role="img" aria-label="傳統木雕皮影戲台框景">
+  <defs>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#24130d"/>
+      <stop offset=".18" stop-color="#6d3923"/>
+      <stop offset=".48" stop-color="#3a1d14"/>
+      <stop offset=".72" stop-color="#7c452a"/>
+      <stop offset="1" stop-color="#21110c"/>
+    </linearGradient>
+    <linearGradient id="wood-edge" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#c19562" stop-opacity=".7"/>
+      <stop offset=".26" stop-color="#815234" stop-opacity=".76"/>
+      <stop offset=".7" stop-color="#321911"/>
+      <stop offset="1" stop-color="#130b08"/>
+    </linearGradient>
+    <linearGradient id="aged-gold" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#a57b4e" stop-opacity=".16"/>
+      <stop offset=".45" stop-color="#e0bd7b" stop-opacity=".52"/>
+      <stop offset=".62" stop-color="#8f633c" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#d5ad6b" stop-opacity=".12"/>
+    </linearGradient>
+    <pattern id="grain" width="88" height="34" patternUnits="userSpaceOnUse">
+      <path d="M-12 9C10-1 24 22 48 10S80 3 104 14M-8 28C18 17 37 38 65 25S92 20 111 30" fill="none" stroke="#e6bb78" stroke-opacity=".075" stroke-width="2"/>
+      <path d="M2 16h72M18 32h54" stroke="#120a07" stroke-opacity=".16" stroke-width="1"/>
+    </pattern>
+    <filter id="cast-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#050302" flood-opacity=".82"/>
+      <feDropShadow dx="0" dy="1" stdDeviation=".8" flood-color="#f0cc8d" flood-opacity=".26"/>
+    </filter>
+    <filter id="carve" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#080403" flood-opacity=".9"/>
+      <feDropShadow dx="0" dy="-1" stdDeviation=".7" flood-color="#e2b975" flood-opacity=".24"/>
+    </filter>
+    <g id="cloud-scroll">
+      <path d="M0 24c20-23 47-20 55 0 9-15 28-18 40-6 8 8 9 19 5 29 22-2 37 10 38 27 0 18-17 31-41 28H16C-4 102-16 90-16 74c0-14 11-26 30-28C9 38 8 30 12 23" fill="none" stroke="url(#aged-gold)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 62h104M28 84h58" fill="none" stroke="#160b08" stroke-opacity=".7" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g id="rosette">
+      <circle r="31" fill="#2d160f" stroke="#b28551" stroke-opacity=".42" stroke-width="4"/>
+      <g fill="#875033" stroke="#24110c" stroke-width="3">
+        <ellipse ry="22" rx="9" transform="rotate(0) translate(0 -14)"/>
+        <ellipse ry="22" rx="9" transform="rotate(60) translate(0 -14)"/>
+        <ellipse ry="22" rx="9" transform="rotate(120) translate(0 -14)"/>
+      </g>
+      <circle r="8" fill="#bc8d56" fill-opacity=".52"/>
+    </g>
+    <mask id="apron-cut">
+      <rect width="1600" height="900" fill="#fff"/>
+      <g fill="#000">
+        <path d="M160 837c24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0 24-34 54-34 78 0v44H160z"/>
+      </g>
+    </mask>
+  </defs>
+
+  <g filter="url(#cast-shadow)">
+    <path d="M0 0h1600v122l-54 12-20 62-55-16-44 38-49-37-55 21-44-44H321l-44 44-55-21-49 37-44-38-55 16-20-62L0 122z" fill="url(#wood)" stroke="#130a07" stroke-width="8"/>
+    <rect x="20" y="24" width="1560" height="98" rx="14" fill="url(#wood-edge)" stroke="#bd8c54" stroke-opacity=".38" stroke-width="4"/>
+    <rect x="45" y="44" width="1510" height="60" rx="8" fill="#351a11" stroke="#120907" stroke-width="4"/>
+    <rect x="45" y="44" width="1510" height="60" rx="8" fill="url(#grain)" opacity=".85"/>
+    <path d="M86 74h1428" stroke="url(#aged-gold)" stroke-width="4"/>
+    <g filter="url(#carve)" opacity=".94">
+      <use href="#cloud-scroll" transform="translate(95 7) scale(.74)"/>
+      <use href="#cloud-scroll" transform="translate(340 7) scale(.74)"/>
+      <use href="#cloud-scroll" transform="translate(1110 7) scale(-.74 .74)"/>
+      <use href="#cloud-scroll" transform="translate(1355 7) scale(-.74 .74)"/>
+      <path d="M621 76c46-46 98-46 139 0 41-46 93-46 139 0-34-12-66-9-94 12-31 23-59 23-90 0-28-21-60-24-94-12z" fill="#7f4a2e" stroke="#b88953" stroke-opacity=".46" stroke-width="4"/>
+      <path d="M692 74c28-35 56-35 84 0-19-8-37-6-52 7-10 8-21 8-32 0zM824 74c28-35 56-35 84 0-19-8-37-6-52 7-10 8-21 8-32 0z" fill="#24120d"/>
+      <use href="#rosette" transform="translate(800 72) scale(.72)"/>
+    </g>
+
+    <g>
+      <path d="M0 104h112l20 40-23 624 34 64H0z" fill="url(#wood)" stroke="#120907" stroke-width="8"/>
+      <path d="M1600 104h-112l-20 40 23 624-34 64h143z" fill="url(#wood)" stroke="#120907" stroke-width="8"/>
+      <path d="M21 151h73l-12 590H30zM1579 151h-73l12 590h52z" fill="url(#wood-edge)" stroke="#b78955" stroke-opacity=".36" stroke-width="4"/>
+      <path d="M41 174h34l-10 546H48zM1559 174h-34l10 546h17z" fill="url(#grain)" opacity=".9"/>
+      <path d="M103 176c44 18 70 53 76 106-32-34-61-42-87-24M1497 176c-44 18-70 53-76 106 32-34 61-42 87-24" fill="#5d301e" stroke="#b98b55" stroke-opacity=".34" stroke-width="5"/>
+      <path d="M102 700c46-8 78-38 92-90-38 29-71 31-99 8M1498 700c-46-8-78-38-92-90 38 29 71 31 99 8" fill="#5d301e" stroke="#b98b55" stroke-opacity=".34" stroke-width="5"/>
+      <g filter="url(#carve)">
+        <use href="#rosette" transform="translate(62 286) scale(.8)"/>
+        <use href="#rosette" transform="translate(62 454) scale(.8)"/>
+        <use href="#rosette" transform="translate(62 622) scale(.8)"/>
+        <use href="#rosette" transform="translate(1538 286) scale(.8)"/>
+        <use href="#rosette" transform="translate(1538 454) scale(.8)"/>
+        <use href="#rosette" transform="translate(1538 622) scale(.8)"/>
+      </g>
+    </g>
+
+    <g mask="url(#apron-cut)">
+      <path d="M0 760h1600v140H0z" fill="url(#wood)" stroke="#120907" stroke-width="8"/>
+      <path d="M24 781h1552v92H24z" fill="url(#wood-edge)" stroke="#bf9059" stroke-opacity=".35" stroke-width="4"/>
+      <path d="M24 781h1552v92H24z" fill="url(#grain)" opacity=".82"/>
+    </g>
+    <path d="M117 782h1366M136 816h1328" stroke="url(#aged-gold)" stroke-width="5"/>
+    <g filter="url(#carve)" opacity=".88">
+      <use href="#cloud-scroll" transform="translate(215 764) scale(.58 .48)"/>
+      <use href="#cloud-scroll" transform="translate(520 764) scale(.58 .48)"/>
+      <use href="#cloud-scroll" transform="translate(1080 764) scale(-.58 .48)"/>
+      <use href="#cloud-scroll" transform="translate(1385 764) scale(-.58 .48)"/>
+      <use href="#rosette" transform="translate(800 816) scale(.72)"/>
+    </g>
+  </g>
+
+  <rect x="106" y="124" width="1388" height="650" rx="4" fill="none" stroke="#e0bd7b" stroke-opacity=".28" stroke-width="4"/>
+  <rect x="116" y="134" width="1368" height="630" rx="2" fill="none" stroke="#140a07" stroke-opacity=".82" stroke-width="5"/>
+</svg>

@@ -2,7 +2,7 @@
   "use strict";
 
   const version = "20260827-experience-1";
-  const coreVersion = "20260827-experience-1-fm123-runtime-clean-1-character-art-clean-2";
+  const coreVersion = "20260828-shadow-stage-1-fm123-runtime-clean-1-character-art-clean-2";
   const animationMapVersion = "20260827-animation-map-2";
   const mobileQuery = matchMedia("(max-width:760px)");
   const mobileParts = [
