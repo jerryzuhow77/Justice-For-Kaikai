@@ -1,6 +1,14 @@
 name: Build four film downloads
 
 on:
+  push:
+    branches:
+      - codex/four-film-downloads
+    paths:
+      - .github/workflows/build-film-downloads.yml
+      - index.html
+      - assets/css/cinematic-revamp-core.css
+      - scripts/qa.mjs
   workflow_dispatch:
 
 permissions:
@@ -8,6 +16,7 @@ permissions:
 
 jobs:
   build:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout requested branch
@@ -51,8 +60,8 @@ jobs:
 
       - name: Commit generated videos
         run: |
-          git config user.name "chatgpt-codex-connector[bot]"
-          git config user.email "chatgpt-codex-connector[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/video
           if git diff --cached --quiet; then
             echo "Video assets already match."
