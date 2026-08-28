@@ -275,8 +275,8 @@ test("gives all ten shadow poems a production carved stage and generated paper p
   assert.match(app, /function addPaperCutBeat/);
   assert.match(app, /const pieces = \$\$\("\.paper-piece", group\)\.slice\(0, 2\);/);
   assert.match(app, /addPaperCutBeat\(timeline, meta, at, duration\)/);
-  assert.match(loader, /const coreVersion = "20260828-paper-art-motion-2-production-pass-1"/);
-  assert.match(legacy, /cinematic-revamp-core\.js\?v=20260828-paper-art-motion-2-production-pass-1/);
+  assert.match(loader, /const coreVersion = "20260828-paper-art-motion-2-production-pass-1-css-url-1"/);
+  assert.match(legacy, /cinematic-revamp-core\.js\?v=20260828-paper-art-motion-2-production-pass-1-css-url-1/);
 });
 
 test("gives the prologue an explicit mobile-safe music control", async () => {

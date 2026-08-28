@@ -2,7 +2,7 @@
   "use strict";
 
   const version = "20260828-production-pass-1";
-  const coreVersion = "20260828-paper-art-motion-2-production-pass-1";
+  const coreVersion = "20260828-paper-art-motion-2-production-pass-1-css-url-1";
   const animationMapVersion = "20260827-animation-map-2";
   const mobileQuery = matchMedia("(max-width:760px)");
   const mobileParts = [
