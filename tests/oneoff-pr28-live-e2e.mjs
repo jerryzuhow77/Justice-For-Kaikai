@@ -157,17 +157,21 @@ function assertCleanDiagnostics(diagnostics) {
   const actionableConsoleErrors = diagnostics.consoleErrors.filter((item) =>
     !/^Failed to load resource: the server responded with a status of \d+/.test(item.text),
   );
+  const uniqueBadResponses = [...new Map(
+    diagnostics.badResponses.map((item) => [`${item.status}:${item.resourceType}:${item.url}`, item]),
+  ).values()];
   const normalized = {
     ...diagnostics,
     consoleErrors: actionableConsoleErrors,
     failedRequests: criticalRequestFailures,
+    badResponses: uniqueBadResponses,
   };
   report.diagnostics[diagnostics.label] = normalized;
   console.log(`DIAGNOSTICS | ${diagnostics.label} | ${JSON.stringify(normalized)}`);
   assert.deepEqual(diagnostics.pageErrors, [], `${diagnostics.label}: uncaught page errors`);
   assert.deepEqual(actionableConsoleErrors, [], `${diagnostics.label}: actionable console errors`);
   assert.deepEqual(criticalRequestFailures, [], `${diagnostics.label}: critical request failures`);
-  assert.deepEqual(diagnostics.badResponses, [], `${diagnostics.label}: HTTP errors for critical resources`);
+  assert.deepEqual(uniqueBadResponses, [], `${diagnostics.label}: HTTP errors for critical resources`);
 }
 
 async function newContext(options = {}) {
@@ -193,6 +197,13 @@ async function waitForPlayer(page) {
   await page.waitForSelector("#cinema-dialog", { state: "attached", timeout: 30_000 });
   await page.waitForFunction(() => document.querySelector("#cinema-dialog")?.open === true, null, { timeout: 30_000 });
   await page.waitForSelector("#cinema-play-overlay", { state: "visible", timeout: 15_000 });
+}
+
+async function waitForPlayerClose(page) {
+  await page.waitForFunction(() => {
+    const dialog = document.querySelector("#cinema-dialog");
+    return dialog?.open === false && document.body.style.overflow === "";
+  }, null, { timeout: 15_000 });
 }
 
 async function catalogStats(page) {
@@ -334,7 +345,7 @@ async function testDesktopPlayerStateAndRelease() {
   const shadowBeforeClose = await playerReleaseState(page);
   assert.ok(shadowBeforeClose.actorSrcCount > 0, "Shadow-player actor assets were not hydrated before release test");
   await page.locator("#close-cinema").click();
-  await page.waitForFunction(() => document.querySelector("#cinema-dialog")?.open === false);
+  await waitForPlayerClose(page);
   const shadowAfterClose = await playerReleaseState(page);
   assertReleased(shadowAfterClose, "shadow close");
 
@@ -356,7 +367,7 @@ async function testDesktopPlayerStateAndRelease() {
   assert.equal(restored.saved?.sceneId, "SP00");
   assert.equal(restored.saved?.localStep, saved.localStep);
   await page.locator("#close-cinema").click();
-  await page.waitForFunction(() => document.querySelector("#cinema-dialog")?.open === false);
+  await waitForPlayerClose(page);
 
   await page.evaluate(() => localStorage.setItem("kk-music-v8", "true"));
   await page.goto(`${BASE_URL}?animation=24&qa=${qa}`, { waitUntil: "domcontentloaded", timeout: 45_000 });
@@ -371,7 +382,7 @@ async function testDesktopPlayerStateAndRelease() {
   await page.waitForFunction(() => document.querySelector("#play-cinema")?.getAttribute("aria-pressed") === "true");
   await page.waitForTimeout(750);
   await page.locator("#close-cinema").click();
-  await page.waitForFunction(() => document.querySelector("#cinema-dialog")?.open === false);
+  await waitForPlayerClose(page);
   const heavyAfter = await playerReleaseState(page);
   assertReleased(heavyAfter, "FM-C close");
   if (heavyAfter.audio?.srcAttribute) {
@@ -443,7 +454,7 @@ async function testMobilePlayer() {
   await page.screenshot({ path: `${ARTIFACT_DIR}/mobile-390x844-player.png`, fullPage: false });
 
   await page.locator("#close-cinema").click();
-  await page.waitForFunction(() => document.querySelector("#cinema-dialog")?.open === false);
+  await waitForPlayerClose(page);
   const mobileAfterClose = await playerReleaseState(page);
   assertReleased(mobileAfterClose, "mobile FM-C close");
 
@@ -504,7 +515,7 @@ try {
     status: report.status,
     target: report.target,
     production: report.production || null,
-    passedChecks: report.checks.map((check) => check.name),
+    passedChecks: report.checks.filter((check) => check.status === "passed").map((check) => check.name),
     warnings: report.warnings,
     error: report.error || null,
   })}`);
