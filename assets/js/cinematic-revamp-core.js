@@ -762,7 +762,15 @@
     if (target === "#top") playPageIntro();
     window.setTimeout(() => {
       const targetElement = $(target);
-      if (target !== "#top") targetElement?.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
+      if (target !== "#top" && targetElement) {
+        // The entry gate and prologue both lock page scrolling. Jump only after
+        // those locks are released so Chromium cannot discard the navigation.
+        targetElement.scrollIntoView({ behavior: "auto", block: "start" });
+        window.requestAnimationFrame(() => {
+          const offset = targetElement.getBoundingClientRect().top;
+          if (Math.abs(offset) > 4) window.scrollTo({ top: window.scrollY + offset, behavior: "auto" });
+        });
+      }
       (target === "#top" ? main : targetElement)?.focus?.({ preventScroll: true });
       window.ScrollTrigger?.refresh();
     }, 220);
