@@ -753,8 +753,8 @@
     if (!locked && entryGate) gateHideTimer = window.setTimeout(() => { entryGate.hidden = true; }, 220);
   }
 
-  function enterSite(target = "#top") {
-    const startWithMusic = $("#gate-music")?.checked === true;
+  function enterSite(target = "#top", options = {}) {
+    const startWithMusic = options.startWithMusic ?? ($("#gate-music")?.checked === true);
     if (target === "#full-copy") { $(".full-copy-details")?.setAttribute("open", ""); loadInlineStory(); }
     setPageGate(false);
     rememberEnteredSession();
@@ -2941,19 +2941,27 @@
   }
   function teardownPageMotion() { state.pageMedia?.revert(); state.pageMedia = null; }
 
-  function bindEvents() {
-    $("#enter-experience")?.addEventListener("click", async (event) => {
-      const button = event.currentTarget;
-      if (button.disabled) return;
-      if ($("#gate-reduced")?.checked) setReduced(true);
+  async function startEntrancePrologue({ automatic = false } = {}) {
+    const button = $("#enter-experience");
+    if (!entryGate || entryGate.dataset.prologueStarting === "true") return;
+    entryGate.dataset.prologueStarting = "true";
+    if ($("#gate-reduced")?.checked) setReduced(true);
+    if (button) {
       button.disabled = true;
-      button.textContent = "序幕播放中…";
-      entryGate.inert = true;
-      entryGate.setAttribute("aria-hidden", "true");
-      entryGate.setAttribute("aria-modal", "false");
-      await window.playChairPrologue?.();
-      enterSite("#top");
-    });
+      button.textContent = automatic ? "序幕自動播放中…" : "序幕播放中…";
+    }
+    entryGate.inert = true;
+    entryGate.setAttribute("aria-hidden", "true");
+    entryGate.setAttribute("aria-modal", "false");
+    const result = await window.playChairPrologue?.();
+    const target = result?.target === "#chapter-two-preview" ? result.target : "#top";
+    const startWithMusic = automatic ? window.__kaikaiAmbientRequested === true : $("#gate-music")?.checked === true;
+    if (target !== "#top" && window.location.hash !== target) window.history.pushState(null, "", target);
+    enterSite(target, { startWithMusic });
+  }
+
+  function bindEvents() {
+    $("#enter-experience")?.addEventListener("click", () => startEntrancePrologue({ automatic: false }));
     $("#enter-reading")?.addEventListener("click", () => enterSite("#full-copy"));
     $("#gate-reduced")?.addEventListener("change", (event) => setReduced(event.target.checked)); motionToggle?.addEventListener("click", () => setReduced(!state.reduced)); navToggle?.addEventListener("click", () => setNavOpen(!state.navOpen));
     $$("a", nav).forEach((link) => link.addEventListener("click", () => setNavOpen(false))); window.addEventListener("resize", () => { if (window.innerWidth > 1120) setNavOpen(false); requestActorCalibration(); });
@@ -3091,7 +3099,12 @@
     refreshMotionUi(); refreshAmbientUi(); renderAnimationCatalog(); bindEvents(); updateReadingProgress(); setupFullCopy(); setupPageMotion();
     const directPlayer = initDirectPlayer();
     const directHash = !directPlayer && initDirectHash();
-    if (!directPlayer && !directHash) { if (gated) playGateIntro(); else playPageIntro(); }
+    if (!directPlayer && !directHash) {
+      if (gated) {
+        playGateIntro();
+        window.requestAnimationFrame(() => startEntrancePrologue({ automatic: true }));
+      } else playPageIntro();
+    }
   }
 
   init();

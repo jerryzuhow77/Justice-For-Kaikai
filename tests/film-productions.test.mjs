@@ -180,7 +180,7 @@ test("FM-C maps concept plates into 7/8/8/8/9 moving GSAP storyboards", async ()
   assert.match(legacy, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.doesNotMatch(refinedPrologue, /direct\.has\("scene"\)\|\|direct\.get\("reel"\)==="1"/);
   assert.match(html, /assets\/vendor\/gsap\/MotionPathPlugin\.min\.js/);
-  assert.match(html, /cinematic-revamp\.js\?v=20260828-production-pass-1/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260828-auto-prologue-ch2-1/);
   assert.match(css, /\.fm-c-five-act-sequence/);
   assert.match(css, /\.fm-c-five-act-sequence\{position:absolute;z-index:3/);
   assert.match(css, /\.fm-c-act-shot\{/);

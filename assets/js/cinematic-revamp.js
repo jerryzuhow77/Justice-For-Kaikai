@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const version = "20260828-production-pass-1";
-  const coreVersion = "20260828-paper-art-motion-2-production-pass-1-css-url-1";
+  const version = "20260828-auto-prologue-ch2-1";
+  const coreVersion = "20260828-auto-prologue-ch2-1";
   const animationMapVersion = "20260827-animation-map-2";
   const mobileQuery = matchMedia("(max-width:760px)");
   const mobileParts = [
@@ -86,11 +86,11 @@
         ]);
         await loadScript(`assets/js/chair-prologue-refined.js?v=${version}`);
         if (typeof window.initChairPrologueRefined !== "function") return;
-        await new Promise((resolve) => {
-          const fallback = window.setTimeout(resolve, 15000);
-          window.addEventListener("kaikai:prologue-finished", () => {
+        return await new Promise((resolve) => {
+          const fallback = window.setTimeout(() => resolve({ target: "#top", timedOut: true }), 15000);
+          window.addEventListener("kaikai:prologue-finished", (event) => {
             window.clearTimeout(fallback);
-            resolve();
+            resolve(event.detail || { target: "#top" });
           }, { once: true });
           window.initChairPrologueRefined();
         });
