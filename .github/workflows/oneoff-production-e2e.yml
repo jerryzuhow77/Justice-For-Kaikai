@@ -1,0 +1,70 @@
+name: One-off production E2E
+
+on:
+  push:
+    branches:
+      - qa/production-e2e-20260828
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oneoff-production-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PRODUCTION_BASE_URL: https://jerryzuhow77.github.io/Justice-For-Kaikai/
+      E2E_ROOT: /tmp/kaikai-production-e2e
+    steps:
+      - name: Check out QA branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install production E2E runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$E2E_ROOT"
+          cp .github/e2e/production.spec.mjs "$E2E_ROOT/production.spec.mjs"
+          cd "$E2E_ROOT"
+          npm init -y >/dev/null
+          npm install --no-save --no-audit --no-fund @playwright/test@1.55.0
+
+      - name: Install Traditional Chinese fonts
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+
+      - name: Run live-site desktop and mobile E2E
+        shell: bash
+        env:
+          CI: '1'
+          PLAYWRIGHT_HTML_OPEN: never
+          PLAYWRIGHT_HTML_OUTPUT_DIR: /tmp/kaikai-production-e2e/playwright-report
+          GITHUB_WORKSPACE_PATH: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          cd "$E2E_ROOT"
+          npx playwright test production.spec.mjs --workers=1 --reporter=line,html
+
+      - name: Upload production E2E evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-e2e-evidence-${{ github.run_id }}
+          path: |
+            /tmp/kaikai-production-e2e/artifacts
+            /tmp/kaikai-production-e2e/playwright-report
+            /tmp/kaikai-production-e2e/test-results
+          if-no-files-found: warn
+          retention-days: 14
