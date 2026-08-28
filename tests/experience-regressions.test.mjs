@@ -26,7 +26,7 @@ function alternateHref(html, language) {
   return tag?.match(/\bhref=["']([^"']+)["']/i)?.[1] || "";
 }
 
-test("keeps the prologue opt-in, session-stable, and bypassed by direct hashes", async () => {
+test("autoplays the first-session prologue without forced audio and bypasses it for direct links", async () => {
   const [html, loader, legacy, app, css] = await Promise.all([
     read("index.html"),
     read("assets/js/cinematic-revamp.js"),
@@ -43,14 +43,20 @@ test("keeps the prologue opt-in, session-stable, and bypassed by direct hashes",
   assert.match(loader, /loadStyle\(`assets\/css\/chair-prologue-mobile-v2-runtime\.css\?v=\$\{version\}`\)/);
   assert.doesNotMatch(css, /@import url\("\.\/chair-prologue-/);
   assert.doesNotMatch(loader, /(?:^|[;}]\s*)playChairPrologue\(\)/m);
-  assert.match(app, /#enter-experience[\s\S]*?await window\.playChairPrologue\?\.\(\)/);
+  assert.match(loader, /resolve\(event\.detail \|\| \{ target: "#top" \}\)/);
+  assert.match(app, /async function startEntrancePrologue\(\{ automatic = false \} = \{\}\)/);
+  assert.match(app, /window\.requestAnimationFrame\(\(\) => startEntrancePrologue\(\{ automatic: true \}\)\)/);
+  assert.match(app, /const startWithMusic = automatic \? window\.__kaikaiAmbientRequested === true/);
+  assert.match(app, /window\.history\.pushState\(null, "", target\)/);
+  assert.match(app, /#enter-experience[\s\S]*?startEntrancePrologue\(\{ automatic: false \}\)/);
   assert.match(app, /function hasDirectHash\(\)\s*{\s*return Boolean\(window\.location\.hash && window\.location\.hash !== "#" && window\.location\.hash !== "#top"\)/);
   assert.match(app, /const gated = !hasDirectHash\(\) && !hasDirectPlayer && !hasEnteredSession\(\)/);
   assert.match(app, /function directPlayerRequest/);
   assert.match(html, /Number\.isInteger\(animation\) && animation >= 1 && animation <= 24/);
   assert.match(html, /\^\(\?:SP0\[0-9\]\|DV0\[0-9\]\|FM-\[ABCD\]\)\$/);
   assert.match(app, /function initDirectHash\(\)[\s\S]*?setPageGate\(false\);[\s\S]*?document\.getElementById\(id\)/);
-  assert.match(html, /椅仔姑序幕約 12 秒，只在首次進站時提供；直接連到章節或動畫的網址不會被入口攔住/);
+  assert.match(html, /椅仔姑序幕約 12 秒，首次進站會自動播放/);
+  assert.match(html, /瀏覽器不會自動發聲，可在序幕中開啟配樂/);
 });
 
 test("keeps public player URLs aligned with displayed film acts and theatre beats", async () => {
