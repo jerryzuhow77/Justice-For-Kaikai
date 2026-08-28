@@ -545,12 +545,12 @@
   function hydrateFmCAct(actIndex, shotIndex = 0) {
     const frame = filmActFrames[actIndex];
     if (!frame) return;
-    if (frame.dataset.actBackdrop) frame.style.setProperty("--act-backdrop", `url('${frame.dataset.actBackdrop}')`);
+    if (frame.dataset.actBackdrop) frame.style.setProperty("--act-backdrop", `url('${assetUrl(frame.dataset.actBackdrop)}')`);
     const shots = $$(".fm-c-act-shot", frame);
     [shotIndex, shotIndex + 1].forEach((index) => {
       const shot = shots[index];
       if (!shot || shot.dataset.hydrated === "true") return;
-      if (shot.dataset.shotBackdrop) shot.style.setProperty("--shot-backdrop", `url('${shot.dataset.shotBackdrop}')`);
+      if (shot.dataset.shotBackdrop) shot.style.setProperty("--shot-backdrop", `url('${assetUrl(shot.dataset.shotBackdrop)}')`);
       const image = $("img[data-src]", shot);
       if (image?.dataset.src) image.src = image.dataset.src;
       shot.dataset.hydrated = "true";
@@ -560,7 +560,7 @@
         if (image.dataset.src && !image.getAttribute("src")) image.src = image.dataset.src;
       });
       const responsibility = $(".fm-c-responsibility-rig", frame);
-      if (responsibility?.dataset.adultFocusImage) responsibility.style.setProperty("--adult-focus-image", `url('${responsibility.dataset.adultFocusImage}')`);
+      if (responsibility?.dataset.adultFocusImage) responsibility.style.setProperty("--adult-focus-image", `url('${assetUrl(responsibility.dataset.adultFocusImage)}')`);
       frame.dataset.rigHydrated = "true";
     }
   }

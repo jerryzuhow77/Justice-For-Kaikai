@@ -108,6 +108,26 @@ test("features exactly four films before the complete 24-animation catalog", asy
   assert.match(cardBuilder, /button\.setAttribute\("aria-label", `播放第\$\{publicSceneNumber\(scene\)\}篇，共\$\{PUBLIC_TOTAL\}篇/);
 });
 
+test("resolves CSS custom-property images from the stylesheet without duplicated asset paths", async () => {
+  const [html, app] = await Promise.all([
+    read("index.html"),
+    read("assets/js/cinematic-revamp-core.js"),
+  ]);
+  const stylesheet = "https://jerryzuhow77.github.io/Justice-For-Kaikai/assets/css/cinematic-revamp-core.css";
+  const featuredImages = [...html.matchAll(/--film-image:url\('([^']+)'\)/g)].map((match) => match[1]);
+  assert.equal(featuredImages.length, 4);
+  for (const image of featuredImages) {
+    assert.match(new URL(image, stylesheet).pathname, /^\/Justice-For-Kaikai\/assets\/img\/films\//);
+  }
+  assert.doesNotMatch(html, /--film-image:url\(['"]assets\/img\//);
+
+  const hydration = functionBlock(app, "function hydrateFmCAct(actIndex, shotIndex = 0)", "const filmSeparatedPalms");
+  assert.match(hydration, /assetUrl\(frame\.dataset\.actBackdrop\)/);
+  assert.match(hydration, /assetUrl\(shot\.dataset\.shotBackdrop\)/);
+  assert.match(hydration, /assetUrl\(responsibility\.dataset\.adultFocusImage\)/);
+  assert.doesNotMatch(hydration, /assets\/css\/assets\/img/);
+});
+
 test("ships the three-key mobile dock and a live visual description", async () => {
   const [html, app] = await Promise.all([
     read("index.html"),
