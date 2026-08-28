@@ -189,6 +189,7 @@
   let inlineStoryPromise = null;
   let catalogPosterObserver = null;
   let gateHideTimer = 0;
+  let decorativeSealsQueued = false;
 
   const storedWatched = readStoredJson(STORAGE_KEYS.watched, []);
   const storedResume = readStoredJson(STORAGE_KEYS.resume, null);
@@ -234,10 +235,15 @@
   const header = $("#site-header");
   const main = $("#main");
   const entryGate = $("#entry-gate");
+  const footer = $("footer");
+  const helpFab = $(".help-fab");
+  const mobileQuickNav = $(".mobile-quick-nav");
+  const skipLink = $(".skip-link");
   const nav = $("#main-nav");
   const navToggle = $("#nav-toggle");
   const motionToggle = $("#motion-toggle");
   const animationCatalog = $("#animation-catalog");
+  const animationCatalogStatus = $("#animation-catalog-status");
   const dialog = $("#cinema-dialog");
   const stage = $("#cinema-stage");
   const bgA = $("#cinema-bg-a");
@@ -525,19 +531,27 @@
   const filmFinaleActions = $$(".finale-actions span", filmFinaleRig);
   const filmFinaleMemory = $$(".finale-memory", filmFinaleRig);
   const filmFinaleTitle = $(".finale-title", filmFinaleRig);
-  function hydrateFmCAct(actIndex) {
+  function hydrateFmCAct(actIndex, shotIndex = 0) {
     const frame = filmActFrames[actIndex];
-    if (!frame || frame.dataset.hydrated === "true") return;
+    if (!frame) return;
     if (frame.dataset.actBackdrop) frame.style.setProperty("--act-backdrop", `url('${frame.dataset.actBackdrop}')`);
-    $$(".fm-c-act-shot", frame).forEach((shot) => {
+    const shots = $$(".fm-c-act-shot", frame);
+    [shotIndex, shotIndex + 1].forEach((index) => {
+      const shot = shots[index];
+      if (!shot || shot.dataset.hydrated === "true") return;
       if (shot.dataset.shotBackdrop) shot.style.setProperty("--shot-backdrop", `url('${shot.dataset.shotBackdrop}')`);
       const image = $("img[data-src]", shot);
       if (image?.dataset.src) image.src = image.dataset.src;
+      shot.dataset.hydrated = "true";
     });
-    $$("img[data-src]", frame).forEach((image) => { if (image.dataset.src && !image.getAttribute("src")) image.src = image.dataset.src; });
-    const responsibility = $(".fm-c-responsibility-rig", frame);
-    if (responsibility?.dataset.adultFocusImage) responsibility.style.setProperty("--adult-focus-image", `url('${responsibility.dataset.adultFocusImage}')`);
-    frame.dataset.hydrated = "true";
+    if (frame.dataset.rigHydrated !== "true") {
+      $$("img[data-src]", frame).filter((image) => !image.closest(".fm-c-act-shot")).forEach((image) => {
+        if (image.dataset.src && !image.getAttribute("src")) image.src = image.dataset.src;
+      });
+      const responsibility = $(".fm-c-responsibility-rig", frame);
+      if (responsibility?.dataset.adultFocusImage) responsibility.style.setProperty("--adult-focus-image", `url('${responsibility.dataset.adultFocusImage}')`);
+      frame.dataset.rigHydrated = "true";
+    }
   }
   const filmSeparatedPalms = document.createElement("div");
   filmSeparatedPalms.className = "film-separated-palms";
@@ -700,6 +714,20 @@
       .from(".scroll-cue", { y: -10, autoAlpha: 0, duration: .45, clearProps: "transform,opacity,visibility" }, "-=.3");
   }
 
+  function queueDecorativeSeals() {
+    if (decorativeSealsQueued) return;
+    decorativeSealsQueued = true;
+    const hydrate = () => {
+      const limit = window.matchMedia("(max-width:760px)").matches ? 2 : 6;
+      $$(".minnan-seal-field img[data-src]").slice(0, limit).forEach((image) => {
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      });
+    };
+    if ("requestIdleCallback" in window) window.requestIdleCallback(hydrate, { timeout: 3200 });
+    else window.setTimeout(hydrate, 2200);
+  }
+
   function setPageGate(locked) {
     window.clearTimeout(gateHideTimer);
     if (locked && entryGate) entryGate.hidden = false;
@@ -707,7 +735,10 @@
     document.body.classList.toggle("is-gated", locked);
     if (header) header.inert = locked;
     if (main) main.inert = locked;
+    [footer, helpFab, mobileQuickNav, skipLink].forEach((element) => { if (element) element.inert = locked; });
     entryGate?.setAttribute("aria-hidden", String(!locked));
+    entryGate?.setAttribute("aria-modal", String(locked));
+    if (!locked) queueDecorativeSeals();
     if (!locked && entryGate) gateHideTimer = window.setTimeout(() => { entryGate.hidden = true; }, 220);
   }
 
@@ -731,6 +762,7 @@
     if (motionToggle) {
       motionToggle.textContent = state.reduced ? "低動態" : "動態";
       motionToggle.setAttribute("aria-pressed", String(state.reduced));
+      motionToggle.setAttribute("aria-label", state.reduced ? "開啟完整頁面動態" : "切換為低動態模式");
     }
     const gateToggle = $("#gate-reduced");
     if (gateToggle) gateToggle.checked = state.reduced;
@@ -765,6 +797,17 @@
     const ratio = clamp(window.scrollY / available, 0, 1);
     const bar = $("#reading-progress-bar");
     if (bar) bar.style.width = `${ratio * 100}%`;
+    const quickTargets = ["film-reel", "full-copy"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    const current = quickTargets.reduce((active, target) => {
+      const top = target.getBoundingClientRect().top;
+      return top <= window.innerHeight * .42 ? target.id : active;
+    }, window.scrollY < window.innerHeight * .75 ? "" : quickTargets[0]?.id || "");
+    $$("[data-quick-section]", mobileQuickNav || document).forEach((link) => {
+      if (link.dataset.quickSection === current) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
   }
 
   function normalizeText(value) {
@@ -899,7 +942,7 @@
   function preloadSceneStart(scene) {
     if (!scene) return;
     if (scene.image && scene.id !== "FM-C") warmImage(scene.image);
-    if (scene.id === "FM-C") [...new Set((FM_C_ACT_SHOTS[0] || []).map((plan) => plan.src))].forEach(warmImage);
+    if (scene.id === "FM-C") [...new Set((FM_C_ACT_SHOTS[0] || []).slice(0, 2).map((plan) => plan.src))].forEach(warmImage);
     if (scene.type !== "film") ["female", "male"].forEach((sex) => warmImage(poseAsset(scene, sex, actorPosePlan(scene, sex)[0])));
   }
 
@@ -965,8 +1008,8 @@
   }
 
   function createAnimationCard(scene) {
-    const button = document.createElement("button");
-    button.type = "button";
+    const button = document.createElement("a");
+    button.href = `?animation=${publicSceneNumber(scene)}`;
     button.className = "animation-card";
     button.dataset.sceneId = scene.id;
     button.dataset.type = scene.type;
@@ -979,26 +1022,55 @@
     const watched = document.createElement("span"); watched.className = "animation-card-state"; watched.textContent = state.watched.has(scene.id) ? "已觀看" : "未觀看";
     top.append(number, watched);
 
+    const preview = document.createElement("span");
+    preview.className = "animation-card-preview";
+    if (scene.type !== "film") {
+      const actionIndex = Math.min(4, Math.max(0, scene.actions.length - 1));
+      ["female", "male"].forEach((sex) => {
+        const pose = actorPosePlan(scene, sex)[actionIndex];
+        const image = document.createElement("img");
+        image.alt = "";
+        image.loading = "lazy";
+        image.decoding = "async";
+        image.dataset.src = poseAsset(scene, sex, pose);
+        image.className = `animation-card-actor ${sex}`;
+        configurePreviewActor(image, scene, sex, pose);
+        preview.append(image);
+      });
+    }
+
     const copy = document.createElement("span"); copy.className = "animation-card-copy";
     const type = document.createElement("small"); type.textContent = `${TYPE_LABELS[scene.type]} · ${chapterLabel(scene)}`;
     const title = document.createElement("strong"); title.textContent = scene.title;
     const subtitle = document.createElement("span"); subtitle.textContent = scene.type === "film" ? (scene.cardCopy || scene.subtitle) : scene.subtitle;
     const detail = document.createElement("i");
     const production = productionFor(scene);
-    detail.textContent = production ? `五幕 · ${formatTime(production.duration)}` : TYPE_PURPOSES[scene.type].split("｜")[0];
+    const duration = production
+      ? production.duration
+      : Array.from({ length: totalSteps(scene) }, (_, index) => stepDuration(scene, index)).reduce((sum, value) => sum + value, 0);
+    detail.textContent = production
+      ? `五幕 · ${formatTime(duration)}`
+      : `${TYPE_PURPOSES[scene.type].split("｜")[0]} · ${formatTime(duration)}`;
     copy.append(type, title, subtitle, detail);
-    button.append(top, copy);
+    button.append(top, preview, copy);
     button.classList.toggle("is-watched", state.watched.has(scene.id));
-    button.addEventListener("click", () => openCinema(scene.id, "single"));
+    button.addEventListener("click", (event) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      openCinema(scene.id, "single");
+    });
     return button;
   }
 
   function observeCatalogPosters(root) {
     catalogPosterObserver?.disconnect();
-    const cards = $$('[data-poster]', root);
+    const cards = $$(".animation-card", root);
     const reveal = (card) => {
-      if (!card.dataset.poster) return;
-      card.style.setProperty("--catalog-poster", `url('${card.dataset.poster}')`);
+      if (card.dataset.poster) card.style.setProperty("--catalog-poster", `url('${card.dataset.poster}')`);
+      $$("img[data-src]", card).forEach((image) => {
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      });
       card.classList.add("is-poster-ready");
       delete card.dataset.poster;
     };
@@ -1033,6 +1105,10 @@
       section.append(header, grid); animationCatalog.append(section);
     });
     animationCatalog.setAttribute("aria-busy", "false");
+    if (animationCatalogStatus) {
+      const labels = { story: "故事順序", type: "劇場類型", chapter: "八篇章節" };
+      animationCatalogStatus.textContent = `已切換為${labels[state.catalogView]}檢視，共 ${PUBLIC_TOTAL} 篇動畫。`;
+    }
     observeCatalogPosters(animationCatalog);
     updateAnimationProgressUi();
   }
@@ -1256,6 +1332,13 @@
     state.player.currentBackdrop = state.player.currentBackdrop === 0 ? 1 : 0;
   }
 
+  function describeSceneVisual(scene, action = "") {
+    if (!scene) return "畫面描述：播放器尚未開始。";
+    const overview = scene.description || scene.cardCopy || scene.subtitle || scene.title;
+    const motifs = [scene.motif, scene.prop].filter(Boolean).join("、");
+    return `畫面描述：${overview}${motifs ? `。畫面以${motifs}承接敘事` : ""}${action ? `；目前畫面為${action}` : ""}。人物與場景皆為非肖像化藝術重構，不是案件影像。`;
+  }
+
   function applyScene(scene, immediate = false) {
     const changed = state.player.currentScene?.id !== scene.id;
     const production = productionFor(scene);
@@ -1264,6 +1347,8 @@
     $("#cinema-type").textContent = state.player.mode === "reel" ? `四部主線電影 · ${ACT_LABELS[scene.id] || TYPE_LABELS[scene.type]} · ${publicSceneLabel(scene)}` : `${publicSceneLabel(scene)} · ${TYPE_LABELS[scene.type]} · ${TYPE_PURPOSES[scene.type]}`;
     $("#cinema-title").textContent = scene.title; $("#cinema-subtitle").textContent = production ? `${scene.subtitle}｜五幕 ${formatTime(production.duration)}` : scene.subtitle; $("#cinema-source").textContent = production?.ethics || scene.source; stageProp.textContent = scene.prop || scene.motif || "";
     const filmIntro = $("#cinema-film-intro"); if (filmIntro) { filmIntro.textContent = scene.description || ""; filmIntro.hidden = !scene.description; }
+    const visualDescription = $("#cinema-visual-description");
+    if (visualDescription) visualDescription.textContent = describeSceneVisual(scene);
     if (changed) {
       preloadCurrentAndNext(scene); setBackdrop(scene, immediate); renderStoryboard(scene); updateActMarkers(scene.id); syncSceneAudio(scene); updateStoryNavigation(scene);
       const productionControls = Boolean(production);
@@ -1601,6 +1686,8 @@
       const shotAt = at + duration * plan.start;
       const nextStart = plans[shotIndex + 1]?.start ?? 1;
       const motionDuration = Math.max(1.2, duration * (nextStart - plan.start) + transition);
+      const preloadAt = Math.max(at, shotAt - Math.min(1.2, duration * .04));
+      timeline.call(() => hydrateFmCAct(meta.actionIndex, shotIndex), null, preloadAt);
       timeline.set(shot, { zIndex: shotIndex + 1 }, shotAt);
       if (shotIndex === 0) {
         timeline.set(shot, { autoAlpha: 1, clipPath: "inset(0 0 0 0)" }, shotAt);
@@ -2460,9 +2547,19 @@
     if (state.player.completedSceneId !== meta.scene.id || index !== state.player.stepMeta.length - 1) setCompletionState(false);
     const production = productionFor(meta.scene);
     const line = meta.line || meta.scene.dialogue[meta.dialogueIndex];
+    const visualDescription = $("#cinema-visual-description");
+    if (visualDescription) {
+      const currentAction = productionFor(meta.scene)?.acts?.[meta.actionIndex]?.action || meta.scene.actions?.[meta.actionIndex] || "場景推進";
+      visualDescription.textContent = describeSceneVisual(meta.scene, currentAction);
+    }
     if (production) {
       const actInfo = production.acts[meta.actionIndex];
-      if (meta.scene.id === "FM-C") hydrateFmCAct(meta.actionIndex);
+      if (meta.scene.id === "FM-C") {
+        const progress = clamp((meta.localStart - actInfo.start) / Math.max(.1, actInfo.end - actInfo.start), 0, 1);
+        const plans = FM_C_ACT_SHOTS[meta.actionIndex] || [];
+        const shotIndex = plans.reduce((current, plan, planIndex) => progress + .0001 >= plan.start ? planIndex : current, 0);
+        hydrateFmCAct(meta.actionIndex, shotIndex);
+      }
       stage.style.setProperty("--scene-mobile-focus", productionView(actInfo).position);
       setProductionState(meta);
       $("#frame-counter").textContent = `第${CHINESE_ACT_NUMBERS[meta.actionIndex]}幕 / 五幕`;
@@ -2565,6 +2662,11 @@
   function renderStoryboard(scene) {
     const root = $("#storyboard"); if (!root) return; root.replaceChildren();
     const production = productionFor(scene);
+    root.hidden = Boolean(production);
+    if (production) {
+      root.removeAttribute("data-beats");
+      return;
+    }
     const beatCount = production ? production.acts.length : scene.type === "shadow" ? 6 : scene.type === "side" ? 4 : 10;
     for (let beatIndex = 0; beatIndex < beatCount; beatIndex += 1) {
       const actionIndex = production ? beatIndex : Math.round((beatIndex / Math.max(1, beatCount - 1)) * Math.max(0, scene.actions.length - 1));
@@ -2668,9 +2770,12 @@
     [actorFemaleImage, actorMaleImage].forEach((image) => image?.removeAttribute("src"));
     [bgA, bgB, depthFar, depthMid, depthNear].forEach((element) => element?.style.removeProperty("background-image"));
     filmActFrames.forEach((frame) => {
-      delete frame.dataset.hydrated;
+      delete frame.dataset.rigHydrated;
       frame.style.removeProperty("--act-backdrop");
-      $$(".fm-c-act-shot", frame).forEach((shot) => shot.style.removeProperty("--shot-backdrop"));
+      $$(".fm-c-act-shot", frame).forEach((shot) => {
+        delete shot.dataset.hydrated;
+        shot.style.removeProperty("--shot-backdrop");
+      });
       $$("img[data-src]", frame).forEach((image) => image.removeAttribute("src"));
       $(".fm-c-responsibility-rig", frame)?.style.removeProperty("--adult-focus-image");
     });
@@ -2704,7 +2809,16 @@
       window.setTimeout(() => focusTarget?.focus?.({ preventScroll: true }), state.reduced ? 0 : 450);
     });
   }
-  function sceneShareUrl() { const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href; const url = new URL(canonical, window.location.href); if (state.player.mode === "reel") url.searchParams.set("reel", "1"); else if (state.player.currentScene) { url.searchParams.set("animation", publicSceneNumber(state.player.currentScene)); const meta = state.player.stepMeta[state.player.stepIndex]; if (productionFor(state.player.currentScene) && meta?.actionIndex > 0) url.searchParams.set("act", String(meta.actionIndex + 1)); } return url.href; }
+  function sceneShareUrl() {
+    const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href;
+    const filmSharePaths = { "FM-A": "share/fm-a/", "FM-D": "share/fm-d/", "FM-B": "share/fm-b/", "FM-C": "share/fm-c/" };
+    const currentId = state.player.currentScene?.id;
+    if (state.player.mode === "single" && filmSharePaths[currentId]) return new URL(filmSharePaths[currentId], canonical).href;
+    const url = new URL(canonical, window.location.href);
+    if (state.player.mode === "reel") url.searchParams.set("reel", "1");
+    else if (state.player.currentScene) url.searchParams.set("animation", publicSceneNumber(state.player.currentScene));
+    return url.href;
+  }
   function setShareStatus(message) { const status = $("#share-status"); if (!status) return; window.clearTimeout(state.player.shareTimer); status.textContent = message; state.player.shareTimer = window.setTimeout(() => { status.textContent = ""; }, 3200); }
 
   async function shareCinema() {
@@ -2761,12 +2875,24 @@
   function teardownPageMotion() { state.pageMedia?.revert(); state.pageMedia = null; }
 
   function bindEvents() {
-    $("#enter-experience")?.addEventListener("click", () => { if ($("#gate-reduced")?.checked) setReduced(true); enterSite("#top"); });
+    $("#enter-experience")?.addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      if (button.disabled) return;
+      if ($("#gate-reduced")?.checked) setReduced(true);
+      button.disabled = true;
+      button.textContent = "序幕播放中…";
+      entryGate.inert = true;
+      entryGate.setAttribute("aria-hidden", "true");
+      entryGate.setAttribute("aria-modal", "false");
+      await window.playChairPrologue?.();
+      enterSite("#top");
+    });
     $("#enter-reading")?.addEventListener("click", () => enterSite("#full-copy"));
     $("#gate-reduced")?.addEventListener("change", (event) => setReduced(event.target.checked)); motionToggle?.addEventListener("click", () => setReduced(!state.reduced)); navToggle?.addEventListener("click", () => setNavOpen(!state.navOpen));
     $$("a", nav).forEach((link) => link.addEventListener("click", () => setNavOpen(false))); window.addEventListener("resize", () => { if (window.innerWidth > 1120) setNavOpen(false); requestActorCalibration(); });
     window.addEventListener("scroll", () => { if (!readingProgressFrame) readingProgressFrame = window.requestAnimationFrame(updateReadingProgress); }, { passive: true });
     $("#hero-play-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel")); $("#play-full-reel")?.addEventListener("click", () => openCinema(FILM_ORDER[0], "reel"));
+    $$('[data-featured-film]').forEach((button) => button.addEventListener("click", () => openCinema(button.dataset.featuredFilm, "single")));
     $$('[data-catalog-view]').forEach((button) => button.addEventListener("click", () => renderAnimationCatalog(button.dataset.catalogView)));
     $("#resume-animation")?.addEventListener("click", resumeLastAnimation);
     $("#close-cinema")?.addEventListener("click", closeCinema); $("#share-cinema")?.addEventListener("click", shareCinema); $("#prev-beat")?.addEventListener("click", () => adjacentUnit(-1)); $("#next-beat")?.addEventListener("click", () => adjacentUnit(1));
@@ -2795,7 +2921,16 @@
     scoreLibraryAudio?.addEventListener("play", () => { cinemaAudio?.pause(); suspendAmbient(); });
     scoreLibraryAudio?.addEventListener("pause", () => { if (!dialog?.open) resumeAmbient(); });
     scoreLibraryAudio?.addEventListener("ended", () => { if (!dialog?.open) resumeAmbient(); });
-    document.addEventListener("keydown", (event) => { if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; } if (event.key === "ArrowRight") adjacentUnit(1); if (event.key === "ArrowLeft") adjacentUnit(-1); if (event.key.toLowerCase() === "c") setCaptions(!state.player.captions); if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); } });
+    document.addEventListener("keydown", (event) => {
+      if (!dialog?.open) { if (event.key === "Escape") setNavOpen(false); return; }
+      const target = event.target;
+      const usesNativeKeys = target instanceof HTMLElement && (target.matches("button, input, summary, a, select, textarea") || target.isContentEditable);
+      if (usesNativeKeys) return;
+      if (event.key === "ArrowRight") adjacentUnit(1);
+      if (event.key === "ArrowLeft") adjacentUnit(-1);
+      if (event.key.toLowerCase() === "c") setCaptions(!state.player.captions);
+      if (event.key === " ") { event.preventDefault(); if (state.player.playing) pausePlayback(); else startPlayback(); }
+    });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         state.player.resumeAfterVisibility = state.player.playing;
@@ -2834,13 +2969,45 @@
     return false;
   }
 
+  function hasDirectHash() {
+    return Boolean(window.location.hash && window.location.hash !== "#" && window.location.hash !== "#top");
+  }
+
+  function initDirectHash() {
+    if (!hasDirectHash()) return false;
+    setPageGate(false);
+    sessionStorage.setItem("kk-entered-v8", "true");
+    window.setTimeout(async () => {
+      let id = "";
+      try { id = decodeURIComponent(window.location.hash.slice(1)); }
+      catch { id = window.location.hash.slice(1); }
+      let target = document.getElementById(id);
+      if (!target) {
+        const details = $(".full-copy-details");
+        if (details) details.open = true;
+        await loadInlineStory();
+        target = document.getElementById(id);
+      } else if (target.id === "full-copy") {
+        $(".full-copy-details")?.setAttribute("open", "");
+      }
+      (target || $("#main"))?.scrollIntoView({ behavior: state.reduced ? "auto" : "smooth", block: "start" });
+      target?.setAttribute?.("tabindex", "-1");
+      window.setTimeout(() => target?.focus?.({ preventScroll: true }), state.reduced ? 0 : 450);
+      window.ScrollTrigger?.refresh();
+    }, 180);
+    return true;
+  }
+
   function init() {
     if (!scenes.length) { console.error("Scene registry was not loaded."); return; }
-    const gated = sessionStorage.getItem("kk-entered-v8") !== "true";
+    const params = new URLSearchParams(window.location.search);
+    const hasDirectPlayer = params.has("scene") || params.has("animation") || params.get("reel") === "1";
+    const gated = !hasDirectHash() && !hasDirectPlayer && sessionStorage.getItem("kk-entered-v8") !== "true";
     setPageGate(gated);
     refreshMotionUi(); refreshAmbientUi(); renderAnimationCatalog(); bindEvents(); updateReadingProgress(); setupFullCopy(); setupPageMotion();
     const directPlayer = initDirectPlayer();
-    if (!directPlayer) { if (gated) playGateIntro(); else playPageIntro(); }
+    const directHash = !directPlayer && initDirectHash();
+    if (!directPlayer && !directHash) { if (gated) playGateIntro(); else playPageIntro(); }
   }
 
   init();

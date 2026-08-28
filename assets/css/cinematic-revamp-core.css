@@ -198,8 +198,8 @@ body:not(.is-gated) .entry-gate { opacity: 0; visibility: hidden; pointer-events
 .gate-panel::before { top: 14px; left: 14px; border-top: 1px solid; border-left: 1px solid; border-radius: 18px 0 0; }
 .gate-panel::after { right: 14px; bottom: 14px; border-right: 1px solid; border-bottom: 1px solid; border-radius: 0 0 18px; }
 .gate-copy { display: grid; align-content: center; justify-items: start; gap: 1.15rem; min-width: 0; padding: clamp(2.2rem, 5vw, 5.8rem); }
-.gate-copy h1 { margin: 0; font: 500 clamp(2.5rem, 4.25vw, 3.8rem)/1.14 var(--serif); letter-spacing: .045em; }
-.gate-copy h1 em { color: #e0bd8d; font-style: normal; }
+.gate-copy h2 { margin: 0; font: 500 clamp(2.5rem, 4.25vw, 3.8rem)/1.14 var(--serif); letter-spacing: .045em; }
+.gate-copy h2 em { color: #e0bd8d; font-style: normal; }
 .gate-copy .gate-quatrain { display: grid; gap: .02em; }
 .gate-quatrain span { display: block; white-space: nowrap; }
 .gate-quatrain span:nth-child(even) { color: #e0bd8d; }
@@ -569,7 +569,7 @@ footer { padding-block: 2rem; border-top: 1px solid var(--line); background: rgb
 .cinema-header h2 { margin: .15rem 0; font: 500 clamp(2rem, 4vw, 4.2rem)/1.1 var(--serif); }
 .cinema-header p { margin: 0; color: #aeb4ae; }
 .cinema-type { color: var(--ehuang) !important; font-size: .68rem; font-weight: 800; letter-spacing: .17em; }
-.cinema-header-actions { display: grid; grid-template-columns: auto auto; gap: .45rem; align-items: center; }
+.cinema-header-actions { display: grid; justify-items: end; gap: .45rem; align-items: center; }
 .cinema-header-actions button { min-width: 48px; min-height: 44px; padding: .45rem .75rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(22, 35, 33, .76); cursor: pointer; }
 #close-cinema { font-size: 1.7rem; line-height: 1; }
 #share-status { grid-column: 1 / -1; min-height: 1.2em; color: var(--ehuang); font-size: .72rem; text-align: right; }
@@ -735,7 +735,7 @@ html.has-gsap .score-track-grid button { will-change: transform, opacity; }
   .entry-gate { padding: max(.55rem, env(safe-area-inset-top)) .55rem max(.55rem, env(safe-area-inset-bottom)); }
   .gate-panel { grid-template-columns: 1fr; min-height: 0; border-radius: 22px; }
   .gate-copy { gap: .72rem; padding: 1.45rem 1.15rem 1.2rem; }
-  .gate-copy h1 { font-size: clamp(1.9rem, 8.8vw, 2.55rem); line-height: 1.2; }
+  .gate-copy h2 { font-size: clamp(1.9rem, 8.8vw, 2.55rem); line-height: 1.2; }
   .gate-lead { font-size: 1rem; }
   .content-note { font-size: .86rem; }
   .gate-actions { display: grid; grid-template-columns: 1fr; width: 100%; }

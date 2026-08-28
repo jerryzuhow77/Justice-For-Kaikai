@@ -41,7 +41,7 @@
       node.textContent = `司法狀態核對至 ${data.statusCheckedLabel}`;
       node.setAttribute("datetime", data.statusCheckedAt);
     });
-    document.querySelectorAll("[data-site-updated]").forEach((node) => {
+    document.querySelectorAll("[data-current-site-updated]").forEach((node) => {
       node.textContent = data.siteUpdatedAt.replaceAll("-", ".");
       node.setAttribute("datetime", data.siteUpdatedAt);
     });
@@ -92,10 +92,11 @@
     if (!main) return;
 
     [
+      ".ethics-strip",
+      "#film-reel",
       "#case-progress",
       "#reading-map",
       "#full-copy",
-      "#film-reel",
       "#source-guide",
       "#materials-guide",
       "#glossary",
@@ -105,7 +106,6 @@
       "#chapter-two-preview",
       "#action",
       "#version-history",
-      ".ethics-strip",
       ".visual-system"
     ].forEach((selector) => {
       const section = main.querySelector(selector);

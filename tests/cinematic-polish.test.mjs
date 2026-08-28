@@ -82,7 +82,7 @@ test("sets the opening proverb as four lines and varies article emphasis", async
   const app = await readFile(new URL("assets/js/cinematic-revamp-core.js", root), "utf8");
   const css = await readFile(new URL("assets/css/cinematic-revamp-core.css", root), "utf8");
   assert.match(story, /<strong>花有重開日，<\/strong><br \/>\s*<strong>人無再少年。<\/strong><br \/>\s*<strong>應須惜兒孫，<\/strong><br \/>\s*<strong>安樂是天倫。<\/strong>/);
-  assert.match(html, /<h1 class="gate-quatrain" id="gate-title"><span>花有重開日，<\/span><span>人無再少年。<\/span><span>應須惜兒孫，<\/span><span>安樂是天倫。<\/span><\/h1>/);
+  assert.match(html, /<h2 class="gate-quatrain" id="gate-title"><span>花有重開日，<\/span><span>人無再少年。<\/span><span>應須惜兒孫，<\/span><span>安樂是天倫。<\/span><\/h2>/);
   assert.match(app, /story-data-line/);
   assert.match(app, /story-question/);
   assert.match(app, /story-contrast/);
@@ -164,10 +164,10 @@ test("keeps the prologue skip control immediately visible and mobile-safe", asyn
   assert.match(refinedCss, /\.kkp6__skip\{[^}]*opacity:1;visibility:visible/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*top:var\(--mobile-safe-top\)!important;[^}]*bottom:auto!important/);
   assert.match(mobileCss, /\.kkp6__skip\{[^}]*opacity:1!important;[^}]*visibility:visible!important/);
-  assert.match(loader, /const version="20260826-directors-cut-1"/);
-  assert.match(html, /cinematic-revamp\.css\?v=20260826-directors-cut-1/);
-  assert.match(html, /cinematic-revamp\.js\?v=20260826-directors-cut-1/);
-  assert.match(html, /audio=20260826-skip-immediate-2/);
+  assert.match(loader, /const version = "20260827-experience-1"/);
+  assert.match(html, /cinematic-revamp\.css\?v=20260827-experience-1/);
+  assert.match(html, /cinematic-revamp\.js\?v=20260827-experience-1/);
+  assert.match(html, /audio=20260827-lazy-prologue-1/);
   assert.match(prologue, /if\(skipped\)\{settle\(true\);return\}/);
   assert.match(prologue, /duration:\.72/);
   assert.match(prologue, /status\.textContent="已略過序幕"/);
@@ -208,8 +208,8 @@ test("ships the director's cut, evidence-separated Chen statements, and complete
   assert.match(app, /scene\.type === "side"\) return Math\.max\(4/);
   assert.match(css, /\.inline-story>\.copy-scene-group\{[\s\S]*?width:100%/);
   assert.match(css, /\.cinema-stage\.captions-hidden \.dialogue-box\{visibility:hidden!important;opacity:0!important/);
-  assert.match(html, /official-home-v2\.css\?v=20260826-directors-cut-4/);
-  assert.match(story, /official-home-v2\.css\?v=20260826-directors-cut-4/);
+  assert.match(html, /official-home-v2\.css\?v=20260827-experience-1/);
+  assert.match(story, /official-home-v2\.css\?v=20260827-experience-1/);
   assert.match(css, /\.quote-dispute>\.quote-dispute-boundary\{padding-right:10\.25rem\}/);
   assert.match(css, /\.story-page \.story-quote-dispute>\.quote-dispute-boundary\{[\s\S]*?color:#3f554e;[\s\S]*?background:rgba\(82,120,110,\.12\);[\s\S]*?font-size:\.875rem/);
 });

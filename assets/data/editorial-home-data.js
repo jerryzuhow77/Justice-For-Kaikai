@@ -2,7 +2,7 @@
   "use strict";
 
   window.KAIKAI_EDITORIAL_DATA = Object.freeze({
-    siteUpdatedAt: "2026-08-24",
+    siteUpdatedAt: "2026-08-28",
     statusCheckedAt: "2026-08-16",
     statusCheckedLabel: "2026年8月16日",
     timeline: [

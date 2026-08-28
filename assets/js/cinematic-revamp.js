@@ -1,91 +1,101 @@
-(function(){
+(function () {
   "use strict";
-  const version="20260826-directors-cut-1";
-  const coreVersion="20260826-directors-cut-1-fm123-runtime-clean-1-character-art-clean-2";
-  const directVersion="20260826-directors-cut-1-skip-immediate-3";
-  const animationMapVersion="20260827-animation-map-1";
-  const mobileQuery=matchMedia("(max-width:760px)");
-  const mobileParts=[
+
+  const version = "20260827-experience-1";
+  const coreVersion = "20260827-experience-1-fm123-runtime-clean-1-character-art-clean-2";
+  const animationMapVersion = "20260827-animation-map-2";
+  const mobileQuery = matchMedia("(max-width:760px)");
+  const mobileParts = [
     "assets/data/prologue/chair-maiden-mobile-v2-0.b64",
     "assets/data/prologue/chair-maiden-mobile-v2-1.b64",
     "assets/data/prologue/chair-maiden-mobile-v2-2.b64",
     "assets/data/prologue/chair-maiden-mobile-v2-3.b64"
   ];
 
-  const load=(src,onload,onerror)=>{
-    const script=document.createElement("script");
-    script.src=src;
-    script.async=false;
-    script.onload=onload;
-    script.onerror=onerror;
-    document.head.append(script);
-  };
-
-  const ensureMobileStyle=()=>new Promise(resolve=>{
-    const current=document.querySelector("link[data-chair-mobile-v2]");
-    if(current){resolve();return;}
-    const link=document.createElement("link");
-    let settled=false;
-    const finish=()=>{if(settled)return;settled=true;resolve();};
-    link.rel="stylesheet";
-    link.href=`assets/css/chair-prologue-mobile-v2-runtime.css?v=${version}`;
-    link.dataset.chairMobileV2="1";
-    link.onload=finish;
-    link.onerror=finish;
-    document.head.append(link);
-    setTimeout(finish,1200);
-  });
-
-  const bootDesignPolish=()=>load(`assets/js/chapter1-design-polish.js?v=${version}`,null,()=>{});
-  const bootLegacy=()=>load(`assets/js/cinematic-revamp-legacy.js?v=${coreVersion}&map=${animationMapVersion}`,()=>bootDesignPolish(),()=>bootDesignPolish());
-  let started=false;
-
-  const start=()=>{
-    if(started)return;
-    started=true;
-    load(`assets/js/chair-prologue-refined.js?v=${directVersion}&map=${animationMapVersion}`,()=>{
-      try{
-        if(typeof window.initChairPrologueRefined==="function")window.initChairPrologueRefined();
-      }finally{
-        bootLegacy();
-      }
-    },bootLegacy);
-  };
-
-  const prepareMobileArtwork=async()=>{
-    const pieces=await Promise.all(mobileParts.map(async path=>{
-      const response=await fetch(`${path}?v=${version}`,{cache:"force-cache"});
-      if(!response.ok)throw new Error(`Mobile prologue artwork failed: ${response.status}`);
-      return (await response.text()).replace(/\s+/g,"");
-    }));
-    const base64=pieces.join("");
-    if(base64.length<50000||!base64.startsWith("UklGR"))throw new Error("Mobile prologue artwork is incomplete");
-    const binary=atob(base64);
-    const bytes=new Uint8Array(binary.length);
-    for(let i=0;i<binary.length;i+=1)bytes[i]=binary.charCodeAt(i);
-    const objectUrl=URL.createObjectURL(new Blob([bytes],{type:"image/webp"}));
-    window.__chairMobileArtObjectUrl=objectUrl;
-    document.documentElement.style.setProperty("--chair-mobile-art",`url("${objectUrl}")`);
-    document.documentElement.classList.add("chair-mobile-art-ready");
-  };
-
-  if(mobileQuery.matches){
-    const fallbackTimer=setTimeout(start,2400);
-    Promise.all([ensureMobileStyle(),prepareMobileArtwork()])
-      .catch(error=>console.warn("[Chair prologue] portrait artwork fallback",error))
-      .finally(()=>{
-        clearTimeout(fallbackTimer);
-        start();
-      });
-  }else{
-    const preload=document.createElement("link");
-    preload.rel="preload";
-    preload.as="image";
-    preload.href=`assets/img/prologue/chair-maiden-concept.webp?v=${version}`;
-    preload.fetchPriority="high";
-    preload.addEventListener("load",start,{once:true});
-    preload.addEventListener("error",start,{once:true});
-    document.head.append(preload);
-    setTimeout(start,900);
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[data-lazy-src="${src}"]`);
+      if (existing?.dataset.loaded === "true") { resolve(); return; }
+      const script = existing || document.createElement("script");
+      script.src = src;
+      script.async = false;
+      script.dataset.lazySrc = src;
+      script.addEventListener("load", () => { script.dataset.loaded = "true"; resolve(); }, { once: true });
+      script.addEventListener("error", reject, { once: true });
+      if (!existing) document.head.append(script);
+    });
   }
+
+  function loadStyle(href) {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector(`link[data-lazy-href="${href}"]`);
+      if (existing?.dataset.loaded === "true") { resolve(); return; }
+      const link = existing || document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.dataset.lazyHref = href;
+      link.addEventListener("load", () => { link.dataset.loaded = "true"; resolve(); }, { once: true });
+      link.addEventListener("error", reject, { once: true });
+      if (!existing) document.head.append(link);
+    });
+  }
+
+  async function prepareMobileArtwork() {
+    if (window.__chairMobileArtObjectUrl) return;
+    const pieces = await Promise.all(mobileParts.map(async (path) => {
+      const response = await fetch(`${path}?v=${version}`, { cache: "force-cache" });
+      if (!response.ok) throw new Error(`Mobile prologue artwork failed: ${response.status}`);
+      return (await response.text()).replace(/\s+/g, "");
+    }));
+    const base64 = pieces.join("");
+    if (base64.length < 50000 || !base64.startsWith("UklGR")) throw new Error("Mobile prologue artwork is incomplete");
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    const objectUrl = URL.createObjectURL(new Blob([bytes], { type: "image/webp" }));
+    window.__chairMobileArtObjectUrl = objectUrl;
+    document.documentElement.style.setProperty("--chair-mobile-art", `url("${objectUrl}")`);
+    document.documentElement.classList.add("chair-mobile-art-ready");
+  }
+
+  async function prepareDesktopArtwork() {
+    const image = new Image();
+    image.decoding = "async";
+    image.src = `assets/img/prologue/chair-maiden-concept.webp?v=${version}`;
+    try { await image.decode(); }
+    catch { /* The prologue keeps a dark fallback while the image finishes. */ }
+  }
+
+  let prologuePromise = null;
+  window.playChairPrologue = function playChairPrologue() {
+    if (prologuePromise) return prologuePromise;
+    prologuePromise = (async () => {
+      try {
+        const styleTasks = [loadStyle(`assets/css/chair-prologue-refined.css?v=${version}`)];
+        if (mobileQuery.matches) styleTasks.push(loadStyle(`assets/css/chair-prologue-mobile-v2-runtime.css?v=${version}`));
+        await Promise.all([
+          ...styleTasks,
+          mobileQuery.matches ? prepareMobileArtwork() : prepareDesktopArtwork()
+        ]);
+        await loadScript(`assets/js/chair-prologue-refined.js?v=${version}`);
+        if (typeof window.initChairPrologueRefined !== "function") return;
+        await new Promise((resolve) => {
+          const fallback = window.setTimeout(resolve, 15000);
+          window.addEventListener("kaikai:prologue-finished", () => {
+            window.clearTimeout(fallback);
+            resolve();
+          }, { once: true });
+          window.initChairPrologueRefined();
+        });
+      } catch (error) {
+        console.warn("[Chair prologue] lazy experience unavailable", error);
+      }
+    })();
+    return prologuePromise;
+  };
+
+  const bootDesignPolish = () => loadScript(`assets/js/chapter1-design-polish.js?v=${version}`).catch(() => {});
+  loadScript(`assets/js/cinematic-revamp-legacy.js?v=${coreVersion}&map=${animationMapVersion}`)
+    .then(bootDesignPolish)
+    .catch(bootDesignPolish);
 })();
