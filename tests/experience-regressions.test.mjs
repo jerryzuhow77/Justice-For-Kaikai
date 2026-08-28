@@ -51,6 +51,7 @@ test("autoplays the first-session prologue without forced audio and bypasses it 
   assert.match(app, /async function startEntrancePrologue\(\{ automatic = false \} = \{\}\)/);
   assert.match(app, /window\.requestAnimationFrame\(\(\) => startEntrancePrologue\(\{ automatic: true \}\)\)/);
   assert.match(app, /const startWithMusic = automatic \? window\.__kaikaiAmbientRequested === true/);
+  assert.match(app, /const target = result\?\.target === "#full-copy" \? result\.target : "#top"/);
   assert.match(app, /window\.history\.pushState\(null, "", target\)/);
   assert.match(app, /targetElement\.scrollIntoView\(\{ behavior: "auto", block: "start" \}\)/);
   assert.match(app, /window\.scrollTo\(\{ top: window\.scrollY \+ offset, behavior: "auto" \}\)/);

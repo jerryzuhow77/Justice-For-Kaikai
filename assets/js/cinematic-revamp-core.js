@@ -2962,7 +2962,7 @@
     entryGate.setAttribute("aria-hidden", "true");
     entryGate.setAttribute("aria-modal", "false");
     const result = await window.playChairPrologue?.();
-    const target = result?.target === "#chapter-two-preview" ? result.target : "#top";
+    const target = result?.target === "#full-copy" ? result.target : "#top";
     const startWithMusic = automatic ? window.__kaikaiAmbientRequested === true : $("#gate-music")?.checked === true;
     if (target !== "#top" && window.location.hash !== target) window.history.pushState(null, "", target);
     enterSite(target, { startWithMusic });

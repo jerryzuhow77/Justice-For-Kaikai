@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const version = "20260828-auto-prologue-ch2-3";
-  const coreVersion = "20260828-auto-prologue-ch2-3";
+  const version = "20260828-prologue-ch1-link-1";
+  const coreVersion = "20260828-prologue-ch1-link-1";
   const animationMapVersion = "20260827-animation-map-2";
   const mobileQuery = matchMedia("(max-width:760px)");
   const mobileParts = [
