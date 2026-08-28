@@ -53,6 +53,22 @@ test("keeps the prologue opt-in, session-stable, and bypassed by direct hashes",
   assert.match(html, /椅仔姑序幕約 12 秒，只在首次進站時提供；直接連到章節或動畫的網址不會被入口攔住/);
 });
 
+test("keeps public player URLs aligned with displayed film acts and theatre beats", async () => {
+  const app = await read("assets/js/cinematic-revamp-core.js");
+  const urlState = functionBlock(app, "function setPlayerUrl", "function openCinema");
+  const directPlayer = functionBlock(app, "function directPlayerRequest", "function hasDirectHash");
+
+  assert.match(urlState, /const publicAct = productionFor\(scene\) \? actIndex \+ 1 : localStep \+ 1/);
+  assert.match(urlState, /url\.searchParams\.set\("act", String\(publicAct\)\)/);
+  assert.equal(
+    (app.match(/setPlayerUrl\(meta\.scene\.id, "single", meta\.actionIndex, meta\.localStep\)/g) ?? []).length,
+    2,
+    "manual navigation and timeline scrubbing must both serialize the displayed step"
+  );
+  assert.match(directPlayer, /const maxAct = production\?\.acts\?\.length \|\| \(scene \? totalSteps\(scene\) : 1\)/);
+  assert.match(directPlayer, /\(production \? meta\.actionIndex : meta\.localStep\) === requestedAct/);
+});
+
 test("releases temporary prologue and player media resources", async () => {
   const [loader, app] = await Promise.all([
     read("assets/js/cinematic-revamp.js"),
