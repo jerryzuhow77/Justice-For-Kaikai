@@ -10,6 +10,9 @@ on:
     paths:
       - index.html
       - story.html
+      - story-*.html
+      - scripts/story-page-template.html
+      - sitemap.xml
       - assets/css/cinematic-revamp.css
       - assets/css/cinematic-revamp-core.css
       - assets/css/cinematic-revamp-legacy.css
