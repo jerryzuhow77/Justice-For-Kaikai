@@ -113,7 +113,21 @@
     });
   }
 
+  function recordChapterView() {
+    const api = "https://global-protection.jerryzuhow77.chatgpt.site/api/public/view-count";
+    let clientId = "";
+    try {
+      clientId = localStorage.getItem("cpa_engagement_client_v1") || crypto.randomUUID();
+      localStorage.setItem("cpa_engagement_client_v1", clientId);
+    } catch (_) { clientId = `${Date.now()}-${Math.random().toString(36).slice(2)}`; }
+    const payload = JSON.stringify({ channel: "official-article", articleKey: "official--justice-for-kaikai", action: "view", clientId });
+    try {
+      fetch(api, { method: "POST", cache: "no-store", keepalive: true, headers: { "content-type": "application/json" }, body: payload });
+    } catch (_) { /* Counting must never block the article. */ }
+  }
+
   function init() {
+    recordChapterView();
     renderTimeline();
     renderEditorialDates();
     renderSourceLabels();
